@@ -16,5 +16,5 @@ Projekt for VMware i Datahouse
 | Jesper 	| Frontend      	| H5 - 31/10 - 20/12 	|
 | Kasper 	| Backend       	| H4 - 05/08 - 20/09 	|
 | Jonas  	| Backend       	| H4 - 05/08 - 20/09 	|
-| Dalya  	|               	|                    	|
-| Ronni  	|               	|                    	|
+| Dalya  	| Frontend       	|                    	|
+| Ronni  	| DevOps - Infra 	|                    	|
