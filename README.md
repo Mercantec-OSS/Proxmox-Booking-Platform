@@ -17,5 +17,5 @@ Projekt for VMware i Datahouse - [Scrum/task board](https://github.com/orgs/Merc
 | Jesper 	| Frontend      	| H5 - 31/10 - 20/12 	|
 | Kasper 	| Backend       	| H4 - 05/08 - 20/09 	|
 | Jonas  	| Backend       	| H4 - 05/08 - 20/09 	|
-| Dalya  	| Frontend       	| H6 -               	|
+| Dalya  	| DevOps        	| H6 -               	|
 | Ronni  	| DevOps - Infra 	| H3 - 02/04 - 14/06 	|
