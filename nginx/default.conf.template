@@ -1,0 +1,19 @@
+server {
+    listen 443 ssl;
+    ssl_certificate     /ssl/sert.pem;
+    ssl_certificate_key /ssl/sert.key;
+    server_name     site;
+    index           index.html;
+    client_max_body_size 1G;
+
+    location / {
+        proxy_pass       http://frontend:6003/;
+        proxy_redirect   off;
+    }
+
+    location ^~ /api {
+        rewrite ^/api/(.*) /$1 break;
+        proxy_pass       http://backend:5000/;
+        proxy_redirect   off;
+    }
+}
