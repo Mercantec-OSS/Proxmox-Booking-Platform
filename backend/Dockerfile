@@ -12,7 +12,7 @@ FROM builder AS publish
 # copy dependences
 WORKDIR /app
 
-COPY app ./
+COPY vmware-backend/vmware_backend ./
 
 RUN dotnet publish --sc -o /build
 
