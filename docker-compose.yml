@@ -58,3 +58,13 @@ services:
       - PUBLIC_VERSION=${FR_PUBLIC_VERSION}
       - PUBLIC_CLIENT_API=${FR_PUBLIC_CLIENT_API}
       - PUBLIC_BACKEND_API=${FR_PUBLIC_BACKEND_API}
+  
+  db-backup:
+    build: ./backup
+    container_name: backup-dev
+    restart: unless-stopped
+    volumes:
+      - ./backup/backup-files:/backup
+      - ./backup/backup_script.sh:/etc/periodic/daily/backup_script.sh
+    environment:
+      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
