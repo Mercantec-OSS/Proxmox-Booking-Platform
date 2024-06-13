@@ -50,7 +50,6 @@ services:
   frontend:
     container_name: frontend-dev
     build: ./frontend
-    working_dir: /app
     ports:
       - 6003:6003 # Optional for debugging
     environment:
