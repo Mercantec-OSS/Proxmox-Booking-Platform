@@ -65,4 +65,4 @@ services:
       - ./backup/backup-files:/backup
       - ./backup/backup_script.sh:/etc/periodic/daily/backup_script.sh
     environment:
-      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+      - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
