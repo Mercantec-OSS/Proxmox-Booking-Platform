@@ -1,11 +1,9 @@
-version: "3.9"
-
 services:
   nginx:
     container_name: nginx-dev
     image: nginx
     ports:
-      - "6005:443"
+      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/templates
       - ./ssl:/ssl
@@ -14,50 +12,50 @@ services:
     container_name: automat-dev
     restart: unless-stopped
     build: ./automatization
-    ports:
-      - "6004:5000" # Optional for debugging
+    # ports:
+    #   - "6004:5000" # Optional for debugging
     environment:
-      - SCRIPTS_PATH=${AUT_SCRIPTS_PATH}
-      - VERSION=${AUT_VERSION}
+      - VERSION=8.3.0
+      - SCRIPTS_PATH=/scripts
       - VM_VCENTER_IP=${VM_VCENTER_IP}
       - VM_VCENTER_USER=${VM_VCENTER_USER}
       - VM_VCENTER_PASSWORD=${VM_VCENTER_PASSWORD}
     volumes:
-      - ./automatization/scripts:${AUT_SCRIPTS_PATH}
+      - ./automatization/scripts:/scripts
 
   backend:
     container_name: backend-dev
     restart: unless-stopped
     build: ./backend
-    ports:
-      - "6002:5000" # Optional for debugging
+    # ports:
+    #   - "6002:5000" # Optional for debugging
     environment:
-      - VERSION=${BACKEND_VERSION}
-      - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
-      - SALT=${SALT}
-      - AUTOMATIZATION_URL=${AUTOMATIZATION_URL}
-      - EMAIL_TEMPLATES=${EMAIL_TEMPLATES}
+      - VERSION=8.4.1
+      - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
+      - SALT=fE6CNRT0ch244bwK4kr14Ho14GcNNC
+      - AUTOMATIZATION_URL=http://automatization:5000
+      - EMAIL_TEMPLATES=/app/EmailTemplates/
       - MAIL_SMTP_ADDRESS=${MAIL_SMTP_ADDRESS}
       - MAIL_SMTP_PORT=${MAIL_SMTP_PORT}
-      - MAIL_LOGIN=${MAIL_LOGIN}
+      - MAIL_LOGIN=${MAIL_USER}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - UNIT_TESTING=${UNIT_TESTING}
+      - UNIT_TESTING=
       - AUTO_MIGRATIONS=true
       - USE_SWAGGER=true
       - ALLOW_CORS=true
-      - AD_CONNECTION_STRING=${AD_CONNECTION_STRING}
+      - AD_CONNECTION_STRING=${AD_ADDRESS}__${AD_DOMAIN}__${AD_USER}__${AD_PASSWORD}
       - ASPNETCORE_ENVIRONMENT=Development # Temporary. Remove in production
 
   frontend:
     container_name: frontend-dev
     build: ./frontend
-    ports:
-      - 6003:6003 # Optional for debugging
+    # ports:
+    #   - 6003:6003 # Optional for debugging
     environment:
       - PORT=6003
-      - PUBLIC_VERSION=${FR_PUBLIC_VERSION}
-      - PUBLIC_CLIENT_API=${FR_PUBLIC_CLIENT_API}
-      - PUBLIC_BACKEND_API=${FR_PUBLIC_BACKEND_API}
+      - PUBLIC_VERSION=8.2.0
+      - PUBLIC_CLIENT_API=/api
+      - PUBLIC_BACKEND_API=http://backend:5000
   
   db-backup:
     build: ./backup
