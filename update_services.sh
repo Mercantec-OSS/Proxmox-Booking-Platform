@@ -1,5 +1,5 @@
 #!/usr/bin/bash
-PROJECT_PATH="/home/booking/vmware/dev"
+PROJECT_PATH=$(pwd)
 
 cd $PROJECT_PATH
 git pull
