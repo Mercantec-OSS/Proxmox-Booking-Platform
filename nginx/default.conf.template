@@ -1,4 +1,13 @@
 server {
+    listen 80;
+    server_name booking.hotdata.dk;
+
+    location / {
+        return 301 https://$server_name$request_uri;
+    }
+}
+
+server {
     listen 443 ssl;
     ssl_certificate     /ssl/sert.pem;
     ssl_certificate_key /ssl/sert.key;
