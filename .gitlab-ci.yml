@@ -1,0 +1,13 @@
+image: alpine:latest
+
+stages:
+  - deploy
+
+deploy_job:
+  stage: deploy
+  script:
+    - apk update
+    - apk add --no-cache openssh-client sshpass
+    - sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USER@$HOST 'bash -s' < /home/administrator/update.sh
+  only:
+    - main
