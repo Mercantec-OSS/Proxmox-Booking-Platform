@@ -33,9 +33,9 @@ services:
     environment:
       - VERSION=${VERSION}
       - TEST_MODE=${TEST_MODE}
-      - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
       - JWT_SECRET=${JWT_SECRET}
       - DEVOPS_URL=http://automatization:5000
+      - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
       - AD_CONNECTION_STRING=${AD_ADDRESS}__${AD_DOMAIN}__${AD_USER}__${AD_PASSWORD}
       - SMTP_CONNECTION_STRING=${SMTP_ADDRESS}__${SMTP_PORT}__${SMTP_USER}__${SMTP_PASSWORD}
       - AUTO_MIGRATIONS=true
