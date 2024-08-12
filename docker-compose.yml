@@ -31,21 +31,16 @@ services:
     # ports:
     #   - "6002:5000" # Optional for debugging
     environment:
-      - VERSION=8.4.1
+      - VERSION=${VERSION}
+      - TEST_MODE=${TEST_MODE}
       - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
-      - SALT=jakX9CaStSKCFT0XQoOM
-      - AUTOMATIZATION_URL=http://automatization:5000
-      - EMAIL_TEMPLATES=/app/EmailTemplates/
-      - MAIL_SMTP_ADDRESS=${MAIL_SMTP_ADDRESS}
-      - MAIL_SMTP_PORT=${MAIL_SMTP_PORT}
-      - MAIL_LOGIN=${MAIL_USER}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - UNIT_TESTING=
+      - JWT_SECRET=${JWT_SECRET}
+      - DEVOPS_URL=http://automatization:5000
+      - AD_CONNECTION_STRING=${AD_ADDRESS}__${AD_DOMAIN}__${AD_USER}__${AD_PASSWORD}
+      - SMTP_CONNECTION_STRING=${SMTP_ADDRESS}__${SMTP_PORT}__${SMTP_USER}__${SMTP_PASSWORD}
       - AUTO_MIGRATIONS=true
       - USE_SWAGGER=true
       - ALLOW_CORS=true
-      - AD_CONNECTION_STRING=${AD_ADDRESS}__${AD_DOMAIN}__${AD_USER}__${AD_PASSWORD}
-      - ASPNETCORE_ENVIRONMENT=Development # Temporary. Remove in production
 
   frontend:
     container_name: frontend-dev
