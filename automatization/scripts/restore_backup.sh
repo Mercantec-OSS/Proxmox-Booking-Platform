@@ -18,6 +18,6 @@ password=$(echo "$1" | awk -F'__' '{print $2}')
 address=$(echo "$1" | awk -F'__' '{print $3}')
 
 # Pass the local variable to the remote script
-file_path=$(sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" 'find / -name configBundle.tgz')
+file_path=$(sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" 'find / -name configBundle.tgz | head -n 1')
 sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" "cp $file_path /tmp/configBundle.tgz"
 sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" "vim-cmd hostsvc/firmware/restore_config 0"
