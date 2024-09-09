@@ -1,14 +1,10 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
-
-namespace Controllers;
+﻿namespace Controllers;
 
 [ApiController]
 [Route("vm-booking")]
 
 public class VmBookingController(VmBookingService vmBookingService) : ControllerBase
 {
-    private readonly List<string> _templateCache = new ();
     [HttpPost("create")]
     [ProducesResponseType(201)]
     public IActionResult Create(CreateVmDTO dto)
@@ -28,16 +24,7 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
     [HttpGet("get-templates")]
     public ActionResult<List<string>> GetTemplates()
     {
-        return Ok(_templateCache);
-    }
-
-    [HttpGet("update-templates-cache")]
-    [ProducesResponseType(204)]
-    public IActionResult ClearTemplatesCache()
-    {
-        _templateCache.AddRange(vmBookingService.GetTemplates());
-        _templateCache.Clear();
-        return NoContent();
+        return Ok(vmBookingService.GetTemplates());
     }
 
     [HttpGet("get-vm/{vmName}")]
