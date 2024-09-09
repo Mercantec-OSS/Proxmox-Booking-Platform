@@ -20,5 +20,4 @@ address=$(echo "$1" | awk -F'__' '{print $3}')
 # Pass the local variable to the remote script
 sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" "rm -r /etc/vmware/license.cfg"
 sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" "cp /etc/vmware/.#license.cfg /etc/vmware/license.cfg"
-#sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" "/etc/init.d/vpxa restart"
-#sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" "reboot"
+
