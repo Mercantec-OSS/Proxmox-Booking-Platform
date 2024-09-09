@@ -6,7 +6,7 @@ LABEL maintainer="carrergt@gmail.com"
 WORKDIR /app
 
 # copy app
-COPY vmware-frontend start.sh ./
+COPY app start.sh ./
 
 RUN npm i
 
