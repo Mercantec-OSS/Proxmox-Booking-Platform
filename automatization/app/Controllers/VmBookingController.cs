@@ -5,6 +5,7 @@
 
 public class VmBookingController(VmBookingService vmBookingService) : ControllerBase
 {
+    private static readonly List<string> _templates = new ();
     [HttpPost("create")]
     [ProducesResponseType(201)]
     public IActionResult Create(CreateVmDTO dto)
@@ -24,7 +25,20 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
     [HttpGet("get-templates")]
     public ActionResult<List<string>> GetTemplates()
     {
-        return Ok(vmBookingService.GetTemplates());
+        if (_templates.Count == 0)
+        {
+            _templates.AddRange(vmBookingService.GetTemplates());
+        }
+
+        return Ok(_templates);
+    }
+
+    [HttpDelete("delete-templates")]
+    [ProducesResponseType(204)]
+    public IActionResult DeleteTemplates()
+    {
+        _templates.Clear();
+        return NoContent();
     }
 
     [HttpGet("get-vm/{vmName}")]
