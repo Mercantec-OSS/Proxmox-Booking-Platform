@@ -13,14 +13,16 @@ services:
     container_name: automat-dev
     restart: unless-stopped
     build: ./automatization
-    # ports:
-    #   - "6004:5000" # Optional for debugging
+    ports:
+      - "6004:5000" # Optional for debugging
     environment:
       - VERSION=8.3.0
       - SCRIPTS_PATH=/scripts
       - VM_VCENTER_IP=${VM_VCENTER_IP}
       - VM_VCENTER_USER=${VM_VCENTER_USER}
       - VM_VCENTER_PASSWORD=${VM_VCENTER_PASSWORD}
+      - VM_CLUSTER_NAME=${VM_VCENTER_CLUSTER}
+      - VM_DATASTORE_NAME=${VM_VCENTER_DATASTORE}
     volumes:
       - ./automatization/scripts:/scripts
 
@@ -28,8 +30,8 @@ services:
     container_name: backend-dev
     restart: unless-stopped
     build: ./backend
-    # ports:
-    #   - "6002:5000" # Optional for debugging
+    ports:
+      - "6002:5000" # Optional for debugging
     environment:
       - VERSION=${VERSION}
       - TEST_MODE=${TEST_MODE}

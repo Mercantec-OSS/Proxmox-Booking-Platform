@@ -8,7 +8,7 @@ if ($args.Length -ne 2) {
 }
 
 $esxi_host = $args[0] -split '__'
-Connect-VIServer -Server $esxi_host[2] -User $esxi_host[0] -Password $esxi_host[1] -Force
+$null = Connect-VIServer -Server $esxi_host[2] -User $esxi_host[0] -Password $esxi_host[1] -Force
 
 $VM = Get-VM -Name $args[1]
 $VM.Guest.IPAddress

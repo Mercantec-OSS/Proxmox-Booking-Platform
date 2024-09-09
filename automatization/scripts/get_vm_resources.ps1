@@ -17,9 +17,12 @@ $vm = Get-VM | Where-Object { $_.ExtensionData.Config.Name -eq $vm_name }
 
 # Output VM CPU and RAM info
 if ($vm) {
+    $name = $vm.Name
+    $ip = $vm.Guest.IPAddress
     $cpu = $vm.NumCpu
     $ram = $vm.MemoryGB
-    Write-Host "name: $($vm.Name)"
+    Write-Host "name: $name"
+    Write-Host "ip: $ip"
     Write-Host "cpu: $cpu"
     Write-Host "ram: $ram"
 } else {
