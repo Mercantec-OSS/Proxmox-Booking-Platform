@@ -12,7 +12,7 @@ FROM builder AS publish
 # copy dependences
 WORKDIR /app
 
-COPY vmware-automation ./
+COPY app ./
 
 RUN dotnet publish --sc -o /build
 
