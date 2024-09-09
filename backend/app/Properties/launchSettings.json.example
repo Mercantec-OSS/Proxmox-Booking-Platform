@@ -1,0 +1,21 @@
+﻿{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5176",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "VERSION": "Development 1.5.6",
+        "TEST_MODE": "true",
+        "DB_CONNECTION_STRING": "",
+        "JWT_SECRET": "HEYB0BHERE!",
+        "DEVOPS_URL": "http://10.132.128.20:6004",
+        
+        "AD_CONNECTION_STRING": "addr__domain__username__password",
+        "SMTP_CONNECTION_STRING": "addr__port__username__password"
+      }
+    }
+  }
+}

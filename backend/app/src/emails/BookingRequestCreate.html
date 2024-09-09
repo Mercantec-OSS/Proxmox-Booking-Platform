@@ -1,0 +1,55 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account updated</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+            .section h2 {
+                margin-top: 0;
+            }
+
+        .details {
+            border-collapse: collapse;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Booking Requested</h1>
+        <div class="section">
+            <h2>Hello ##FirstName## ##Surname##</h2>
+            <h3>Your booking request has been sendt to your teacher.</h3>
+        </div>
+        <div class="section">
+            <h2>Teacher</h2>
+            <p><strong>Name:</strong> ##TeacherFirstName## ##TeacherSurname##</p>
+            <p><strong>Email: </strong> ##TeacherEmail##</p>
+        </div>
+        <div class="section">
+            <h2>Machine info</h2>
+            <p><strong>Type:</strong> ##Type##</p>
+            <p><strong>Machine uuid: </strong> ##MachineUuid##</p>
+            <p><strong>Created:</strong> ##Created##</p>
+            <p><strong>Expires:</strong> ##Expires##</p>
+        </div>
+    </div>
+</body>
+</html>

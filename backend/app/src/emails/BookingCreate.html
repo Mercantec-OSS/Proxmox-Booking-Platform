@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Booking Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+            .section h2 {
+                margin-top: 0;
+            }
+
+        .details {
+            border-collapse: collapse;
+            width: 100%;
+        }
+            .details th,
+            .details td {
+                border: 1px solid #ddd;
+                padding: 8px;
+            }
+
+            .details th {
+                background-color: #f2f2f2;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Booking Confirmation</h1>
+        <div class="section">
+            <h2>Booking Details</h2>
+            <p><strong>Booking ID:</strong> ##bookingId##</p>
+            <p><strong>Amount of Students:</strong> ##bookingAoumtStudents##</p>
+        </div>
+        <div class="section">
+            <h2>vCenters & ESXi Hosts</h2>
+            <table class="details">
+                <thead>
+                    <tr>
+                        <th>vCenter</th>
+                        <th>ESXi Hosts</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ##vcentersAndHost##
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h2>Owner Details</h2>
+            <p><strong>Name:</strong> ##name## ##surname##</p>
+            <p><strong>Email:</strong> ##email##</p>
+            <p><strong>Role:</strong> ##role##</p>
+        </div>
+        <div class="section">
+            <h2>Booking Timings</h2>
+            <p>
+                <strong>Created At:</strong> ##created##
+            </p>
+            <p>
+                <strong>Expired At:</strong> ##expires##
+            </p>
+        </div>
+    </div>
+</body>
+</html>
