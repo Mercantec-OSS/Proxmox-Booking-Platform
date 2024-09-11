@@ -1,16 +1,16 @@
 <script>
+  import { tick } from 'svelte';
+  import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
+  import { clusterListStore, vmListStore, userStore } from '$lib/utils/store';
+  import { toast } from 'svelte-sonner';
+  import { LoaderCircle, Ellipsis, CalendarIcon, Check, ChevronsUpDown } from 'lucide-svelte';
+  import { cn } from '$lib/utils/utils.js';
   import { clusterService } from '$lib/services/cluster-service';
   import { vmService } from '$lib/services/vm-service';
   import { userService } from '$lib/services/user-service';
-  import { clusterListStore, vmListStore, userStore } from '$lib/utils/store';
-  import { toast } from 'svelte-sonner';
-  import { LoaderCircle, Ellipsis } from 'lucide-svelte';
-  import { cn } from '$lib/utils/utils.js';
   import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
   import { Calendar } from '$lib/components/ui/calendar';
   import * as Popover from '$lib/components/ui/popover';
-  import { CalendarIcon } from 'lucide-svelte';
-  import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
   import { Badge } from '$lib/components/ui/badge';
   import * as Tabs from '$lib/components/ui/tabs/index.js';
   import * as Select from '$lib/components/ui/select/index.js';
@@ -18,6 +18,7 @@
   import * as Drawer from '$lib/components/ui/drawer';
   import { Label } from '$lib/components/ui/label';
   import { Input } from '$lib/components/ui/input';
+  import * as Command from '$lib/components/ui/command/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
 
   let userAuthed = $userStore.role !== 'Student';
@@ -41,6 +42,22 @@
   $: vmCalendarDateFormated = new Date(vmCalendarDatePicked).toLocaleDateString(undefined, { dateStyle: 'long' });
   $: calendarDateFormated = new Date(calendarDatePicked).toLocaleDateString(undefined, { dateStyle: 'long' });
   $: clusterBookingInput.amountDays = calendarDatePicked ? Math.ceil((new Date(calendarDatePicked) - new Date()) / (1000 * 60 * 60 * 24)) : null;
+
+  // Vars used for search select component
+  let searchSelectOpen = false;
+  let searchSelectvalue = null;
+  $: selectedSearchSelectvalue = (() => {
+    const selectedUser = listOfUsers.find((user) => user.id === searchSelectvalue);
+    return selectedUser ? `${selectedUser.name} ${selectedUser.surname}`.trim() : `Select a ${userAuthed ? 'student' : 'teacher'}`;
+  })();
+
+  // Handle focus on the search select component
+  function closeAndFocusTrigger(triggerId) {
+    searchSelectOpen = false;
+    tick().then(() => {
+      document.getElementById(triggerId)?.focus();
+    });
+  }
 
   /* Create cluster booking */
   async function handleCreateClusterBoooking() {
@@ -67,9 +84,12 @@
 
   /* Create VM booking */
   async function handleCreateVMBoooking() {
+    // Set booking owner to the creator if not set
     if (!vmBookingInput.ownerId) {
       vmBookingInput.ownerId = $userStore.id;
     }
+
+    // Assign booking to the teacher who made it if not set
     if (userAuthed && !vmBookingInput.assignedId) {
       vmBookingInput.assignedId = $userStore.id;
     }
@@ -265,35 +285,49 @@
                         <Label for="studentCount">Assign to student</Label>
                       </div>
 
-                      <Select.Root
-                        onSelectedChange={(value) => {
-                          if (value.value === vmBookingInput.ownerId) {
-                            vmBookingInput.ownerId = null;
-                            value.value = '';
-                          } else {
-                            vmBookingInput.ownerId = value.value;
-                          }
-                        }}
-                      >
-                        <Select.Trigger>
-                          <Select.Value placeholder="Select a student" />
-                        </Select.Trigger>
-                        <Select.Content>
-                          <ScrollArea class="h-40">
-                            <Select.Group>
-                              <Select.Item value="" label="Select a student">Select a student</Select.Item>
+                      <Popover.Root bind:open={searchSelectOpen} let:ids>
+                        <Popover.Trigger asChild let:builder>
+                          <Button builders={[builder]} variant="outline" role="combobox" aria-expanded={open} class="justify-between">
+                            {selectedSearchSelectvalue}
+                            <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </Popover.Trigger>
+                        <Popover.Content class="p-0">
+                          <Command.Root>
+                            <Command.Input placeholder="Search {userAuthed ? 'students' : 'teachers'}" />
+                            <Command.Empty>No users found.</Command.Empty>
+                            <Command.Group>
                               {#each listOfUsers as user}
                                 {#if user.role === 'Student'}
-                                  <Select.Item value={user.id} label={`${user.name} ${user.surname}`}>
-                                    {`${user.name} ${user.surname}`}
-                                  </Select.Item>
+                                  <Command.Item
+                                    value={`${user.name} ${user.surname} ${user.id}`}
+                                    onSelect={(value) => {
+                                      const selectedId = parseInt(value.split(' ').pop(), 10);
+
+                                      // Add logic to deselect the selected user
+                                      if (selectedId === searchSelectvalue) {
+                                        searchSelectvalue = null;
+                                        vmBookingInput.ownerId = null;
+                                        closeAndFocusTrigger(ids.trigger);
+
+                                        return;
+                                      }
+
+                                      vmBookingInput.ownerId = selectedId;
+                                      searchSelectvalue = selectedId;
+                                      closeAndFocusTrigger(ids.trigger);
+                                    }}
+                                  >
+                                    <Check class={cn('mr-2 h-4 w-4', searchSelectvalue !== `${user.name} ${user.surname}` && 'text-transparent')} />
+                                    {user.name}
+                                    {user.surname}
+                                  </Command.Item>
                                 {/if}
                               {/each}
-                            </Select.Group>
-                          </ScrollArea>
-                        </Select.Content>
-                        <Select.Input name="student" />
-                      </Select.Root>
+                            </Command.Group>
+                          </Command.Root>
+                        </Popover.Content>
+                      </Popover.Root>
                     </div>
                   {:else}
                     <!-- Select teacher component -->
@@ -302,27 +336,49 @@
                         <Label for="studentCount">Assign to teacher</Label>
                       </div>
 
-                      <Select.Root
-                        onSelectedChange={(value) => {
-                          vmBookingInput.assignedId = value.value;
-                        }}
-                      >
-                        <Select.Trigger>
-                          <Select.Value placeholder="Select a teacher" />
-                        </Select.Trigger>
-                        <Select.Content>
-                          <Select.Group>
-                            {#each listOfUsers as user}
-                              {#if user.role === 'Teacher'}
-                                <Select.Item value={user.id} label={`${user.name} ${user.surname}`}>
-                                  {`${user.name} ${user.surname}`}
-                                </Select.Item>
-                              {/if}
-                            {/each}
-                          </Select.Group>
-                        </Select.Content>
-                        <Select.Input name="teacher" />
-                      </Select.Root>
+                      <Popover.Root bind:open={searchSelectOpen} let:ids>
+                        <Popover.Trigger asChild let:builder>
+                          <Button builders={[builder]} variant="outline" role="combobox" aria-expanded={open} class="justify-between">
+                            {selectedSearchSelectvalue}
+                            <ChevronsUpDown class="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </Popover.Trigger>
+                        <Popover.Content class="p-0">
+                          <Command.Root>
+                            <Command.Input placeholder="Search {userAuthed ? 'students' : 'teachers'}" />
+                            <Command.Empty>No users found.</Command.Empty>
+                            <Command.Group>
+                              {#each listOfUsers as user}
+                                {#if user.role === 'Teacher'}
+                                  <Command.Item
+                                    value={`${user.name} ${user.surname} ${user.id}`}
+                                    onSelect={(value) => {
+                                      const selectedId = parseInt(value.split(' ').pop(), 10);
+
+                                      // Add logic to deselect the selected user
+                                      if (selectedId === searchSelectvalue) {
+                                        searchSelectvalue = null;
+                                        vmBookingInput.assignedId = null;
+                                        closeAndFocusTrigger(ids.trigger);
+
+                                        return;
+                                      }
+
+                                      vmBookingInput.assignedId = selectedId;
+                                      searchSelectvalue = selectedId;
+                                      closeAndFocusTrigger(ids.trigger);
+                                    }}
+                                  >
+                                    <Check class={cn('mr-2 h-4 w-4', searchSelectvalue !== `${user.name} ${user.surname}` && 'text-transparent')} />
+                                    {user.name}
+                                    {user.surname}
+                                  </Command.Item>
+                                {/if}
+                              {/each}
+                            </Command.Group>
+                          </Command.Root>
+                        </Popover.Content>
+                      </Popover.Root>
                     </div>
                   {/if}
 
