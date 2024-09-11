@@ -139,7 +139,16 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
-        return Ok(await scriptService.GetVmAsync(booking.Name));
+        VmInfoGetDto? vmInfo = await scriptService.GetVmAsync(booking.Name);
+        if (vmInfo == null)
+        {
+            return NotFound(ResponseMessage.GetErrorMessage("Error under converting vm info"));
+        }
+
+        vmInfo.username = booking.Login;
+        vmInfo.password = booking.Password;
+        
+        return Ok(vmInfo);
     }
     [HttpGet("vm/reset-power/{name}")]
     public async Task<ActionResult> ResetVmPower(string name)

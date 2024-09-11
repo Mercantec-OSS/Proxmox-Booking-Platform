@@ -3,9 +3,9 @@ namespace Services;
 public class VmBookingService(ScriptFactory scriptFactory)
 {
 
-    public void Create(string name, string template)
+    public void Create(string name, string template, string vmRootPassword, string vmUser, string vmPassword)
     {
-        ICommand command = scriptFactory.GetCreateVmScript(name, template);
+        ICommand command = scriptFactory.GetCreateVmScript(name, template, vmRootPassword, vmUser, vmPassword);
         command.Execute(false);
     }
 

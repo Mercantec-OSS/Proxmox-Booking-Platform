@@ -17,6 +17,9 @@ public class Config
     public string SMTP_USER => ParseSMTPConnectionString()[2];
     public string SMTP_PASSWORD => ParseSMTPConnectionString()[3];
 
+    public string VM_DEFAULT_USER => ParseVariable("VM_DEFAULT_USER");
+    public string VM_ROOT_PASSWORD => ParseVariable("VM_ROOT_PASSWORD");
+
     private string ParseVariable(string variableName) {
         string variable = Environment.GetEnvironmentVariable(variableName) ?? "";
         if (string.IsNullOrEmpty(variable)) {
