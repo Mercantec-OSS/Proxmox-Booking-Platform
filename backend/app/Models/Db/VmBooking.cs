@@ -51,6 +51,8 @@ public class VmBooking
             Assigned = Assigned?.MakeGetDto(),
             Message = Message,
             Type = Type,
+            Login = Login,
+            Password = Password,
             IsAccepted = IsAccepted,
             Uuid = Name,
             Extentions = Extentions.ConvertAll(e => e.MakeGetDTO()),

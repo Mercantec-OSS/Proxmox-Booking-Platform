@@ -35,6 +35,8 @@ public class VmBookingController(Context context, ScriptService scriptService, A
             Type = bookingDTO.Type,
             Message = bookingDTO.Message,
             Name = $"{ownerUser.Id}_{Guid.NewGuid()}",
+            Login = VmCredentials.GetLoginByTemplate(bookingDTO.Type),
+            Password = VmCredentials.GenerateRandomPassword(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             ExpiredAt = bookingDTO.ExpiringAt,
@@ -46,10 +48,6 @@ public class VmBookingController(Context context, ScriptService scriptService, A
         _emailService.SendVmBookingCreate(booking);
         _emailService.SendVmBookingToAccept(booking);
 
-        if (isAccepted) {
-            await scriptService.CreateVmAsync(booking.Type.ToString(), booking.Name);
-        }
-        
         return Ok(true);
     }
 
@@ -156,7 +154,7 @@ public class VmBookingController(Context context, ScriptService scriptService, A
         await _vmBookingService.UpdateAsync(booking);
 
         _emailService.SendVmBookingaceepted(booking);
-        await scriptService.CreateVmAsync(booking.Type.ToString(), booking.Name);
+        await scriptService.CreateVmAsync(booking.Type, booking.Name, config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
 
         return NoContent();
     }

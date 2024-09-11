@@ -65,13 +65,16 @@ public class ScriptService
     }
 
     // VM operations
-    public async Task<string> CreateVmAsync(string vmType, string vmName)
+    public async Task<string> CreateVmAsync(string vmType, string vmName, string rootPassword, string user, string password)
     {
         string url = $"vm-booking/create";
         var data = new 
         {
             name = vmName,
-            template = vmType
+            template = vmType,
+            rootPassword,
+            user,
+            password
         };
 
         var json = JsonSerializer.Serialize(data);
@@ -92,9 +95,6 @@ public class ScriptService
 
         string responseText = await GetAsync($"{url}");
         var data = JsonSerializer.Deserialize<VmInfoGetDto>(responseText);
-               
-        data.username = "administrator";
-        data.password = "Merc2024!";
 
         return data;
     }

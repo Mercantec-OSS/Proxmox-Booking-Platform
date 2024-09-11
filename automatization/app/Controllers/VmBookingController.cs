@@ -10,7 +10,7 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
     [ProducesResponseType(201)]
     public IActionResult Create(CreateVmDTO dto)
     {
-        vmBookingService.Create(dto.Name, dto.Template);
+        vmBookingService.Create(dto.Name, dto.Template, dto.RootPassword, dto.User, dto.Password);
         return Ok("VM created");
     }
 

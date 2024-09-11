@@ -32,12 +32,12 @@ public class ScriptFactory(Config config)
         return new PowerShellCommand($"{script} {args}");
     }
 
-    public ICommand GetCreateVmScript(string vmName, string templateName)
+    public ICommand GetCreateVmScript(string vmName, string templateName, string vmRootPassword, string vmUser, string vmPassword)
     {
         string scriptName = "create_vm_from_template.ps1";
 
         string script = Path.Combine(config.SCRIPTS_PATH, scriptName);
-        string args = $"'{config.VM_VCENTER_USER}__{config.VM_VCENTER_PASSWORD}__{config.VM_VCENTER_IP}__{config.VM_CLUSTER_NAME}__{config.VM_DATASTORE_NAME}' '{templateName}' '{vmName}'";
+        string args = $"'{config.VM_VCENTER_USER}__{config.VM_VCENTER_PASSWORD}__{config.VM_VCENTER_IP}__{config.VM_CLUSTER_NAME}__{config.VM_DATASTORE_NAME}' '{templateName}' '{vmName}' '{vmRootPassword}' '{vmUser}' '{vmPassword}'";
 
         return new PowerShellCommand($"{script} {args}");
     }

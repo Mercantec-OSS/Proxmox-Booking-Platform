@@ -15,6 +15,9 @@
         
         "AD_CONNECTION_STRING": "addr__domain__username__password",
         "SMTP_CONNECTION_STRING": "addr__port__username__password"
+
+        "VM_ROOT_PASSWORD": "Password",
+        "VM_DEFAULT_USER":"User"
       }
     }
   }
