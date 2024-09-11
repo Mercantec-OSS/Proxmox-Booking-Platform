@@ -18,7 +18,6 @@
   let clusterInfoDialogOpen;
 
   function openDialog(type, booking) {
-
     selectedBookingStore.set(booking);
 
     if (type === 'VM') {
@@ -26,14 +25,13 @@
 
       // Open extension request dialog if there is new request
       if (booking.extentions.length > 0 && !allAccepted && userAuthed) {
-
         let notAccepted = booking.extentions.filter((extention) => !extention.isAccepted);
         booking.activeExtension = notAccepted[0]; // need to REFACTOR
 
         vmExtensionRequestDialogOpen = true;
       }
       // Open booking request dialog if it's pending
-      else if (!booking.isAccepted) {
+      else if (!booking.isAccepted && userAuthed) {
         vmStatusDialogOpen = true;
       }
       // Open booking info dialog if it's accepted
@@ -107,6 +105,7 @@
       <button
         on:click={() => openDialog($clusterListStore.includes(booking) ? 'Cluster' : 'VM', booking)}
         class="aspect-[2/1.1] w-full max-w-96 md:w-96 rounded-lg bg-primary-foreground shadow-md relative p-4 text-left"
+        disabled={!$clusterListStore.includes(booking) && !booking.isAccepted && !userAuthed}
       >
         <div class="flex justify-between items-start">
           <div class="flex items-center">
@@ -117,22 +116,22 @@
                 {#if $vmListStore.includes(booking)}
                   <Badge variant="secondary">{booking.type}</Badge>
                   <Badge variant="secondary"><School class="mr-2 size-4" />{booking.assigned.name} {booking.assigned.surname}</Badge>
-                  {:else}
+                {:else}
                   <Badge variant="secondary">{booking.vCenters.length}x vCenters</Badge>
                   <Badge variant="secondary">{getTotalEsxiHosts(booking)}x ESXi hosts</Badge>
-                  {/if}
-                </div>
-                <div class="mt-2">
-                  {#if booking.message}
-                    <Badge variant="secondary"><Notebook class="mr-2 size-4" />
-                      {booking.message.slice(0,80)} 
-                      {#if booking.message.length > 80}
+                {/if}
+              </div>
+              <div class="mt-2">
+                {#if booking.message}
+                  <Badge variant="secondary"
+                    ><Notebook class="mr-2 size-4" />
+                    {booking.message.slice(0, 80)}
+                    {#if booking.message.length > 80}
                       ...
-                      {/if}
-                    </Badge>
-                  {/if}
-                </div>
-
+                    {/if}
+                  </Badge>
+                {/if}
+              </div>
             </div>
           </div>
         </div>

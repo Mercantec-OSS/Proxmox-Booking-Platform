@@ -7,7 +7,7 @@
 	export { className as class };
 	let attrs;
 	$: attrs = {
-		class: cn("transition-colors hover:text-foreground", className),
+		class: cn("hover:text-foreground transition-colors", className),
 		href,
 		...$$restProps,
 	};

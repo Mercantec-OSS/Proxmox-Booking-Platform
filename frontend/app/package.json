@@ -27,17 +27,17 @@
   "type": "module",
   "dependencies": {
     "@fontsource/inter": "^5.0.20",
-    "@internationalized/date": "^3.5.4",
+    "@internationalized/date": "^3.5.5",
     "bits-ui": "^0.20.1",
     "clsx": "^2.1.0",
     "cmdk-sv": "^0.0.16",
     "dotenv": "^16.4.5",
     "ky": "^1.7.0",
     "lucide-svelte": "^0.379.0",
-    "mode-watcher": "^0.3.0",
-    "svelte-sonner": "^0.3.24",
+    "mode-watcher": "^0.3.1",
+    "svelte-sonner": "^0.3.27",
     "tailwind-merge": "^2.2.2",
     "tailwind-variants": "^0.2.1",
-    "vaul-svelte": "^0.3.1"
+    "vaul-svelte": "^0.3.2"
   }
 }
