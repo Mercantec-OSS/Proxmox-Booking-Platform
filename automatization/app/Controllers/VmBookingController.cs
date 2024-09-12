@@ -33,11 +33,12 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
         return Ok(_templates);
     }
 
-    [HttpDelete("delete-templates")]
+    [HttpPut("refresh-templates")]
     [ProducesResponseType(204)]
     public IActionResult DeleteTemplates()
     {
         _templates.Clear();
+        _templates.AddRange(vmBookingService.GetTemplates());
         return NoContent();
     }
 
