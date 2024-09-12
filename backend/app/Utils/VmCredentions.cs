@@ -29,17 +29,27 @@ public static class VmCredentials
 
         return login;
     }
-    public static string GenerateRandomPassword()
+    public static string GenerateRandomPassword(int length = 6)
     {
-        byte[] bytes = new byte[3];
-        RandomNumberGenerator.Fill(bytes);
+        Random random = new Random();
 
-        StringBuilder hash = new StringBuilder();
-        foreach (byte b in bytes)
+        string letters = "abcdefghjkmnopqrstuvwxyz";
+        string upperLetters = letters.ToUpper();
+        string digits = "0123456789";
+
+        List<char> passwordChars = new List<char>
         {
-            hash.Append(b.ToString("x2"));
+            letters[random.Next(letters.Length)],
+            upperLetters[random.Next(upperLetters.Length)],
+            digits[random.Next(digits.Length)]
+        };
+
+        string allChars = letters + upperLetters + digits;
+        for (int i = passwordChars.Count; i < length; i++)
+        {
+            passwordChars.Add(allChars[random.Next(allChars.Length)]);
         }
 
-        return hash.ToString();
+        return new string(passwordChars.OrderBy(c => random.Next()).ToArray());
     }
 }
