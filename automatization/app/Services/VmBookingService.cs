@@ -77,4 +77,10 @@ public class VmBookingService(ScriptFactory scriptFactory)
         ICommand command = scriptFactory.GetResetVmPowerScript(vmName);
         command.Execute(false);
     }
+
+    public string GetVcenterInfo()
+    {
+        ICommand command = scriptFactory.GetVcenterInfoScript();
+        return command.Execute(true);
+    }
 }

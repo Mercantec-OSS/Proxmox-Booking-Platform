@@ -4,9 +4,9 @@
 [ApiController]
 public class TaskController : ControllerBase
 {
-    private readonly TaskService taskService;
+    private readonly TaskBackgoundService taskService;
 
-    public TaskController(TaskService taskService)
+    public TaskController(TaskBackgoundService taskService)
     {
         this.taskService = taskService;
     }

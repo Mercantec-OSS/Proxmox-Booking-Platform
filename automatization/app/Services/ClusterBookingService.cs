@@ -1,6 +1,6 @@
 namespace Services;
 
-public class CLusterBookingService(ScriptFactory scriptFactory, TaskService taskService)
+public class CLusterBookingService(ScriptFactory scriptFactory, TaskBackgoundService taskService)
 {
     private string CreateTask(ICommand command, string afterThan)
     {

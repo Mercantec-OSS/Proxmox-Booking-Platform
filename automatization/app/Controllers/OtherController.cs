@@ -4,11 +4,11 @@
 [Route("other")]
 public class OtherController : ControllerBase
 {
-    private readonly TaskService taskService;
+    private readonly TaskBackgoundService taskService;
     private readonly string scriptsPath;
     private readonly string Applicationversion;
 
-    public OtherController(TaskService taskService, Config config)
+    public OtherController(TaskBackgoundService taskService, Config config)
     {
         this.taskService = taskService;
         scriptsPath = config.SCRIPTS_PATH;
