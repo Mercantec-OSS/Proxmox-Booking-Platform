@@ -81,6 +81,8 @@ public class EsxiController(Context context, ActivityService activityService, Us
             VCenterId = dtoObj.VCenterId,
             UserName = dtoObj.UserName,
             Password = dtoObj.Password,
+            DatastoreName = dtoObj.DatastoreName,
+            NetworkName = dtoObj.NetworkName,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };
@@ -133,6 +135,8 @@ public class EsxiController(Context context, ActivityService activityService, Us
         existHost.VCenterId = dtoObj.VCenterId;
         existHost.UserName = dtoObj.UserName;
         existHost.Password = dtoObj.Password;
+        existHost.DatastoreName = dtoObj.DatastoreName;
+        existHost.NetworkName = dtoObj.NetworkName;
 
         await _esxiHostService.UpdateAsync(existHost);
         return NoContent();

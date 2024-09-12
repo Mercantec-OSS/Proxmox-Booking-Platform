@@ -90,6 +90,9 @@ public class VCenterController(Context context, ActivityService activityService,
             Ip = dtoObj.Ip,
             UserName = dtoObj.UserName,
             Password = dtoObj.Password,
+            DatacenterName = dtoObj.DatacenterName,
+            ClusterName = dtoObj.ClusterName,
+            JsonConfig = dtoObj.JsonConfig,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };
@@ -141,6 +144,9 @@ public class VCenterController(Context context, ActivityService activityService,
         vcenter.Ip = dtoObj.Ip;
         vcenter.UserName = dtoObj.UserName;
         vcenter.Password = dtoObj.Password;
+        vcenter.DatacenterName = dtoObj.DatacenterName;
+        vcenter.ClusterName = dtoObj.ClusterName;
+        vcenter.JsonConfig = dtoObj.JsonConfig;
         vcenter.UpdatedAt = DateTime.UtcNow;
 
         await _vCenterService.UpdateAsync(vcenter);

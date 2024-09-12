@@ -20,6 +20,15 @@ public class VCenterGetDto
     [JsonPropertyName("esxiHosts")]
     public List<EsxiHostGetDto> EsxiHosts { get; set; } = new List<EsxiHostGetDto>();
 
+    [JsonPropertyName("datacenter_name")]
+    public string DatacenterName { get; set; } = "";
+
+    [JsonPropertyName("cluster_name")]
+    public string ClusterName { get; set; } = "";
+
+    [JsonPropertyName("json_config")]
+    public string JsonConfig { get; set; } = "";
+
     [JsonPropertyName("createdAt")]
     public DateTime? CreatedAt { get; set; }
 
