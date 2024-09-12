@@ -20,6 +20,12 @@ public class EsxiHostGetDto
     [JsonPropertyName("password")]
     public string Password { get; set; } = "";
 
+    [JsonPropertyName("datastore_name")]
+    public string DatastoreName { get; set; } = "";
+
+    [JsonPropertyName("network_name")]
+    public string NetworkName { get; set; } = "";
+
     [JsonPropertyName("createdAt")]
     public DateTime? CreatedAt { get; set; }
 

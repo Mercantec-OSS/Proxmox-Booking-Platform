@@ -11,6 +11,12 @@ public class VmBookingGetDto
     [JsonPropertyName("assigned")]
     public UserGetDto? Assigned { get; set; }
 
+    [JsonPropertyName("login")]
+    public string Login { get; set; } = string.Empty;
+
+    [JsonPropertyName("password")]
+    public string Password { get; set; } = string.Empty;
+
     [JsonPropertyName("message")]
     public string Message { get; set; } = "";
 

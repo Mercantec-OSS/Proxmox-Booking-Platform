@@ -8,6 +8,7 @@ public class EsxiHost
 
     [Column("vcenter_id")]
     public int VCenterId { get; set; }
+
     [ForeignKey("VCenterId")]
     public VCenter? VCenter { get; set; }
 
@@ -19,6 +20,12 @@ public class EsxiHost
 
     [Column("password")]
     public string Password { get; set; } = "";
+
+    [Column("datastore_name")]
+    public string DatastoreName { get; set; } = "";
+
+    [Column("network_name")]
+    public string NetworkName { get; set; } = ""; 
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -36,6 +43,8 @@ public class EsxiHost
             Ip = Ip,
             UserName = UserName,
             Password = Password,
+            DatastoreName = DatastoreName,
+            NetworkName = NetworkName,
             CreatedAt = DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc),
             UpdatedAt = DateTime.SpecifyKind(UpdatedAt, DateTimeKind.Utc)
         };

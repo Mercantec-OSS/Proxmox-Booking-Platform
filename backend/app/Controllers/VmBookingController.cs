@@ -41,6 +41,8 @@ public class VmBookingController(Context context, ScriptService scriptService, A
             UpdatedAt = DateTime.UtcNow,
             ExpiredAt = bookingDTO.ExpiringAt,
             IsAccepted = isAccepted,
+            Login = "",
+            Password = "",
         };
 
         await _vmBookingService.CreateAsync(booking);

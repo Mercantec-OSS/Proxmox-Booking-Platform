@@ -22,6 +22,15 @@ public class VCenter
     [Column("password")]
     public string Password { get; set; } = "";
 
+    [Column("datacenter_name")]
+    public string DatacenterName { get; set; } = "";
+
+    [Column("cluster_name")]
+    public string ClusterName { get; set; } = "";
+
+    [Column("json_config")]
+    public string JsonConfig { get; set; } = "";
+
     [Column("created_at")]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -38,6 +47,9 @@ public class VCenter
             Password = Password,
             BookingId = BookingId,
             EsxiHosts = EsxiHosts.Select(h => h.MakeGetDto()).ToList(),
+            DatacenterName = DatacenterName,
+            ClusterName = ClusterName,
+            JsonConfig = JsonConfig,
             UpdatedAt = DateTime.SpecifyKind(UpdatedAt, DateTimeKind.Utc),
             CreatedAt = DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc)
         };
