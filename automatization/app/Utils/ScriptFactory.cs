@@ -178,4 +178,15 @@ public class ScriptFactory(Config config)
 
         return new ShellCommand($"{script} {args}");
     }
+
+    // Other scripts
+    public ICommand GetVcenterInfoScript()
+    {
+        string scriptName = "get_vcenter_info.ps1";
+
+        string script = Path.Combine(config.SCRIPTS_PATH, scriptName);
+        string args = $"'{config.VM_VCENTER_USER}__{config.VM_VCENTER_PASSWORD}__{config.VM_VCENTER_IP}'";
+
+        return new PowerShellCommand($"{script} {args}");
+    }
 }

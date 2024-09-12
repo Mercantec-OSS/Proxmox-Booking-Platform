@@ -1,21 +1,24 @@
 ﻿namespace Services;
 
-public class TaskService : IHostedService
+public class TaskBackgoundService : BackgroundService
 {
-    private List<Models.Task> tasks = new List<Models.Task>();
-    private System.Timers.Timer timer;
+    private static List<Models.Task> tasks = new List<Models.Task>();
     private const int ExpirationThresholdHours = 6;
 
-    public TaskService()
+
+    protected override async System.Threading.Tasks.Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        Console.WriteLine("Task service was started");
-        timer = new System.Timers.Timer(5000); // Timer to check tasks every 5 seconds
-        timer.Elapsed += Timer_Elapsed;
-        timer.AutoReset = true;
-        timer.Enabled = true;
+        // Special case: for faster app starting
+        await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            Timer_Elapsed();
+            await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+        }
     }
 
-    private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+    private void Timer_Elapsed()
     {
         foreach (var task in tasks.ToList())
         {
@@ -74,7 +77,7 @@ public class TaskService : IHostedService
         tasks.Add(task);
     }
 
-    public Models.Task GetTaskById(string taskId)
+    public Models.Task? GetTaskById(string taskId)
     {
         return tasks.FirstOrDefault(task => task.Uuid == taskId);
     }
@@ -91,20 +94,5 @@ public class TaskService : IHostedService
 
     public void DeleteAll() {
         tasks.RemoveAll(task => task.Status != Models.Task.TaskStatus.Processing);
-    }
-
-    public System.Threading.Tasks.Task StartAsync(CancellationToken cancellationToken)
-    {
-        timer = new System.Timers.Timer(5000); // Timer to check tasks every 5 seconds
-        timer.Elapsed += Timer_Elapsed;
-        timer.AutoReset = true;
-        timer.Enabled = true;
-        return System.Threading.Tasks.Task.CompletedTask;
-    }
-
-    public System.Threading.Tasks.Task StopAsync(CancellationToken cancellationToken)
-    {
-        timer.Stop();
-        return System.Threading.Tasks.Task.CompletedTask;
     }
 }
