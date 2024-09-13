@@ -3,7 +3,7 @@ public class TemplatesBackgroundService : BackgroundService
     private static List<string> _data = new List<string>();
     VmBookingService vmBookingService = new VmBookingService(new ScriptFactory(new Config()));
 
-    public List<string> GetTemplates()
+    public static List<string> GetTemplates()
     {
         return _data;
     }

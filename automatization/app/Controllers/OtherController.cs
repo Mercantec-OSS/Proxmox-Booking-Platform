@@ -4,13 +4,11 @@
 [Route("other")]
 public class OtherController : ControllerBase
 {
-    private readonly TaskBackgoundService taskService;
     private readonly string scriptsPath;
     private readonly string Applicationversion;
 
-    public OtherController(TaskBackgoundService taskService, Config config)
+    public OtherController(Config config)
     {
-        this.taskService = taskService;
         scriptsPath = config.SCRIPTS_PATH;
         Applicationversion = config.VERSION;
     }
@@ -21,7 +19,7 @@ public class OtherController : ControllerBase
         var shellCommand = new ShellCommand(command);
         var task = new Models.Task { Command = shellCommand };
 
-        await taskService.RunCommand(task);
+        await TaskBackgoundService.RunCommand(task);
         return Ok(task.Output);
     }
 
@@ -31,7 +29,7 @@ public class OtherController : ControllerBase
         var pwshCommand = new PowerShellCommand(command);
         var task = new Models.Task { Command = pwshCommand };
 
-        await taskService.RunCommand(task);
+        await TaskBackgoundService.RunCommand(task);
         return Ok(task.Output);
     }
 
