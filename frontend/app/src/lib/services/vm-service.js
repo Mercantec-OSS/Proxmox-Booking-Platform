@@ -3,7 +3,7 @@ import ky from 'ky';
 
 const clientApi = ky.create({
   prefixUrl: env.PUBLIC_CLIENT_API,
-  timeout: 60000,
+  timeout: 10000,
   hooks: {
     beforeError: [
       async (error) => {
@@ -26,7 +26,7 @@ const clientApi = ky.create({
 
 const backendApi = ky.create({
   prefixUrl: env.PUBLIC_BACKEND_API,
-  timeout: 60000,
+  timeout: 10000,
   hooks: {
     beforeError: [
       async (error) => {
@@ -109,10 +109,17 @@ export const vmService = {
   },
 
   async getVmInfo(id) {
-    return await clientApi.get(`script/vm/get-ip/${id}`).json();    
+    return await clientApi
+      .get(`script/vm/get-ip/${id}`, {
+        retry: {
+          limit: 3
+        },
+        timeout: 60000
+      })
+      .json();
   },
 
   async resetVmPower(name) {
-    await clientApi.get(`script/vm/reset-power/${name}`).json();    
+    await clientApi.get(`script/vm/reset-power/${name}`).json();
   }
 };

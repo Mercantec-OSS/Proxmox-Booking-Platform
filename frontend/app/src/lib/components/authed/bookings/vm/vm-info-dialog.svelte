@@ -91,7 +91,7 @@
               </Tooltip.Content>
             </Tooltip.Root>
             <!-- Action dropdown -->
-            <div class="mr-4 mt-0 mt-0 grow flex justify-end">
+            <div class="mr-4 mt-0 grow flex justify-end">
               <VMActionsDropdown bind:vmInfoDialogOpen />
             </div>
           </div>
@@ -106,7 +106,7 @@
               <div class="flex flex-wrap justify-between w-full gap-y-2 md:gap-y-0">
                 <div class="flex flex-wrap gap-y-2 md:gap-y-0 gap-x-2 md:gap-x-5 items-center">
                   <div class="shrink-0 h-2 w-2 rounded-full {new Date() > new Date($selectedBookingStore.expiredAt) ? 'bg-red-500' : 'bg-green-500'}"></div>
-                  {#if !$selectedBookingStore.ip && !$selectedBookingStore.username && !$selectedBookingStore.password}
+                  {#if !$selectedBookingStore.ip || !$selectedBookingStore.username || !$selectedBookingStore.password}
                     <Skeleton class="h-7 w-28 bg-input" />
                     <Skeleton class="h-7 w-28 bg-input" />
                     <Skeleton class="h-7 w-28 bg-input" />
@@ -120,9 +120,7 @@
                 </div>
               </div>
               <div>
-                <b>
-                  Note:
-                </b>
+                <b> Note: </b>
                 {$selectedBookingStore.message}
               </div>
             </div>
