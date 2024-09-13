@@ -1,9 +1,9 @@
 ﻿[ApiController]
 [Route("cluster-booking")]
-public class ClusterBookingController(Context context, ScriptService scriptService, ActivityService activityService, Config config, UserSession session) : ControllerBase
+public class ClusterBookingController(Context context, ScriptService scriptService, ActivityService activityService, Config config, UserSession session, VCenterService vCenterService) : ControllerBase
 {
     private readonly ClusterBookingService _bookingService = new(context);
-    private readonly VCenterService _vcenterService = new(context);
+    private readonly VCenterService _vcenterService = vCenterService;
     private readonly EsxiHostService _esxiHostService = new(context);
     private readonly ActivityService _activityService = activityService;
     private readonly EmailService _emailService = new(config);

@@ -1,13 +1,40 @@
 ﻿namespace Services;
 
-public class VCenterService(Context context)
+public class VCenterService
 {
-    private readonly Context _dbService = context;
+    private readonly HttpClient _httpClient;
+    private readonly Config _config;
+
+    private readonly Context _dbService;
+
+    public VCenterService(Config config, Context context)
+    {
+        _dbService = context;
+        _config = config;
+        _httpClient = new()
+        {
+            BaseAddress = new(_config.DEVOPS_URL)
+        };
+    }
 
     public async Task CreateAsync(VCenter obj)
     {
         await _dbService.VCenters.AddAsync(obj);
         await _dbService.SaveChangesAsync();
+    }
+
+    public async Task<VCenterInfoDTO?> GetVcenterInfoAsync()
+    {
+        var response = await _httpClient.GetAsync("vm-booking/vcenter-info");
+        string responseText = await response.Content.ReadAsStringAsync();
+
+        VCenterInfoDTO? data = JsonSerializer.Deserialize<VCenterInfoDTO>(responseText);
+
+        if (data == null)
+        {
+            return null;
+        }
+        return data;
     }
 
     public async Task<VCenter?> GetByIdAsync(int id)
