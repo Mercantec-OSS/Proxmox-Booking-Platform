@@ -3,7 +3,7 @@
 [ApiController]
 [Route("vm-booking")]
 
-public class VmBookingController(VmBookingService vmBookingService, VCenterInfoBackgroundService vCenterInfoBackgroundService, TemplatesBackgroundService templatesBackgroundService) : ControllerBase
+public class VmBookingController(VmBookingService vmBookingService) : ControllerBase
 {
     [HttpPost("create")]
     [ProducesResponseType(201)]
@@ -24,7 +24,7 @@ public class VmBookingController(VmBookingService vmBookingService, VCenterInfoB
     [HttpGet("get-templates")]
     public ActionResult<List<string>> GetTemplates()
     {
-        return Ok(templatesBackgroundService.GetTemplates());
+        return Ok(TemplatesBackgroundService.GetTemplates());
     }
 
     [HttpGet("get-vm/{vmName}")]
@@ -63,7 +63,7 @@ public class VmBookingController(VmBookingService vmBookingService, VCenterInfoB
     [HttpGet("vcenter-info")]
     public ActionResult<VCenterInfoDTO> GetVcenterInfo()
     {
-        return Ok(vCenterInfoBackgroundService.GetInfo());
+        return Ok(VCenterInfoBackgroundService.GetInfo());
     }
 
     [HttpGet("test")]

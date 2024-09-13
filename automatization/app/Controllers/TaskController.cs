@@ -4,29 +4,20 @@
 [ApiController]
 public class TaskController : ControllerBase
 {
-    private readonly TaskBackgoundService taskService;
-
-    public TaskController(TaskBackgoundService taskService)
-    {
-        this.taskService = taskService;
-    }
-
     [HttpPost("create")]
-    public IActionResult Create([FromBody] CommandRequestModel requestModel)
+    public IActionResult Create([FromBody] CommandModel command)
     {
-        if (requestModel == null || requestModel.Commands == null || requestModel.Commands.Count == 0)
+        if (command == null)
         {
             return BadRequest("No commands provided");
         }
 
-        foreach (var command in requestModel.Commands)
-        {
-            var task = new Models.Task();
-            task.Command = GetCommandInstance(command);
-            taskService.AddTask(task);
-        }
+        var task = new Models.Task();
+        task.Command = GetCommandInstance(command);
+        task.AfterThan = command.AfterThan;
+        TaskBackgoundService.AddTask(task);
 
-        return Ok("Tasks created successfully");
+        return Ok(task.Uuid);
     }
 
     private ICommand GetCommandInstance(CommandModel command)
@@ -42,7 +33,7 @@ public class TaskController : ControllerBase
     [HttpGet("get")]
     public IActionResult GetById(string taskId)
     {
-        var task = taskService.GetTaskById(taskId);
+        var task = TaskBackgoundService.GetTaskById(taskId);
         if (task != null)
             return Ok(task);
         else
@@ -52,7 +43,7 @@ public class TaskController : ControllerBase
     [HttpGet("all")]
     public IActionResult GetAll()
     {
-        var tasks = taskService.GetAllTasks();
+        var tasks = TaskBackgoundService.GetAllTasks();
         return Ok(tasks);
     }
 
@@ -60,7 +51,7 @@ public class TaskController : ControllerBase
     [ProducesResponseType(204)]
     public IActionResult Delete(string taskId)
     {
-        taskService.DeleteTask(taskId);
+        TaskBackgoundService.DeleteTask(taskId);
         return NoContent();
 
     }
@@ -69,7 +60,7 @@ public class TaskController : ControllerBase
     [ProducesResponseType(204)]
     public IActionResult DeleteAll()
     {
-        taskService.DeleteAll();
+        TaskBackgoundService.DeleteAll();
         return NoContent();
     }
 }

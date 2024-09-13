@@ -3,7 +3,7 @@ public class VCenterInfoBackgroundService : BackgroundService
     private static VCenterInfoDTO _data = new VCenterInfoDTO();
     VmBookingService vmBookingService = new VmBookingService(new ScriptFactory(new Config()));
 
-    public VCenterInfoDTO GetInfo()
+    public static VCenterInfoDTO GetInfo()
     {
         return _data;
     }

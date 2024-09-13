@@ -1,13 +1,13 @@
 namespace Services;
 
-public class CLusterBookingService(ScriptFactory scriptFactory, TaskBackgoundService taskService)
+public class CLusterBookingService(ScriptFactory scriptFactory)
 {
     private string CreateTask(ICommand command, string afterThan)
     {
         var task = new Models.Task();
         task.Command = command;
         task.AfterThan = afterThan;
-        taskService.AddTask(task);
+        TaskBackgoundService.AddTask(task);
         return task.Uuid;
     }
 

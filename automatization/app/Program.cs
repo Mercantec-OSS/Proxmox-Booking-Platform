@@ -17,15 +17,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddTransient<ICommand, PowerShellCommand>();
 builder.Services.AddTransient<ICommand, ShellCommand>();
 builder.Services.AddHostedService<TaskBackgoundService>();
-builder.Services.AddSingleton<TaskBackgoundService>();
 builder.Services.AddSingleton<ScriptFactory>();
 builder.Services.AddSingleton<Config>();
 builder.Services.AddScoped<VmBookingService>();
 builder.Services.AddScoped<CLusterBookingService>();
 builder.Services.AddHostedService<VCenterInfoBackgroundService>();
-builder.Services.AddSingleton<VCenterInfoBackgroundService>();
 builder.Services.AddHostedService<TemplatesBackgroundService>();
-builder.Services.AddSingleton<TemplatesBackgroundService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

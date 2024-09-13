@@ -13,12 +13,12 @@ public class TaskBackgoundService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            Timer_Elapsed();
+            DoTask();
             await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
     }
 
-    private void Timer_Elapsed()
+    private void DoTask()
     {
         foreach (var task in tasks.ToList())
         {
@@ -52,7 +52,7 @@ public class TaskBackgoundService : BackgroundService
         }
     }
 
-    public async System.Threading.Tasks.Task RunCommand(Models.Task task)
+    public static async System.Threading.Tasks.Task RunCommand(Models.Task task)
     {
         task.Status = Models.Task.TaskStatus.Processing;
         task.StartTime = DateTime.UtcNow; 
@@ -72,27 +72,27 @@ public class TaskBackgoundService : BackgroundService
         }
     }
 
-    public void AddTask(Models.Task task)
+    public static void AddTask(Models.Task task)
     {
         tasks.Add(task);
     }
 
-    public Models.Task? GetTaskById(string taskId)
+    public static Models.Task? GetTaskById(string taskId)
     {
         return tasks.FirstOrDefault(task => task.Uuid == taskId);
     }
 
-    public List<Models.Task> GetAllTasks()
+    public static List<Models.Task> GetAllTasks()
     {
         return tasks.ToList();
     }
 
-    public void DeleteTask(string taskId)
+    public static void DeleteTask(string taskId)
     {
         tasks.RemoveAll(task => task.Uuid == taskId && task.Status != Models.Task.TaskStatus.Processing);
     }
 
-    public void DeleteAll() {
+    public static void DeleteAll() {
         tasks.RemoveAll(task => task.Status != Models.Task.TaskStatus.Processing);
     }
 }
