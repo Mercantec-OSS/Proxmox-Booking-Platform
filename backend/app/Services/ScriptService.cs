@@ -99,6 +99,16 @@ public class ScriptService
         return data;
     }
 
+    public async Task<VmConnectionUriDto?> GetVmConnectionUriAsync(string vmName)
+    {
+        string url = $"vm-booking/connection-uri/{vmName}";
+
+        string responseText = await GetAsync($"{url}");
+        var data = JsonSerializer.Deserialize<VmConnectionUriDto>(responseText);
+
+        return data;
+    }
+
     public async Task<string> ResetPowerVmAsync(string vmName)
     {
         string url = $"vm-booking/reset-power/{vmName}";

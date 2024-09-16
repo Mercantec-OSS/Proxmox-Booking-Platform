@@ -2,7 +2,7 @@ using Microsoft.OpenApi.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ScriptService>();
@@ -120,6 +120,8 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseStaticFiles("/web-console/src");
 
 Services.AutoServices autoServices = new();
 autoServices.SetDB(app);
