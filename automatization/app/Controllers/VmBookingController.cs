@@ -66,31 +66,10 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
         return Ok(VCenterInfoBackgroundService.GetInfo());
     }
 
-    [HttpGet("test")]
-    public async Task<IActionResult> Test(Config config)
+    [HttpGet("connection-uri/{vmName}")]
+    public async Task<IActionResult> GetWebConsoleUri(Config config, string vmName)
     {
-        string host = config.VM_VCENTER_IP;
-        string username = config.VM_VCENTER_USER;
-        string password = config.VM_VCENTER_PASSWORD;
-
-        // Створення базової авторизації
-        var credentials = $"{username}:{password}";
-        var base64Credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(credentials));
-
-        // Ігнорування SSL сертифікату
-        HttpClientHandler handler = new HttpClientHandler();
-        handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-
-        HttpClient client = new HttpClient(handler);
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Credentials);
-
-        HttpResponseMessage response = await client.PostAsync($"https://{host}/api/session", null);
-
-        string responseBody = await response.Content.ReadAsStringAsync();
-        string token = responseBody.Replace("\"", "");
-
-        client.DefaultRequestHeaders.Add("vmware-api-session-id", token);
-
-        return Ok(token);
+        var client = new VCenterApiService(config);
+        return Ok(await client.GetVmConnectionUriAsync(vmName));
     }
 }
