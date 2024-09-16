@@ -171,4 +171,10 @@ public class ScriptController(
         session.IsAuthenticated();
         return Ok(await scriptService.GetTemplatesAsync());
     }
+
+    [HttpGet("vm/vcenter-info")]
+    public async Task<ActionResult> GetVcenterInfo()
+    {
+        return Ok(await scriptService.GetVcenterInfoAsync());
+    }
 }

@@ -121,6 +121,14 @@ public class ScriptService
         return JsonSerializer.Deserialize<List<string>>(response) ?? new();
     }
 
+    public async Task<VCenterInfoDTO> GetVcenterInfoAsync()
+    {
+        string response = await GetAsync("vm-booking/vcenter-info");
+        VCenterInfoDTO data = JsonSerializer.Deserialize<VCenterInfoDTO>(response) ?? new();
+
+        return data;
+    }
+
     // Cluster operations
     public async Task<string> ResetLicenseAsync(string hostUsername, string hostPassword, string hostIp, string afterTask = "")
     {
