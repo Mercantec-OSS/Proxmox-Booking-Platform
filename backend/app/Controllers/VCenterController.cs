@@ -1,8 +1,8 @@
 [ApiController]
 [Route("vcenter")]
-public class VCenterController(Context context, ActivityService activityService, UserSession session) : ControllerBase
+public class VCenterController(Context context, ActivityService activityService, UserSession session, VCenterService vCenterService) : ControllerBase
 {
-    private readonly VCenterService _vCenterService = new(context);
+    private readonly VCenterService _vCenterService = vCenterService;
     private readonly EsxiHostService _esxiHostService = new(context);
     private readonly ActivityService _activityService = activityService;
 
@@ -24,6 +24,19 @@ public class VCenterController(Context context, ActivityService activityService,
         }
 
         return Ok(vCenter.MakeGetDto());
+    }
+
+    [HttpGet("vcenter-info")]
+    public async Task<ActionResult> GetVcenterInfo()
+    {
+        VCenterInfoDTO? vCenterInfo = await _vCenterService.GetVcenterInfoAsync();
+
+        if (vCenterInfo == null)
+        {
+            return NotFound(ResponseMessage.GetErrorMessage("Vcenter info was not found"));
+        }
+
+        return Ok(vCenterInfo);
     }
 
     [HttpGet("all")]
