@@ -35,7 +35,7 @@
   });
 </script>
 
-<main class="flex flex-col flex-grow mx-4">
+<main class="flex flex-col flex-grow rounded-3xl bg-background">
   <div class="mx-auto mt-10">
     {#if data.userData}
       <UserInfo user={data.userData} />

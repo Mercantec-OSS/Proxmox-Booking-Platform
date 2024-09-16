@@ -7,6 +7,11 @@ body {
   font-family: 'Inter', sans-serif;
 }
 
+html,
+body {
+  @apply h-full w-full;
+}
+
 @layer utilities {
   .custom-scrollbar {
     @apply [&::-webkit-scrollbar]:w-2.5

@@ -1,5 +1,5 @@
 <script>
-  import { Sun, Moon, LogOut } from 'lucide-svelte';
+  import { Sun, Moon, LogOut, Bell, ChevronDown, SunMoon, User } from 'lucide-svelte';
   import { authService } from '$lib/services/auth-service';
   import { getCookie, deleteCookie } from '$lib/utils/cookie';
   import { goto } from '$app/navigation';
@@ -9,6 +9,14 @@
   import UserSearch from '$lib/components/authed/user-search.svelte';
   import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
   import { page } from '$app/stores';
+  import * as Avatar from '$lib/components/ui/avatar/index.js';
+  import { userStore } from '$lib/utils/store';
+  import * as HoverCard from '$lib/components/ui/hover-card/index.js';
+
+  let dropdownOpen = false;
+  $: firstCharFirstName = $userStore?.name?.[0] || '.';
+  $: firstCharLastName = $userStore?.surname?.[0] || '.';
+  $: initials = `${firstCharFirstName}${firstCharLastName}`.toUpperCase();
 
   async function handleLogout() {
     try {
@@ -20,55 +28,100 @@
     }
   }
 
-  // Get the first path segment and capitalize it
-  function getFirstPathSegment(path) {
-    const segments = path.split('/').filter(Boolean);
-    if (segments.length > 0) {
-      const firstSegment = segments[0];
-      return firstSegment.charAt(0).toUpperCase() + firstSegment.slice(1);
-    }
-    return '';
+  function isActive(href) {
+    return $page.url.pathname === href;
   }
-
-  // Reactive declaration to format the path whenever the URL changes
-  $: firstSegment = getFirstPathSegment($page.url.pathname);
 </script>
 
-<div class="flex flex-wrap w-full justify-between pt-2 px-4">
-  <div class="flex items-center">
-    <Breadcrumb.Root>
-      <Breadcrumb.List>
-        <Breadcrumb.Item>
-          <Breadcrumb.Link href="/">Home</Breadcrumb.Link>
-        </Breadcrumb.Item>
-        {#if firstSegment}
-          <Breadcrumb.Separator />
-          <Breadcrumb.Item>
-            <Breadcrumb.Page>{firstSegment}</Breadcrumb.Page>
-          </Breadcrumb.Item>
-        {/if}
-      </Breadcrumb.List>
-    </Breadcrumb.Root>
+<div class="grid grid-cols-3 items-center w-full px-8 py-3 bg-background">
+  <!-- Logo and company name -->
+  <div>
+    <img src="/images/mercantec-logo.svg" alt="Mercantec" class="h-12 w-auto brightness-0 saturate-0 dark:brightness-100 dark:saturate-100" />
   </div>
-
-  <div class="flex flex-wrap gap-x-3 items-center">
-    <div>
-      <UserSearch />
+  <!-- Navigation links -->
+  <nav class="flex justify-center my-auto">
+    <ul class="flex gap-x-5 py-5 px-5 bg-muted rounded-3xl">
+      <li>
+        <a href="/" class="p-4 rounded-3xl transition-colors duration-200 {isActive('/') ? 'bg-foreground text-background' : 'hover:bg-foreground hover:text-background'}"> Dashboard </a>
+      </li>
+      <li>
+        <a href="/monitor" class="p-4 rounded-3xl transition-colors duration-200 {isActive('/monitor') ? 'bg-foreground text-background' : 'hover:bg-foreground hover:text-background'}">
+          Monitoring
+        </a>
+      </li>
+      <li>
+        <a href="/support" class="p-4 rounded-3xl transition-colors duration-200 {isActive('/support') ? 'bg-foreground text-background' : 'hover:bg-foreground hover:text-background'}"> Support </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- Search, logout, change theme etc -->
+  <div class="flex justify-end">
+    <div class="flex gap-x-4">
+      <div>
+        <UserSearch />
+      </div>
+      <HoverCard.Root openDelay={100} closeDelay="150">
+        <HoverCard.Trigger asChild let:builder>
+          <Button builders={[builder]} variant="ghost" size="icon"><Bell /></Button>
+        </HoverCard.Trigger>
+        <HoverCard.Content class="w-80">
+          <div class="flex justify-between space-x-4">
+            <p class="text-sm">Notifications not yet implemented</p>
+          </div>
+        </HoverCard.Content>
+      </HoverCard.Root>
     </div>
-    <Button on:click={handleLogout} size="icon"><LogOut class="size-[1.2rem]" /></Button>
-    <DropdownMenu.Root>
+    <DropdownMenu.Root bind:open={dropdownOpen}>
       <DropdownMenu.Trigger asChild let:builder>
-        <Button builders={[builder]} size="icon">
-          <Sun class="size-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon class="absolute size-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          <span class="sr-only">Toggle theme</span>
-        </Button>
+        <Button builders={[builder]} variant="ghost"
+          ><Avatar.Root>
+            <Avatar.Fallback>{initials}</Avatar.Fallback>
+          </Avatar.Root>
+          <ChevronDown class="size-4 ml-2" /></Button
+        >
       </DropdownMenu.Trigger>
-      <DropdownMenu.Content align="end">
-        <DropdownMenu.Item on:click={() => setMode('light')}>Light</DropdownMenu.Item>
-        <DropdownMenu.Item on:click={() => setMode('dark')}>Dark</DropdownMenu.Item>
-        <DropdownMenu.Item on:click={() => resetMode()}>System</DropdownMenu.Item>
+      <DropdownMenu.Content>
+        <DropdownMenu.Group>
+          <DropdownMenu.Label>{$userStore.role}</DropdownMenu.Label>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item on:click={() => goto(`/user/${$userStore.id}`)}
+            ><User class="mr-2 h-4 w-4" />
+            <span>Profile</span></DropdownMenu.Item
+          >
+          <DropdownMenu.Sub>
+            <DropdownMenu.SubTrigger
+              ><SunMoon class="mr-2 h-4 w-4" />
+              <span>Theme</span></DropdownMenu.SubTrigger
+            >
+            <DropdownMenu.SubContent>
+              <DropdownMenu.Item on:click={() => setMode('light')}>Light</DropdownMenu.Item>
+              <DropdownMenu.Item on:click={() => setMode('dark')}>Dark</DropdownMenu.Item>
+              <DropdownMenu.Item on:click={() => resetMode()}>System</DropdownMenu.Item>
+            </DropdownMenu.SubContent>
+          </DropdownMenu.Sub>
+          <DropdownMenu.Separator />
+          <DropdownMenu.Item on:click={handleLogout}
+            ><LogOut class="mr-2 h-4 w-4" />
+            <span>Log out</span></DropdownMenu.Item
+          >
+        </DropdownMenu.Group>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   </div>
 </div>
+
+<!-- <Button on:click={handleLogout} size="icon"><LogOut class="size-[1.2rem]" /></Button> -->
+<!-- <DropdownMenu.Root>
+  <DropdownMenu.Trigger asChild let:builder>
+    <Button builders={[builder]} size="icon">
+      <Sun class="size-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon class="absolute size-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+      <span class="sr-only">Toggle theme</span>
+    </Button>
+  </DropdownMenu.Trigger>
+  <DropdownMenu.Content align="end">
+    <DropdownMenu.Item on:click={() => setMode('light')}>Light</DropdownMenu.Item>
+    <DropdownMenu.Item on:click={() => setMode('dark')}>Dark</DropdownMenu.Item>
+    <DropdownMenu.Item on:click={() => resetMode()}>System</DropdownMenu.Item>
+  </DropdownMenu.Content>
+</DropdownMenu.Root> -->

@@ -60,14 +60,14 @@
 </script>
 
 <Button
-  variant="outline"
+  variant="ghost"
+  size="icon"
   on:click={() => {
     open = true;
   }}
 >
-  <Search class="mr-2 h-4 w-4" />
-  Search for user
-</Button>
+  <Search /></Button
+>
 
 <Command.Dialog bind:open>
   <Command.Input placeholder="Search for a user..." />

@@ -41,11 +41,8 @@
   });
 </script>
 
-<main class="flex flex-col mx-4">
-  <div class="mx-auto mt-5">
-    <h1 class="text-4xl font-black text-highlight">Dashboard</h1>
-    <GreetingsComponent name={data.userInfo.name} role={data.userInfo.role} />
-  </div>
+<main class="flex flex-grow flex-col bg-background">
+  <div class="ml-5 mt-5"></div>
 
   <!-- Button to open create booking drawer and filter bookings -->
   <div class="flex flex-col md:w-3/4 md:mx-auto my-10">

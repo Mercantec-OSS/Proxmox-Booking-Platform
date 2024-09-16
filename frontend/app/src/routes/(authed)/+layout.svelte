@@ -8,7 +8,7 @@
 <Toaster />
 <ModeWatcher />
 
-<div class="flex flex-col min-h-screen bg-background text-foreground">
+<div class="flex flex-col min-h-screen">
   <Navbar />
   <slot />
 </div>
