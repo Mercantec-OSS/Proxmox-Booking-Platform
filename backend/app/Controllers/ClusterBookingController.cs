@@ -75,12 +75,7 @@ public class ClusterBookingController(Context context, ScriptService scriptServi
         foreach (VCenter vcenter in selectedVcenters)
             selectedHosts.AddRange(await _esxiHostService.GetByVcenterAsync(vcenter.Id));
 
-        await scriptService.ResetAndInstallVcenterAsync
-        (
-            selectedVcenters,
-            DATACENTER_NAME,
-            CLUSTER_NAME
-        );
+        await scriptService.ResetAndInstallVcenterAsync(selectedVcenters);
 
         _emailService.SendClusterBookingCreate(booking);
 
