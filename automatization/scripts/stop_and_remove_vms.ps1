@@ -2,9 +2,7 @@
 if ($args.Length -ne 1) {
     Write-Host "Incorrect number of arguments."
     Write-Host "Usage:"
-    Write-Host "./stop_vms.ps1 '<username>__<password>__<esxi_host>'"
-    Write-Host "Example:"
-    Write-Host "./stop_vms.ps1 'root__password__10.1.60.120'"
+    Write-Host "./stop_and_remove_vms.ps1 '<username>__<password>__<esxi_host>'"
     exit
 }
 

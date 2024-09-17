@@ -3,8 +3,6 @@ if ($args.Length -ne 2) {
     Write-Host "Incorrect number of arguments."
     Write-Host "Usage:"
     Write-Host "./create_datacenter.ps1 '<username>__<password>__<vcenter>' <datacenter_name>"
-    Write-Host "Example:"
-    Write-Host "./create_datacenter.ps1 'admin@dc1.local__password__10.1.60.139' Datacenter01"
     exit
 }
 
