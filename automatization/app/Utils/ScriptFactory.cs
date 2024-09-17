@@ -63,11 +63,11 @@ public class ScriptFactory(Config config)
     }
 
     // Cluster scripts
-    public ICommand GetCreateBackupScript(string hostIp, string hostUsername, string hostPassword) {
+    public ICommand GetCreateBackupScript(string hostIp, string hostUsername, string hostPassword, string datastoreName) {
         string scriptName = "create_backup.sh";
 
         string script = Path.Combine(config.SCRIPTS_PATH, scriptName);
-        string args = $"'{hostUsername}__{hostPassword}__{hostIp}'";
+        string args = $"'{hostUsername}__{hostPassword}__{hostIp}' '{datastoreName}'";
 
         return new ShellCommand($"{script} {args}");
     }

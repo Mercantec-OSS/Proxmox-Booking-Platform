@@ -17,9 +17,9 @@ public class CLusterBookingService(ScriptFactory scriptFactory)
         return CreateTask(cmd, afterThan);
     }
 
-    public string CreateBackup(string hostIp, string hostUsername, string hostPassword, string afterThan)
+    public string CreateBackup(string hostIp, string hostUsername, string hostPassword, string datastoreName, string afterThan)
     {
-        ICommand command = scriptFactory.GetCreateBackupScript(hostIp, hostUsername, hostPassword);
+        ICommand command = scriptFactory.GetCreateBackupScript(hostIp, hostUsername, hostPassword, datastoreName);
         return CreateTask(command, afterThan);
     }
 

@@ -18,9 +18,10 @@ public class ClusterBookingController(CLusterBookingService clusterBookingServic
         [FromQuery] string hostUsername,
         [FromQuery] string hostPassword,
         [FromQuery] string hostIp,
+        [FromQuery] string datastoreName,
         [FromQuery] string afterThan = "")
     {
-        string taskUuid = clusterBookingService.CreateBackup(hostIp, hostUsername, hostPassword, afterThan);
+        string taskUuid = clusterBookingService.CreateBackup(hostIp, hostUsername, hostPassword, datastoreName, afterThan);
         return Ok(taskUuid);
     }
 
