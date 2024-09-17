@@ -7,8 +7,6 @@ then
     echo "Incorrect number of arguments."
     echo "Usage:"
     echo "./restore_backup.sh '<username>__<password>__<esxi_host>'"
-    echo "Example:"
-    echo "./restore_backup.sh 'root__password__10.1.60.120'"
     exit 1
 fi
 
