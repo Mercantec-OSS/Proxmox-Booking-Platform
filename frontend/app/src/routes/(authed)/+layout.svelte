@@ -9,9 +9,9 @@
 <Toaster />
 <ModeWatcher />
 
-<div class="flex flex-col min-h-screen w-full bg-background text-foreground">
+<div class="flex flex-col bg-background text-foreground">
   <Sidebar />
-  <div class="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
+  <div class="flex flex-col min-h-screen w-full sm:py-4 sm:pl-14">
     <Topbar />
     <slot />
   </div>

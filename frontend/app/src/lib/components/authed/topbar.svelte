@@ -11,7 +11,6 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as HoverCard from '$lib/components/ui/hover-card';
-
   async function handleLogout() {
     try {
       await authService.logout(getCookie('token'));
@@ -63,17 +62,26 @@
   <Breadcrumb.Root class="hidden md:flex">
     <Breadcrumb.List>
       <Breadcrumb.Item>
-        <Breadcrumb.Page href="/">Dashboard</Breadcrumb.Page>
+        <Breadcrumb.Link href="/">Dashboard</Breadcrumb.Link>
       </Breadcrumb.Item>
       <Breadcrumb.Separator />
+      {#if $page.url.pathname === '/'}
+        <Breadcrumb.Item>
+          <Breadcrumb.Page href="/">Overview</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      {:else if $page.url.pathname.includes('user')}
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>User Profile</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      {/if}
     </Breadcrumb.List>
   </Breadcrumb.Root>
-  <div class="relative ml-auto flex-1 md:grow-0">
+  <div class="relative ml-auto flex-1 md:grow-0 text-center md:text-right">
     <UserSearch />
   </div>
   <HoverCard.Root openDelay={200} closeDelay={150}>
     <HoverCard.Trigger asChild let:builder>
-      <Button builders={[builder]} variant="outline" size="icon"><Bell /></Button>
+      <Button builders={[builder]} variant="outline" size="icon" class="hidden md:flex"><Bell /></Button>
     </HoverCard.Trigger>
     <HoverCard.Content>
       <div class="flex justify-between space-x-4">

@@ -7,6 +7,7 @@
   import { onMount, onDestroy } from 'svelte';
   import { clusterService } from '$lib/services/cluster-service';
   import { vmService } from '$lib/services/vm-service';
+  import { Button } from '$lib/components/ui/button/index.js';
 
   export let data;
   let bookingUpdateIntervalId;
@@ -41,19 +42,15 @@
   });
 </script>
 
-<main class="flex flex-grow flex-col bg-background">
-  <div class="ml-5 mt-5"></div>
-
-  <!-- Button to open create booking drawer and filter bookings -->
-  <div class="flex flex-col md:w-3/4 md:mx-auto my-10">
-    <div class="flex gap-x-2">
-      <CreateBookingDrawer />
-      <BookingFiltering />
-    </div>
-
-    <!-- List of all bookings -->
-    <div class="flex flex-wrap justify-center gap-5 w-full mt-3">
-      <BookingList />
+<main class="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+  <div class="flex items-center">
+    <h1 class="text-lg font-semibold md:text-2xl">Booking Overview</h1>
+  </div>
+  <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
+    <div class="flex flex-col items-center gap-1 text-center">
+      <h3 class="text-2xl font-bold tracking-tight">You have no server bookings</h3>
+      <p class="text-muted-foreground text-sm">Start managing your server by creating a new booking.</p>
+      <Button class="mt-4">Create Booking</Button>
     </div>
   </div>
 </main>

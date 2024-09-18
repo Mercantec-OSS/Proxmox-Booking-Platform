@@ -34,7 +34,7 @@
     </a>
     <Separator />
     <!-- Dashboard nav link -->
-    <Tooltip.Root openDelay={450}>
+    <Tooltip.Root openDelay={400}>
       <Tooltip.Trigger asChild let:builder>
         <a
           href="/"
@@ -49,7 +49,7 @@
       <Tooltip.Content side="right">Dashboard</Tooltip.Content>
     </Tooltip.Root>
     <!-- Analytics nav link -->
-    <Tooltip.Root openDelay={450}>
+    <Tooltip.Root openDelay={400}>
       <Tooltip.Trigger asChild let:builder>
         <a
           href="/analytics"
@@ -64,7 +64,7 @@
       <Tooltip.Content side="right">Analytics</Tooltip.Content>
     </Tooltip.Root>
     <!-- Help nav link -->
-    <Tooltip.Root openDelay={450}>
+    <Tooltip.Root openDelay={400}>
       <Tooltip.Trigger asChild let:builder>
         <a
           href="/help"
@@ -83,7 +83,7 @@
   <!-- Bottom of side navigation bar -->
   <nav class="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
     <!-- Change theme button -->
-    <Tooltip.Root openDelay={450}>
+    <Tooltip.Root openDelay={400}>
       <Tooltip.Trigger let:builder>
         <Button on:click={toggleMode} variant="ghost" size="icon" class="text-muted-foreground hover:text-foreground" {...builder}>
           <Sun class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -95,7 +95,7 @@
     </Tooltip.Root>
 
     <!-- Logout button -->
-    <Tooltip.Root openDelay={450}>
+    <Tooltip.Root openDelay={400}>
       <Tooltip.Trigger let:builder>
         <Button on:click={handleLogout} variant="ghost" size="icon" class="text-muted-foreground hover:text-foreground" {...builder}>
           <LogOut class="size-5" />
