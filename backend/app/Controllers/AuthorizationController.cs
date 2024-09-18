@@ -49,6 +49,16 @@ public class AuthorizationController(Context context, Config config, UserSession
             user = await _userService.GetAsync(adUser.Email);
         }
 
+        if (user == null)
+        {
+            return Unauthorized(ResponseMessage.GetErrorMessage("Intern error. User not found."));
+        }
+
+        if (user.Password == null)
+        {
+            return Unauthorized(ResponseMessage.GetErrorMessage("Intern error. User password not found."));
+        }
+
         if (!Password.Verify(userDto.Password, user.Password))
         {
             return Unauthorized(ResponseMessage.GetErrorMessage("User got bad username or password"));

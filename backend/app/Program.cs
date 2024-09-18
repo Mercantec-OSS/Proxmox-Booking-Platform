@@ -1,5 +1,3 @@
-using Microsoft.OpenApi.Models;
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -13,12 +11,9 @@ builder.Services.AddScoped<EsxiHostService>();
 builder.Services.AddScoped<VCenterService>();
 builder.Services.AddScoped<UserSession>();
 builder.Services.AddScoped<JwtTokenService>();
-builder.Services.AddSingleton<ActivityService>();
 builder.Services.AddSingleton<JwtTokenService>();
-builder.Services.AddSingleton<Services.AutoServices>();
 builder.Services.AddSingleton<Config>();
-builder.Services.AddHostedService<ActivityService>();
-builder.Services.AddHostedService<Services.AutoServices>();
+builder.Services.AddHostedService<SchedulerBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 
 // CORS
@@ -33,35 +28,7 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddSwaggerGen(c =>
-{
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
-                Scheme = "oauth2",
-                Name = "Bearer",
-                In = ParameterLocation.Header,
-            },
-                new List<string>()
-        }
-    });
-});
+builder.Services.AddSwaggerGen();
 
 
 // Db initialization
@@ -122,8 +89,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseStaticFiles("/web-console/src");
-
-Services.AutoServices autoServices = new();
-autoServices.SetDB(app);
 
 app.Run();
