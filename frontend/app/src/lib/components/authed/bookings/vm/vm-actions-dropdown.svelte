@@ -3,7 +3,7 @@
   import VMExtensionDialog from '$lib/components/authed/bookings/vm/vm-extension-dialog.svelte';
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
-  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap } from 'lucide-svelte';
+  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, MonitorUp } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -135,6 +135,10 @@
       <DropdownMenu.Label>Booking actions</DropdownMenu.Label>
       <DropdownMenu.Separator />
       {#if new Date() < new Date($selectedBookingStore.expiredAt)}
+      <DropdownMenu.Item>
+        <MonitorUp class="mr-2 size-4" />
+          <a target="_blank" class="cursor-default" href="/api/web-console/{$selectedBookingStore.uuid}">Web console</a>
+        </DropdownMenu.Item>
         <DropdownMenu.Item on:click={handleFileDownload}>
           <Download class="mr-2 size-4" />
           <span>Download</span>
