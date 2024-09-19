@@ -126,3 +126,12 @@ html, body {
    from {opacity: 1;}
    to {opacity: 0.25;}
 }
+
+
+.cred {
+    padding: 5px;
+    background-color: #00000080;
+    position: absolute;
+    z-index: 1;
+    font-weight: bold;
+}
