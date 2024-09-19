@@ -12,6 +12,11 @@ public class ResponseMessage(string message)
         return new ResponseMessage("Insufficient privileges to perform this action");
     }
 
+    public static ResponseMessage GetWrongCredentials()
+    {
+        return new ResponseMessage("Invalid email or password. Please check your credentials and try again.");
+    }
+
     public static ResponseMessage GetUserNotFound()
     {
         return new ResponseMessage("User not found");
