@@ -27,7 +27,7 @@ public class AuthorizationController(Context context, Config config, UserSession
 
             if (userCanConnect == false)
             {
-                return BadRequest(ResponseMessage.GetUserUnauthorized());
+                return BadRequest(ResponseMessage.GetWrongCredentials());
             }
 
             User? adUser = await _ldapService.GetStudentByEmailAsync(userDto.Email);
@@ -61,7 +61,7 @@ public class AuthorizationController(Context context, Config config, UserSession
 
         if (!Password.Verify(userDto.Password, user.Password))
         {
-            return Unauthorized(ResponseMessage.GetErrorMessage("User got bad username or password"));
+            return Unauthorized(ResponseMessage.GetWrongCredentials());
         }
 
         string token = jwt.CreateToken(user);
@@ -152,33 +152,6 @@ public class AuthorizationController(Context context, Config config, UserSession
 
         return Ok(await CreateUser(userDto, Models.User.UserRoles.Moderator));
     }
-
-    // [HttpGet("sync/students")]
-    // public async Task<ActionResult> SyncStudents()
-    // {
-    //     session.GetIfRoles(Models.User.UserRoles.Admin);
-
-    //     // await SyncADWithDB.SyncStudents(_userService, _groupService, _ldapService);
-    //     return NoContent();
-    // }
-
-    // [HttpGet("sync/teachers")]
-    // public async Task<ActionResult> SyncTeachers()
-    // {
-    //     session.GetIfRoles(Models.User.UserRoles.Admin);
-
-    //     // await SyncADWithDB.SyncTeachers(_userService, _ldapService);
-    //     return NoContent();
-    // }
-
-    // [HttpGet("sync/classes")]
-    // public async Task<ActionResult> SyncClasses()
-    // {
-    //     session.GetIfRoles(Models.User.UserRoles.Admin);
-
-    //     // await SyncADWithDB.SyncClasses(_userService, _groupService);
-    //     return NoContent();
-    // }
 
     private async Task<UserGetDto> CreateUser(UserCreateDto userDto, User.UserRoles userRole)
     {
