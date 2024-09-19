@@ -49,6 +49,8 @@ public class WebConsoleController : Controller
         var pageModel = new {
             url = connectionUri.Uri,
             vcenterIp = connectionUri.VcenterIp,
+            booking.Login,
+            booking.Password,
         };
         return View("web-console", pageModel);
     }
