@@ -12,16 +12,6 @@ public class ScriptFactory(Config config)
         return new PowerShellCommand($"{script} {args}");
     }
 
-    public ICommand GetVmScript(string vmName)
-    {
-        string scriptName = "get_vm.ps1";
-
-        string script = Path.Combine(config.SCRIPTS_PATH, scriptName);
-        string args = $"'{config.VM_VCENTER_USER}__{config.VM_VCENTER_PASSWORD}__{config.VM_VCENTER_IP}' '{vmName}'";
-
-        return new PowerShellCommand($"{script} {args}");
-    }
-
     public ICommand GetUpdateVmResourcesScript(string vmName, int cpu, int ram)
     {
         string scriptName = "update_vm_resources.ps1";

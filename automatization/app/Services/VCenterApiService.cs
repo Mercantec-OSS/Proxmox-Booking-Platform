@@ -10,7 +10,8 @@ public class VCenterApiService
         Login().Wait();
     }
 
-    private HttpClient InitHttpClient() {
+    private HttpClient InitHttpClient()
+    {
         // Ignore SSL certificate
         HttpClientHandler handler = new HttpClientHandler();
         handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
@@ -20,7 +21,8 @@ public class VCenterApiService
         return client;
     }
 
-    private async System.Threading.Tasks.Task Login() {
+    private async System.Threading.Tasks.Task Login()
+    {
         // Add authorization header to client
         var credentials = $"{_config.VM_VCENTER_USER}:{_config.VM_VCENTER_PASSWORD}";
         var base64Credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(credentials));
@@ -35,7 +37,8 @@ public class VCenterApiService
         _client.DefaultRequestHeaders.Add("vmware-api-session-id", token);
     }
 
-    public async Task<ResponseVCenterVmDTO?> SearchVmByNameAsync(string vmName) {
+    public async Task<ResponseVCenterVmDTO?> SearchVmByNameAsync(string vmName)
+    {
         var vms = await _client.GetFromJsonAsync<List<ResponseVCenterVmDTO>>($"https://{_config.VM_VCENTER_IP}/api/vcenter/vm?names={vmName}") ?? new List<ResponseVCenterVmDTO>();
         return vms.FirstOrDefault();
     }
@@ -48,7 +51,7 @@ public class VCenterApiService
             return new ResponseVCenterTicketDTO();
         }
 
-        var data = new 
+        var data = new
         {
             type = "WEBMKS"
         };
@@ -62,5 +65,63 @@ public class VCenterApiService
 
         return ticket;
     }
+
+    public async Task<string> GetVmIpAsync(string internName)
+    {
+        string uri = $"https://{_config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/guest/networking/interfaces";
+
+        var machines = await _client.GetFromJsonAsync<List<ResponseVmIpDTO>>(uri) ?? new List<ResponseVmIpDTO>();
+        var selectedMachine = machines.FirstOrDefault(new ResponseVmIpDTO());
+        var ipv4 = selectedMachine.IP.IPAddresses.Where(x => x.PrefixLength == 24).FirstOrDefault(new ResponseVmIpDTO.IPInfo.IPAddressInfo());
+
+        return ipv4.IPAddress;
+    }
+
+    public async Task<int> GetCpuCount(string internName)
+    {
+        var uri = $"https://{_config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/hardware/cpu";
+        var cpuCountData = await _client.GetFromJsonAsync<ResponseVmCpuDTO>(uri) ?? new ResponseVmCpuDTO();
+
+        return cpuCountData.Count;
+    }
+
+    public async Task<int> GetRamSize(string internName)
+    {
+        var uri = $"https://{_config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/hardware/memory";
+        var ramSizeData = await _client.GetFromJsonAsync<ResponseVmRamDTO>(uri) ?? new ResponseVmRamDTO();
+
+        return ramSizeData.SizeGB;
+    }
+
+    public async Task<VmDTO> GetInfo(string vmName)
+    {
+        var selectedVm = await SearchVmByNameAsync(vmName);
+        if (selectedVm == null)
+        {
+            return new VmDTO();
+        }
+
+        string name = vmName;
+        string ip = "";
+        int cpuCores = 0;
+        int ramGb = 0;
+
+        try
+        {
+            ip = await GetVmIpAsync(selectedVm.InternName);
+            cpuCores = await GetCpuCount(selectedVm.InternName);
+            ramGb = await GetRamSize(selectedVm.InternName);
+        }
+        catch { }
+
+        return new VmDTO()
+        {
+            Name = name,
+            Ip = ip,
+            Cpu = cpuCores,
+            Ram = ramGb
+        };
+    }
+
 
 }

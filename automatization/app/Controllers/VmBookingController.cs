@@ -3,7 +3,7 @@
 [ApiController]
 [Route("vm-booking")]
 
-public class VmBookingController(VmBookingService vmBookingService) : ControllerBase
+public class VmBookingController(VmBookingService vmBookingService, Config config) : ControllerBase
 {
     [HttpPost("create")]
     [ProducesResponseType(201)]
@@ -28,14 +28,16 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
     }
 
     [HttpGet("get-vm/{vmName}")]
-    public ActionResult<VmDTO> GetVMResources(string vmName)
+    public async Task<ActionResult<VmDTO>> GetVMResources(string vmName)
     {
         if (string.IsNullOrWhiteSpace(vmName))
         {
             return BadRequest("Invalid uuid");
         }
 
-        VmDTO vm = vmBookingService.Get(vmName);
+        var client = new VCenterApiService(config);
+
+        VmDTO vm = await client.GetInfo(vmName);
         return Ok(vm);
     }
 
@@ -67,7 +69,7 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
     }
 
     [HttpGet("connection-uri/{vmName}")]
-    public async Task<IActionResult> GetWebConsoleUri(Config config, string vmName)
+    public async Task<IActionResult> GetWebConsoleUri(string vmName)
     {
         var client = new VCenterApiService(config);
         return Ok(await client.GetVmConnectionUriAsync(vmName));

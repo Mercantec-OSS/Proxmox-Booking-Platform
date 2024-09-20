@@ -2,16 +2,8 @@
 
 [ApiController]
 [Route("other")]
-public class OtherController : ControllerBase
+public class OtherController(Config config) : ControllerBase
 {
-    private readonly string scriptsPath;
-    private readonly string Applicationversion;
-
-    public OtherController(Config config)
-    {
-        scriptsPath = config.SCRIPTS_PATH;
-        Applicationversion = config.VERSION;
-    }
 
     [HttpGet("run-shell")]
     public async Task<IActionResult> RunShell([FromQuery] string command)
@@ -36,10 +28,6 @@ public class OtherController : ControllerBase
     [HttpGet("/version")]
     public IActionResult GetVersion()
     {
-        if (string.IsNullOrEmpty(Applicationversion))
-        {
-            return NotFound("Version information not found.");
-        }
-        return Ok(Applicationversion);
+        return Ok(config.VERSION);
     }
 }
