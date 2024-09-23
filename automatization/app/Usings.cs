@@ -4,7 +4,6 @@ global using Services;
 global using System;
 global using System.Diagnostics;
 global using System.Text.RegularExpressions;
-global using VMwareBookingSystem.Models;
 global using VMwareBookingSystem.Services;
 global using System.Text.Json.Serialization;
 global using VMwareBookingSystem.Utils;

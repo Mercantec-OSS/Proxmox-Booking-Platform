@@ -8,8 +8,8 @@ public class Task
     public DateTime EndTime { get; set; } 
     public TaskStatus Status { get; set; } = TaskStatus.Waiting;
     public string Output { get; set; } = string.Empty;
-    public ICommand Command { get; set; }
-    public string AfterThan { get; set; } 
+    public ICommand Command { get; set; } = null!;
+    public string AfterThan { get; set; } = "";
 
     public enum TaskStatus
     {
