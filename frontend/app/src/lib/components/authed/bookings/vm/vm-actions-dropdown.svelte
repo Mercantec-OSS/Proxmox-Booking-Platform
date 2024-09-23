@@ -7,8 +7,7 @@
   import { toast } from 'svelte-sonner';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button/index.js';
-
-  export let vmInfoDialogOpen;
+  import { goto } from '$app/navigation';
 
   let vmExtensionDialogOpen;
 
@@ -67,7 +66,7 @@
     try {
       await vmService.deleteVMBooking($selectedBookingStore.id);
       vmListStore.set(await vmService.getVMBookingsFrontend());
-      vmInfoDialogOpen = false;
+      goto('/');
       toast.success(`Deleted booking #${$selectedBookingStore.id}`);
     } catch (error) {
       toast.error(error.message);
@@ -128,7 +127,7 @@
 
 <DropdownMenu.Root>
   <DropdownMenu.Trigger asChild let:builder>
-    <Button variant="outline" class="bg-primary-foreground" builders={[builder]}>Actions</Button>
+    <Button builders={[builder]}>Actions</Button>
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>
     <DropdownMenu.Group>

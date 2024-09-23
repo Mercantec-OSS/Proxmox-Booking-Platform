@@ -84,6 +84,16 @@ export const vmService = {
     return await clientApi.get(`vm-booking/${id}`).json();
   },
 
+  async getVMBookingByIdBackend(cookie, id) {
+    return await backendApi
+      .get(`vm-booking/${id}`, {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
+  },
+
   async getVMsAvailableCount() {
     return await clientApi.get('vcenter/all/available').json();
   },

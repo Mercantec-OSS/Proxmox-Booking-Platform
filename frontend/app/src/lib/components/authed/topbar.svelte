@@ -37,7 +37,11 @@
     <Sheet.Content side="left" class="sm:max-w-xs">
       <nav class="grid gap-6 text-lg font-medium">
         <a href="/" class="text-primary-foreground group flex h-auto w-40 px-2.5 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold md:text-base">
-          <img src="/images/mercantec-logo-full.svg" alt="Mercantec" class="size-full transition-all brightness-0 saturate-0 dark:brightness-100 dark:saturate-100" />
+          <img
+            src="/images/mercantec-logo-full.svg"
+            alt="Mercantec"
+            class="size-full transition-all group-hover:scale-110 [filter:brightness(0)_saturate(100%)_invert(27%)_sepia(94%)_saturate(1394%)_hue-rotate(218deg)_brightness(95%)_contrast(101%)]"
+          />
           <span class="sr-only">Mercantec</span>
         </a>
         <a href="/" class="{isActive('/') ? 'text-foreground' : 'text-muted-foreground'} hover:text-foreground flex items-center gap-4 px-2.5">
@@ -72,6 +76,10 @@
       {:else if $page.url.pathname.includes('user')}
         <Breadcrumb.Item>
           <Breadcrumb.Page>User Profile</Breadcrumb.Page>
+        </Breadcrumb.Item>
+      {:else if $page.url.pathname.includes('booking')}
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Booking Details</Breadcrumb.Page>
         </Breadcrumb.Item>
       {/if}
     </Breadcrumb.List>

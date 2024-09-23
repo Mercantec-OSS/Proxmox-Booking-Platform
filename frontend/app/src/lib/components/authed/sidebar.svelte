@@ -29,7 +29,11 @@
   <nav class="flex flex-col items-center gap-4 px-2 sm:py-5">
     <!-- Mercantec logo -->
     <a href="/" class="text-primary-foreground group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full text-lg font-semibold md:h-8 md:w-8 md:text-base">
-      <img src="/images/mercantec-logo.svg" alt="Mercantec" class="h-7 w-7 transition-all group-hover:scale-110 brightness-0 saturate-0 dark:brightness-100 dark:saturate-100" />
+      <img
+        src="/images/mercantec-logo.svg"
+        alt="Mercantec"
+        class="h-7 w-7 transition-all group-hover:scale-110 [filter:brightness(0)_saturate(100%)_invert(27%)_sepia(94%)_saturate(1394%)_hue-rotate(218deg)_brightness(95%)_contrast(101%)]"
+      />
       <span class="sr-only">Mercantec</span>
     </a>
     <Separator />
@@ -38,7 +42,9 @@
       <Tooltip.Trigger asChild let:builder>
         <a
           href="/"
-          class="{isActive('/') ? 'text-foreground' : 'text-muted-foreground'} hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
+          class="{isActive('/') || $page.url.pathname.includes('/booking/')
+            ? 'text-foreground'
+            : 'text-muted-foreground'} hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
           use:builder.action
           {...builder}
         >

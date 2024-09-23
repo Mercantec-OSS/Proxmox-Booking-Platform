@@ -8,7 +8,7 @@
   import * as Table from '$lib/components/ui/table';
   import * as Tabs from '$lib/components/ui/tabs';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import { ArrowUpRight } from 'lucide-svelte';
+  import { ArrowUpRight, CirclePlus } from 'lucide-svelte';
 
   let userAuthed = $userStore.role !== 'Student';
   let activeTab = 'vms';
@@ -37,7 +37,7 @@
     <div class="flex flex-col items-center gap-1 text-center">
       <h3 class="text-2xl font-bold tracking-tight">You have no server bookings</h3>
       <p class="text-muted-foreground text-sm">Get started by creating a new booking using the button below.</p>
-      <Button class="mt-4">Create Booking <ArrowUpRight class="h-4 w-4 ml-1" /></Button>
+      <Button class="mt-4">Create Booking <CirclePlus class="h-4 w-4 ml-1" /></Button>
     </div>
   </div>
 {:else}
@@ -48,10 +48,13 @@
     </Card.Header>
     <Card.Content>
       <Tabs.Root bind:value={activeTab}>
-        <Tabs.List class="grid w-full md:w-96 grid-cols-2">
-          <Tabs.Trigger value="vms">Virtual machines</Tabs.Trigger>
-          <Tabs.Trigger value="clusters">Clusters</Tabs.Trigger>
-        </Tabs.List>
+        <div class="flex justify-between items-center">
+          <Tabs.List class="grid w-full md:w-96 grid-cols-2">
+            <Tabs.Trigger value="vms">Virtual machines</Tabs.Trigger>
+            <Tabs.Trigger value="clusters">Clusters</Tabs.Trigger>
+          </Tabs.List>
+          <Button variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
+        </div>
         <Tabs.Content value="vms">
           <!-- Virtual machine booking table  -->
           <Table.Root>
@@ -113,7 +116,7 @@
                   <Table.Cell class="table-cell">{formatDateTime(vm.expiredAt)}</Table.Cell>
                   <!-- Button to open the booking page to show full information about it -->
                   <Table.Cell
-                    ><Button href="/booking/id/{vm.id}" size="sm" class="ml-auto gap-1">
+                    ><Button href="/booking/vm/{vm.id}" size="sm" class="ml-auto gap-1">
                       View
                       <ArrowUpRight class="h-4 w-4" />
                     </Button></Table.Cell
@@ -174,7 +177,7 @@
                   <Table.Cell class="table-cell">{formatDateTime(cluster.expiredAt)}</Table.Cell>
                   <!-- Button to open the booking page to show full information about it -->
                   <Table.Cell
-                    ><Button href="/booking/id/{cluster.id}" size="sm" class="ml-auto gap-1">
+                    ><Button href="/booking/cluster/{cluster.id}" size="sm" class="ml-auto gap-1">
                       View
                       <ArrowUpRight class="h-4 w-4" />
                     </Button></Table.Cell
