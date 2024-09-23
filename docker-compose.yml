@@ -24,6 +24,8 @@ services:
       - VM_CLUSTER_NAME=${VM_VCENTER_CLUSTER}
       - VM_DATASTORE_NAME=${VM_VCENTER_DATASTORE}
     volumes:
+      - ./automatization/app:/app
+      - ./automatization/build:/build
       - ./automatization/scripts:/scripts
 
   backend:
