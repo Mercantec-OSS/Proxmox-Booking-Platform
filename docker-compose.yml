@@ -33,7 +33,7 @@ services:
     restart: unless-stopped
     build: ./backend
     ports:
-      - "6002:5001" # Optional for debugging
+      - "6002:5000" # Optional for debugging
     environment:
       - VERSION=${VERSION}
       - TEST_MODE=${TEST_MODE}
