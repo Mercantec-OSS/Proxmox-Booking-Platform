@@ -45,10 +45,14 @@ public class WebConsoleController : Controller
         {
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
-        
+
+        // get host ip from connectionUri
+        string hostIp = connectionUri.Uri.Split("//")[1].Split(":")[0];
+
         var pageModel = new {
-            url = connectionUri.Uri,
-            vcenterIp = connectionUri.VcenterIp,
+            booking.Name,
+            connectionUri.Uri,
+            HostIp = hostIp,
             booking.Login,
             booking.Password,
         };
