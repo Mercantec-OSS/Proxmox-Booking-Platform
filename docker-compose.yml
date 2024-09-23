@@ -33,7 +33,7 @@ services:
     restart: unless-stopped
     build: ./backend
     ports:
-      - "6002:5000" # Optional for debugging
+      - "6002:5001" # Optional for debugging
     environment:
       - VERSION=${VERSION}
       - TEST_MODE=${TEST_MODE}
@@ -47,6 +47,9 @@ services:
       - AUTO_MIGRATIONS=true
       - USE_SWAGGER=true
       - ALLOW_CORS=true
+    volumes:
+      - ./automatization/app:/app
+      - ./automatization/build:/build
 
   frontend:
     container_name: frontend-dev
