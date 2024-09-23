@@ -25,9 +25,13 @@
     <div id="statusMessage">
         <h2>Connection error</h2>
         <p>
-                <div>You need to use chromium based browser</div>
-                <div>Make sure at your browser support JavaScript</div>
-                <div>To fix the issue, please open following URL <a href="https://@Model.vcenterIp/" target="_blank">https://@Model.vcenterIp/</a> and accept the certificate.</div>
+            <div>You need to use chromium based browser</div>
+            <div>Make sure at your browser support JavaScript</div>
+            <div>
+                To fix the issue, please open following URL 
+                <a href="https://@Model.HostIp/" target="_blank">https://@Model.HostIp/</a> 
+                and accept the certificate.
+            </div>
         </p>
     </div>
     <script>
@@ -47,7 +51,7 @@
                     statusMessage.style.display = 'block';
                 }
             });
-        wmks.connect("@Model.url"); 
+        wmks.connect("@Model.Uri"); 
     </script>
 </body>
 
