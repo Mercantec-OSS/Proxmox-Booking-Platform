@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 public class EmailService
 {
     private readonly Config _config;
-    private static readonly string emailLocaltion = "src/emails/";
+    private static readonly string emailLocaltion = _config.EMAIL_TEMPLATES_PATH;
 
     public EmailService(Config config)
     {

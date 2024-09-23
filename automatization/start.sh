@@ -8,4 +8,5 @@ then
 fi
 
 #run app
+cd /build
 /build/app
