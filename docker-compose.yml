@@ -48,8 +48,8 @@ services:
       - USE_SWAGGER=true
       - ALLOW_CORS=true
     volumes:
-      - ./automatization/app:/app
-      - ./automatization/build:/build
+      - ./backend/app:/app
+      - ./backend/build:/build
 
   frontend:
     container_name: frontend-dev
