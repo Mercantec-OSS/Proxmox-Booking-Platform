@@ -6,11 +6,12 @@ using System.Text.RegularExpressions;
 public class EmailService
 {
     private readonly Config _config;
-    private static readonly string emailLocaltion = _config.EMAIL_TEMPLATES_PATH;
+    private string emailLocaltion;
 
     public EmailService(Config config)
     {
         _config = config;
+        emailLocaltion = _config.EMAIL_TEMPLATES_PATH;
     }
 
     public async Task SendEmail(string recipientAddress, string subject, string body)
