@@ -69,3 +69,54 @@ body {
     --ring: 216 12.2% 83.9%;
   }
 }
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Mobile tap highlight */
+  /* https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-tap-highlight-color */
+  html {
+    -webkit-tap-highlight-color: rgba(128, 128, 128, 0.5);
+  }
+
+  /* === Scrollbars === */
+  ::-webkit-scrollbar {
+    @apply w-2;
+    @apply h-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply !bg-muted;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply !bg-muted-foreground/30 rounded-sm;
+  }
+
+  /* Firefox */
+  /* https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-color#browser_compatibility */
+  html {
+    scrollbar-color: hsl(215.4 16.3% 46.9% / 0.3);
+  }
+
+  html.dark {
+    scrollbar-color: hsl(215.4 16.3% 56.9% / 0.3);
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .antialised {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
