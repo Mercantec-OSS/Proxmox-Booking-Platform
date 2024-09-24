@@ -2,13 +2,10 @@
 FROM node:21
 LABEL maintainer="carrergt@gmail.com"
 
-# copy requirements file
+COPY app start.sh /
+
 WORKDIR /app
-
-# copy app
-COPY app start.sh ./
-
 RUN npm i
 
 # start command
-CMD ["sh","./start.sh"]
+CMD ["sh","/start.sh"]

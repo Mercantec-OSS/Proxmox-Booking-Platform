@@ -1,6 +1,8 @@
 #!/usr/bin/bash
-PROJECT_PATH=$(pwd)
-
 git pull
-docker compose down
-docker compose up -d --build
+
+sudo rm -rf ./automatization/build/*
+sudo rm -rf ./backend/build/*
+sudo rm -rf ./frontend/build/*
+
+docker compose restart

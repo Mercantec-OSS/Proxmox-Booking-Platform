@@ -62,6 +62,9 @@ services:
       - PUBLIC_VERSION=8.2.0
       - PUBLIC_CLIENT_API=/api
       - PUBLIC_BACKEND_API=http://backend:5000
+    volumes:
+      - ./frontend/app:/app
+      - ./frontend/build:/build
   
   db-backup:
     build: ./backup
