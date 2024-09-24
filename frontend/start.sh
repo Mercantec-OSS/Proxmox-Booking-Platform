@@ -1,7 +1,9 @@
-if [ ! -d "/build/index.js" ]; then
+if [ ! -f "/build/index.js" ]
+then
     cd /app
     npm run build
     mv /app/build/* /build
+    cp /app/package.json /build
 fi
 
 cd /build
