@@ -1,7 +1,7 @@
 #!/usr/bin/bash
-$user=$(whoami)
+user=$(sudo whoami)
 if [ $user != "root" ]; then
-    echo "You must run this script as root"
+    echo "You need for root permissions"
     exit 1
 fi
 
