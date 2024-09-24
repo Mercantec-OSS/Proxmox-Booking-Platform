@@ -77,7 +77,7 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - ./db/storage:/var/lib/mysql
-  
+
   db-backup:
     build: ./backup
     container_name: backup-dev

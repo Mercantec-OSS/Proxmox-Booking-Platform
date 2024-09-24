@@ -2,4 +2,9 @@ vmware-frontend/
 vmware-backend/
 vmware-automation/
 install/
+build/
+storage/
+backup-files/
+configs/
+.env
 /.vs
