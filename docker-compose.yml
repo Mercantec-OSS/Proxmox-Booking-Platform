@@ -65,6 +65,18 @@ services:
     volumes:
       - ./frontend/app:/app
       - ./frontend/build:/build
+
+  db:
+    image: mysql
+    container_name: db-dev
+    restart: always
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - ./db/storage:/var/lib/mysql
   
   db-backup:
     build: ./backup
