@@ -22,12 +22,12 @@
     vmListStore.set(await vmService.getVMBookingsFrontend());
   }
 
-  /* Make an interval that refreshes all bookings every 20 seconds */
+  /* Make an interval that refreshes all bookings every 10 seconds */
   onMount(async () => {
     bookingUpdateInterval = setTimeout(() => {
       fetchBookings();
-      bookingUpdateIntervalId = setInterval(fetchBookings, 20000);
-    }, 20000);
+      bookingUpdateIntervalId = setInterval(fetchBookings, 10000);
+    }, 10000);
   });
 
   /* Clear the refresh booking interval when a user leaves the page */

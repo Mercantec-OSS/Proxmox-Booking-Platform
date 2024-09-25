@@ -17,10 +17,7 @@
       isLoading = true;
       const response = await authService.login(credentials);
       if (response.hash) {
-        console.log(response.hash);
-
         const expirationDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
-        console.log(expirationDate);
 
         document.cookie = `token=${response.hash}; expires=${expirationDate}; path=/;`;
       }

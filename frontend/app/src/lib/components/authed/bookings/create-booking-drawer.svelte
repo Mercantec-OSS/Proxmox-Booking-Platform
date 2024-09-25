@@ -21,7 +21,7 @@
   import * as Command from '$lib/components/ui/command/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
 
-  let userAuthed = $userStore.role !== 'Student';
+  $: userAuthed = $userStore.role === 'Admin' || $userStore.role === 'Teacher';
 
   let open = false;
   let isLoading = false;

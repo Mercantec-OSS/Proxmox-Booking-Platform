@@ -10,10 +10,8 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { ArrowUpRight, CirclePlus } from 'lucide-svelte';
 
-  let userAuthed = $userStore.role !== 'Student';
+  $: userAuthed = $userStore.role === 'Admin' || $userStore.role === 'Teacher';
   let activeTab = 'vms';
-
-  $: console.log(activeTab);
 
   function formatDateTime(date) {
     const options = {
@@ -94,7 +92,7 @@
                   </Table.Cell>
                   <!-- Shows if booking is accepted or pending -->
                   <Table.Cell>
-                    <Badge variant="outline">{vm.isAccepted ? 'Confirmed' : 'Pending'}</Badge>
+                    <Badge variant={vm.isAccepted ? 'outline' : 'destructive'}>{vm.isAccepted ? 'Confirmed' : 'Pending'}</Badge>
                   </Table.Cell>
                   <!-- Show who is owner and redirect to their profile on click -->
                   <Table.Cell class="table-cell">

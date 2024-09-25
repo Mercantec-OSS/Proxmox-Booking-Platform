@@ -3,13 +3,14 @@
   import VMExtensionDialog from '$lib/components/authed/bookings/vm/vm-extension-dialog.svelte';
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
-  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap } from 'lucide-svelte';
+  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, ChevronDown } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button/index.js';
   import { goto } from '$app/navigation';
 
   let vmExtensionDialogOpen;
+  let open = false;
 
   /* Alert dialog */
   let alertDialogOpen;
@@ -125,9 +126,11 @@
 <!-- Dialog to request extension of booking -->
 <VMExtensionDialog bind:vmExtensionDialogOpen></VMExtensionDialog>
 
-<DropdownMenu.Root>
+<DropdownMenu.Root bind:open>
   <DropdownMenu.Trigger asChild let:builder>
-    <Button builders={[builder]}>Actions</Button>
+    <Button variant="outline" size="sm" class="border-indigo-500 text-indigo-500" builders={[builder]}
+      >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
+    >
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>
     <DropdownMenu.Group>

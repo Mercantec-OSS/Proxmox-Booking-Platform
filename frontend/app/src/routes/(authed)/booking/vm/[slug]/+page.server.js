@@ -1,6 +1,8 @@
 import { vmService } from '$lib/services/vm-service';
 
 export const load = async ({ parent, params, cookies }) => {
+  const { userInfo } = await parent();
+
   let userData;
   let errorMessage;
   let clusterData = [];
@@ -20,6 +22,7 @@ export const load = async ({ parent, params, cookies }) => {
 
   return {
     errorMessage,
-    vmData
+    vmData,
+    userInfo
   };
 };
