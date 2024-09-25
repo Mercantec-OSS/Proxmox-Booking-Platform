@@ -84,6 +84,11 @@ services:
     restart: unless-stopped
     volumes:
       - ./backup/backup-files:/backup
+      - ./backup/restore-backup:/restore
       - ./backup/backup_script.sh:/etc/periodic/daily/backup_script.sh
     environment:
-      - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
+      - HOST=${DB_ADDRESS}
+      - DATABASE=${DB_NAME}
+      - PORT=${DB_PORT}
+      - USER=${DB_USER}
+      - PASSWORD=${DB_PASSWORD}
