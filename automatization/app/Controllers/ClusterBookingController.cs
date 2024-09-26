@@ -145,10 +145,10 @@ public class ClusterBookingController(CLusterBookingService clusterBookingServic
 
     [HttpPost("install-vcenter")]
     public IActionResult InstallVCenter(
-    [FromQuery] string vcenter_ip,
+    [FromBody] string base64JsonConfig,
     [FromQuery] string afterThan = "")
     {
-        string taskUuid = clusterBookingService.InstallVCenter(vcenter_ip, afterThan);
+        string taskUuid = clusterBookingService.InstallVCenter(base64JsonConfig, afterThan);
         return Ok(taskUuid);
     }
 }

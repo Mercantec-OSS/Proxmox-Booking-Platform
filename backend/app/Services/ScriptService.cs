@@ -197,15 +197,15 @@ public class ScriptService
         return await PostAsync($"{url}?{query}", new StringContent(""));
     }
 
-    public async Task<string> InstallVCenterAsync(string vcenterIp, string afterTask = "")
+    public async Task<string> InstallVCenterAsync(string jsonConfig, string afterTask = "")
     {
         string url = $"cluster-booking/install-vcenter";
+        string base64Config = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonConfig));
 
         var query = HttpUtility.ParseQueryString("");
-        query["vcenter_ip"] = vcenterIp;
         query["afterThan"] = afterTask;
 
-        return await PostAsync($"{url}?{query}", new StringContent(""));
+        return await PostAsync($"{url}?{query}", new StringContent($"\"{base64Config}\"", Encoding.UTF8, "application/json"));
     }
 
     public async Task<string> CreateDatacenterAsync(string vcenterUsername, string vcenterPassword, string vcenterIp, string datacenterName, string afterTask = "")
@@ -283,7 +283,7 @@ public class ScriptService
         string lastTaskUuid = afterTask;
         foreach (var vcenter in vcenters)
         {
-            var taskUuid = await InstallVCenterAsync(vcenter.Ip, lastTaskUuid);
+            var taskUuid = await InstallVCenterAsync(vcenter.JsonConfig, lastTaskUuid);
             taskUuid = await CreateDatacenterAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, vcenter.DatacenterName, taskUuid);
             taskUuid = await CreateClusterAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, vcenter.DatacenterName, vcenter.ClusterName, taskUuid);
 

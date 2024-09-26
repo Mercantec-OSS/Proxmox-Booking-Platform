@@ -82,7 +82,7 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetVCenterNotFound());
         }
 
-        return Ok(await scriptService.InstallVCenterAsync(vcenter.Ip));
+        return Ok(await scriptService.InstallVCenterAsync(vcenter.JsonConfig));
     }
 
     [HttpGet("cluster/vcenter/reset-and-install-by-vcenter-id/{id}")]
