@@ -159,12 +159,12 @@ public class ScriptFactory(Config config)
         return new PowerShellCommand($"{script} {args}");
     }
 
-    public ICommand GetInstallVcenterScript(string vcenterIp)
+    public ICommand GetInstallVcenterScript(string configFile)
     {
         string scriptName = "install-vcenter.sh";
 
         string script = Path.Combine(config.SCRIPTS_PATH, scriptName);
-        string args = $"'{vcenterIp}'";
+        string args = $"'{configFile}'";
 
         return new ShellCommand($"{script} {args}");
     }
@@ -178,5 +178,10 @@ public class ScriptFactory(Config config)
         string args = $"'{config.VM_VCENTER_USER}__{config.VM_VCENTER_PASSWORD}__{config.VM_VCENTER_IP}'";
 
         return new PowerShellCommand($"{script} {args}");
+    }
+
+    public ICommand GetRemoveJsonConfigScript(string pathFile)
+    {
+        return new ShellCommand($"rm -rf {pathFile}");
     }
 }
