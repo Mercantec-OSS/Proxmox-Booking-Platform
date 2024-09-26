@@ -299,6 +299,7 @@ public class ScriptService
     public async Task<string> ResetHostAsync(EsxiHost host, string afterTask = "")
     {
         string taskUuid = afterTask;
+        taskUuid = await ResetLicenseAsync(host.UserName, host.Password, host.Ip, afterTask);
 
         taskUuid = await StopAndRemoveVMSAsync(host.UserName, host.Password, host.Ip, taskUuid);
         taskUuid = await MaintanceEnableAsync(host.UserName, host.Password, host.Ip, taskUuid);
