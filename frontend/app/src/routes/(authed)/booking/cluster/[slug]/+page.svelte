@@ -53,8 +53,8 @@
           <ClusterActionsDropdown />
         </div>
       </div>
-      <div class="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
-        <div class="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
+      <div class="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-4 lg:gap-8">
+        <div class="grid auto-rows-max items-start gap-4 lg:col-span-3 lg:gap-8">
           <Card.Root>
             <Card.Header>
               <Card.Title>Details</Card.Title>
