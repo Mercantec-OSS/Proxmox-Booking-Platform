@@ -3,7 +3,7 @@
   import VMExtensionDialog from '$lib/components/authed/bookings/vm/vm-extension-dialog.svelte';
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
-  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, ChevronDown } from 'lucide-svelte';
+  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, ChevronDown, MonitorUp } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -43,7 +43,7 @@
     try {
       const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
 
-      toast.success(`Refreshed booking #${$selectedBookingStore.id}`);
+      toast.success(`Refreshed booking details`);
 
       selectedBookingStore.set(updatedBooking);
 
@@ -53,6 +53,7 @@
       });
     } catch (error) {
       toast.error(error.message);
+      if (error.message === 'Booking not found') goto('/');
     }
   }
 
@@ -110,7 +111,7 @@
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `vm_details_${$selectedBookingStore.id}.txt`;
+    link.download = `vm_${$selectedBookingStore.id}.txt`;
     link.click();
     window.URL.revokeObjectURL(url);
   }
@@ -136,29 +137,35 @@
     <DropdownMenu.Group>
       <DropdownMenu.Label>Booking actions</DropdownMenu.Label>
       <DropdownMenu.Separator />
-      {#if new Date() < new Date($selectedBookingStore.expiredAt)}
-        <DropdownMenu.Item on:click={handleFileDownload}>
-          <Download class="mr-2 size-4" />
-          <span>Download</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item on:click={refreshBooking}>
-          <RefreshCcw class="mr-2 size-4" />
-          <span>Refresh</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item
-          on:click={() => {
-            vmExtensionDialogOpen = true;
-          }}
-        >
-          <CalendarPlus class="mr-2 size-4" />
-          <span>Extend booking</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item on:click={handleResetPower}>
-          <Zap class="mr-2 size-4" />
-          <span>Reset power</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-      {/if}
+      <DropdownMenu.Item
+        on:click={() => {
+          window.open(`/api/web-console/${$selectedBookingStore.uuid}`, '_blank', 'noopener,noreferrer');
+        }}
+      >
+        <MonitorUp class="mr-2 size-4" />
+        <span>Web console</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handleFileDownload}>
+        <Download class="mr-2 size-4" />
+        <span>Download</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={refreshBooking}>
+        <RefreshCcw class="mr-2 size-4" />
+        <span>Refresh</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item
+        on:click={() => {
+          vmExtensionDialogOpen = true;
+        }}
+      >
+        <CalendarPlus class="mr-2 size-4" />
+        <span>Extend booking</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handleResetPower}>
+        <Zap class="mr-2 size-4" />
+        <span>Reset power</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Separator />
       <DropdownMenu.Item on:click={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
         <Trash2 class="mr-2 size-4" />
         <span>Delete</span>

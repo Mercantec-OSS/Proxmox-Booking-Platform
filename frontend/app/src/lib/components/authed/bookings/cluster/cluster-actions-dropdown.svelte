@@ -6,14 +6,9 @@
   import { clusterService } from '$lib/services/cluster-service';
   import { clusterListStore, selectedBookingStore } from '$lib/utils/store';
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
+  import { goto } from '$app/navigation';
 
   let open = false;
-
-  /* Types: "Booking", "vCenter", "ESXi" */
-  export let type;
-
-  /* vCenter id or esxi id */
-  export let id = null;
 
   /* Alert dialog */
   let alertDialogOpen = false;
@@ -47,20 +42,7 @@
     if (!userConfirmed) return;
 
     try {
-      await clusterService.bInstallVcenters(id);
-      toast.success(`vCenter instllation started`);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
-
-  /* vCenter action: install vCenter action */
-  async function vcenterInstallVcenter() {
-    const userConfirmed = await promptUser('Confirm vCenter Installation', 'You are about to install this vCenter. Please confirm to proceed.');
-    if (!userConfirmed) return;
-
-    try {
-      await clusterService.vInstallVcenter(id);
+      await clusterService.installVcenters($selectedBookingStore.id);
       toast.success(`vCenter instllation started`);
     } catch (error) {
       toast.error(error.message);
@@ -76,39 +58,7 @@
     if (!userConfirmed) return;
 
     try {
-      await clusterService.bResetHosts(id);
-      toast.success(`Reset hosts started`);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
-
-  /* vCenter action: reset hosts */
-  async function vcenterResetHosts() {
-    const userConfirmed = await promptUser(
-      'Confirm Host Reset in vCenter',
-      'You are about to reset all hosts in the vCenter. This will wipe the hosts machines, impacting all configurations and services currently running on them.'
-    );
-    if (!userConfirmed) return;
-
-    try {
-      await clusterService.vResetHosts(id);
-      toast.success(`Reset hosts started`);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
-
-  /* ESXi action: reset host */
-  async function esxiResetHost() {
-    const userConfirmed = await promptUser(
-      'Confirm Host Reset',
-      'You are about to reset the host. This will wipe the host machine, impacting all configurations and services currently running on it.'
-    );
-    if (!userConfirmed) return;
-
-    try {
-      await clusterService.eResetHost(id);
+      await clusterService.resetHosts($selectedBookingStore.id);
       toast.success(`Reset hosts started`);
     } catch (error) {
       toast.error(error.message);
@@ -124,37 +74,8 @@
     if (!userConfirmed) return;
 
     try {
-      await clusterService.bResetAndInstall(id);
+      await clusterService.resetAndInstall($selectedBookingStore.id);
       toast.success(`Reset and install started`);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
-
-  /* vCenter action: reset and install */
-  async function vcenterResetAndInstall() {
-    const userConfirmed = await promptUser(
-      'Confirm vCenter and Hosts Reset and Reinstallation',
-      'You are about to perform a reset followed by a reinstallation of both the vCenter and its hosts. Please confirm to proceed.'
-    );
-    if (!userConfirmed) return;
-
-    try {
-      await clusterService.vResetAndInstall(id);
-      toast.success(`Reset and install started`);
-    } catch (error) {
-      toast.error(error.message);
-    }
-  }
-
-  /* vCenter action: create windows vms */
-  async function vcenterCreateWindowsVms() {
-    const userConfirmed = await promptUser('Confirm Creation of Windows VMs', 'You are about to create Windows virtual machines. Please confirm to proceed.');
-    if (!userConfirmed) return;
-
-    try {
-      await clusterService.vCreateWindowsVms(id);
-      toast.success(`Create windows vms started`);
     } catch (error) {
       toast.error(error.message);
     }
@@ -165,7 +86,7 @@
     try {
       const updatedBooking = await clusterService.getClusterBookingById($selectedBookingStore.id);
 
-      toast.success(`Refreshed booking #${$selectedBookingStore.id}`);
+      toast.success(`Refreshed booking details`);
 
       selectedBookingStore.set(updatedBooking);
 
@@ -175,6 +96,7 @@
       });
     } catch (error) {
       toast.error(error.message);
+      if (error.message === 'Booking not found') goto('/');
     }
   }
 
@@ -225,7 +147,7 @@ ${esxiHosts}
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `cluster_booking_details_${booking.id}.txt`;
+    link.download = `cluster_${booking.id}.txt`;
     link.click();
     window.URL.revokeObjectURL(url);
   }
@@ -236,74 +158,40 @@ ${esxiHosts}
 
 <DropdownMenu.Root>
   <DropdownMenu.Trigger asChild let:builder>
-    {#if type === 'Booking'}
-      <Button variant="outline" size="sm" class="border-orange-500 text-orange-500" builders={[builder]}
-        >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
-      >
-    {:else if type === 'vCenter' || type === 'ESXi'}
-      <Button variant="outline" class="bg-primary-foreground" size="icon" builders={[builder]}><EllipsisVertical /></Button>
-    {/if}
+    <Button variant="outline" size="sm" class="border-orange-500 text-orange-500" builders={[builder]}
+      >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
+    >
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>
     <DropdownMenu.Group>
-      <DropdownMenu.Label>{type} actions</DropdownMenu.Label>
+      <DropdownMenu.Label>Booking actions</DropdownMenu.Label>
       <DropdownMenu.Separator />
-      {#if type === 'Booking'}
-        {#if new Date() < new Date($selectedBookingStore.expiredAt)}
-          <DropdownMenu.Item on:click={bookingInstallVcenters}>
-            <Hammer class="mr-2 size-4" />
-            <span>Install vCenters</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item on:click={bookingResetHosts}>
-            <Wrench class="mr-2 size-4" />
-            <span>Reset hosts</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item on:click={bookingResetAndInstall}>
-            <Cable class="mr-2 size-4" />
-            <span>Reset & install</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator />
-          <DropdownMenu.Item on:click={handleFileDownload}>
-            <Download class="mr-2 size-4" />
-            <span>Download</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Item on:click={refreshBooking}>
-            <RefreshCcw class="mr-2 size-4" />
-            <span>Refresh</span>
-          </DropdownMenu.Item>
-          <DropdownMenu.Separator />
-        {/if}
-        <DropdownMenu.Item on:click={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
-          <Trash2 class="mr-2 size-4" />
-          <span>Delete</span>
-        </DropdownMenu.Item>
-      {/if}
-
-      {#if type === 'vCenter'}
-        <DropdownMenu.Item on:click={vcenterInstallVcenter}>
-          <Hammer class="mr-2 size-4" />
-          <span>Install vCenter</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item on:click={vcenterResetHosts}>
-          <Wrench class="mr-2 size-4" />
-          <span>Reset hosts</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item on:click={vcenterResetAndInstall}>
-          <Cable class="mr-2 size-4" />
-          <span>Reset & install</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item on:click={vcenterCreateWindowsVms}>
-          <Server class="mr-2 size-4" />
-          <span>Create Windows vms</span>
-        </DropdownMenu.Item>
-      {/if}
-
-      {#if type === 'ESXi'}
-        <DropdownMenu.Item on:click={esxiResetHost}>
-          <Hammer class="mr-2 size-4" />
-          <span>Reset host</span>
-        </DropdownMenu.Item>
-      {/if}
+      <DropdownMenu.Item on:click={bookingInstallVcenters}>
+        <Hammer class="mr-2 size-4" />
+        <span>Install vCenters</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={bookingResetHosts}>
+        <Wrench class="mr-2 size-4" />
+        <span>Reset hosts</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={bookingResetAndInstall}>
+        <Cable class="mr-2 size-4" />
+        <span>Reset & install</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Separator />
+      <DropdownMenu.Item on:click={handleFileDownload}>
+        <Download class="mr-2 size-4" />
+        <span>Download</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={refreshBooking}>
+        <RefreshCcw class="mr-2 size-4" />
+        <span>Refresh</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Separator />
+      <DropdownMenu.Item on:click={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
+        <Trash2 class="mr-2 size-4" />
+        <span>Delete</span>
+      </DropdownMenu.Item>
     </DropdownMenu.Group>
   </DropdownMenu.Content>
 </DropdownMenu.Root>

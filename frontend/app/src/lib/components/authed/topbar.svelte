@@ -26,7 +26,7 @@
   }
 </script>
 
-<header class="sticky top-0 z-30 flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+<header class="sticky top-0 z-30 bg-background flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
   <Sheet.Root>
     <Sheet.Trigger asChild let:builder>
       <Button builders={[builder]} size="icon" variant="outline" class="sm:hidden">
