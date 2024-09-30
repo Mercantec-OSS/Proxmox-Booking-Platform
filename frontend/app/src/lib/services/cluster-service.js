@@ -84,6 +84,16 @@ export const clusterService = {
     return await clientApi.get(`cluster-booking/${id}`).json();
   },
 
+  async getClusterBookingByIdBackend(cookie, id) {
+    return await backendApi
+      .get(`cluster-booking/${id}`, {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
+  },
+
   async getClustersAvailableCount() {
     return await clientApi.get('vcenter/all/available').json();
   },

@@ -1,17 +1,20 @@
 <script>
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button/index.js';
-  import { Wrench, Hammer, Cable, Download, Trash2, Server, RefreshCcw, EllipsisVertical } from 'lucide-svelte';
+  import { Wrench, Hammer, Cable, Download, Trash2, Server, RefreshCcw, EllipsisVertical, ChevronDown } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
   import { clusterService } from '$lib/services/cluster-service';
   import { clusterListStore, selectedBookingStore } from '$lib/utils/store';
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
 
-  export let ClusterInfoDialogOpen;
+  let open = false;
+
   /* Types: "Booking", "vCenter", "ESXi" */
   export let type;
+
   /* vCenter id or esxi id */
   export let id = null;
+
   /* Alert dialog */
   let alertDialogOpen = false;
   let alertTitle = null;
@@ -186,7 +189,7 @@
     try {
       await clusterService.deleteClusterBooking($selectedBookingStore.id);
       clusterListStore.set(await clusterService.getClusterBookingsFrontend());
-      ClusterInfoDialogOpen = false;
+      goto('/');
       toast.success(`Deleted booking #${$selectedBookingStore.id}`);
     } catch (error) {
       toast.error(error.message);
@@ -234,7 +237,9 @@ ${esxiHosts}
 <DropdownMenu.Root>
   <DropdownMenu.Trigger asChild let:builder>
     {#if type === 'Booking'}
-      <Button variant="outline" class="bg-primary-foreground" builders={[builder]}>Actions</Button>
+      <Button variant="outline" size="sm" class="border-orange-500 text-orange-500" builders={[builder]}
+        >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
+      >
     {:else if type === 'vCenter' || type === 'ESXi'}
       <Button variant="outline" class="bg-primary-foreground" size="icon" builders={[builder]}><EllipsisVertical /></Button>
     {/if}

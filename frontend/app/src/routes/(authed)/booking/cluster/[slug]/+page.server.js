@@ -1,18 +1,18 @@
-import { vmService } from '$lib/services/vm-service';
+import { clusterService } from '$lib/services/cluster-service';
 
 export const load = async ({ parent, params, cookies }) => {
   const { userInfo } = await parent();
 
   let errorMessage;
-  let vmData = [];
+  let clusterData = [];
 
   /* Return error if id is not an int */
   if (!Number.isInteger(Number(params.slug))) {
     errorMessage = 'Invalid booking ID';
   } else {
     try {
-      // Fetch the virtual machine by id param
-      vmData = await vmService.getVMBookingByIdBackend(cookies.get('token'), params.slug);
+      // Fetch the cluster by id param
+      clusterData = await clusterService.getClusterBookingByIdBackend(cookies.get('token'), params.slug);
     } catch (error) {
       errorMessage = error.message;
     }
@@ -20,7 +20,7 @@ export const load = async ({ parent, params, cookies }) => {
 
   return {
     errorMessage,
-    vmData,
+    clusterData,
     userInfo
   };
 };

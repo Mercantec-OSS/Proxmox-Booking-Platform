@@ -118,9 +118,9 @@ export const vmService = {
     return await clientApi.put(`extention-request/accept-extention/${id}`).json();
   },
 
-  async getVmInfo(id) {
+  async getVmInfo(uuid) {
     return await clientApi
-      .get(`script/vm/get-ip/${id}`, {
+      .get(`script/vm/get-ip/${uuid}`, {
         retry: {
           limit: 3
         },
