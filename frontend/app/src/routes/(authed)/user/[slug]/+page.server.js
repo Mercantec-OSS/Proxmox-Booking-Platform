@@ -21,16 +21,25 @@ export const load = async ({ parent, params, cookies }) => {
 
   try {
     const token = cookies.get('token');
+    const userId = params.slug;
 
-    // First, fetch user data
-    userData = await userService.getUserByIdBackend(token, params.slug);
+    // Define the promises we'll always run
+    const fetchPromises = [userService.getUserByIdBackend(token, userId)];
 
-    // If user is teacher or administrator, fetch bookings concurrently
+    // If user is teacher or administrator, add booking fetches
     if (userInfo.role === 'Admin' || userInfo.role === 'Teacher') {
-      const [clusterResults, vmResults] = await Promise.all([clusterService.getClusterBookingsByUserBackend(token, userData.id), vmService.getVMBookingsByUserBackend(token, userData.id)]);
+      fetchPromises.push(clusterService.getClusterBookingsByUserBackend(token, userId), vmService.getVMBookingsByUserBackend(token, userId));
+    }
 
-      clusterData = clusterResults;
-      vmData = vmResults;
+    // Run all fetches concurrently
+    const results = await Promise.all(fetchPromises);
+
+    // Always assign user data (first result)
+    userData = results[0];
+
+    // Assign booking data if fetched
+    if (results.length > 1) {
+      [, clusterData, vmData] = results;
     }
   } catch (error) {
     errorMessage = error.message;

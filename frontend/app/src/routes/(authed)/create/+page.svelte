@@ -1,39 +1,31 @@
 <script>
-  import { userStore } from '$lib/utils/store';
   import { clusterService } from '$lib/services/cluster-service';
   import { vmService } from '$lib/services/vm-service';
+  import { userStore } from '$lib/utils/store';
+  import { goto } from '$app/navigation';
+  import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
+  import { ChevronLeft, ChevronDown, LoaderCircle, CalendarIcon } from 'lucide-svelte';
+  import { toast } from 'svelte-sonner';
+  import { cn } from '$lib/utils/utils.js';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card';
-  import * as Table from '$lib/components/ui/table';
   import * as Tabs from '$lib/components/ui/tabs';
-  import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import { ArrowUpRight, CirclePlus, ChevronLeft } from 'lucide-svelte';
-  import { tick } from 'svelte';
-  import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
-  import { toast } from 'svelte-sonner';
-  import { LoaderCircle, Ellipsis, CalendarIcon, Check, ChevronsUpDown } from 'lucide-svelte';
-  import { cn } from '$lib/utils/utils.js';
-  import { userService } from '$lib/services/user-service';
-  import { ScrollArea } from '$lib/components/ui/scroll-area/index.js';
   import { Calendar } from '$lib/components/ui/calendar';
   import * as Popover from '$lib/components/ui/popover';
   import * as Select from '$lib/components/ui/select/index.js';
   import { Textarea } from '$lib/components/ui/textarea/index.js';
-  import * as Drawer from '$lib/components/ui/drawer';
   import { Label } from '$lib/components/ui/label';
   import { Input } from '$lib/components/ui/input';
   import * as Command from '$lib/components/ui/command/index.js';
-  import { goto } from '$app/navigation';
 
   export let data;
+
   /* Update stores (global vars) to the data returned from the fetch requests in SSR */
   userStore.set(data.userInfo);
 
   let userAuthed = data.userInfo.role !== 'Student';
   let isLoading = false;
-  let clustersAvailable = '? clusters available';
-  let vmsAvailable = '? VMs available';
   let vmBookingInput = { type: null, ownerId: null, assignedId: null, message: null, expiringAt: null };
   let clusterBookingInput = { amountStudents: null, amountDays: null };
   $: clusterBookingInfo = {
@@ -46,10 +38,93 @@
   let vmCalendarDatePicked;
   $: vmCalendarDateFormated = new Date(vmCalendarDatePicked).toLocaleDateString(undefined, { dateStyle: 'long' });
   $: calendarDateFormated = new Date(calendarDatePicked).toLocaleDateString(undefined, { dateStyle: 'long' });
-  $: clusterBookingInput.amountDays = calendarDatePicked ? Math.ceil((new Date(calendarDatePicked) - new Date()) / (1000 * 60 * 60 * 24)) : null;
+
+  /* For select search components */
+  let selectedStudent = null;
+  let selectedTeacher = null;
+  let selectStudentOpen = false;
+  let selectTeacherOpen = false;
+
+  $: console.log(vmBookingInput);
+
+  // Assign student as booking owner on select
+  function handleStudentSelect(value) {
+    const [name, surname, id] = value.split(' ');
+    const parsedId = parseInt(id, 10);
+
+    if (parsedId === vmBookingInput.ownerId) {
+      selectedStudent = null;
+      vmBookingInput.ownerId = null;
+    } else {
+      vmBookingInput.ownerId = parsedId;
+      selectedStudent = `${name} ${surname}`;
+    }
+
+    selectStudentOpen = false;
+  }
+
+  // Assign teacher as the assigned teacher for the booking
+  function handleTeacherSelect(value) {
+    const [name, surname, id] = value.split(' ');
+    const parsedId = parseInt(id, 10);
+
+    if (parsedId === vmBookingInput.assignedId) {
+      selectedTeacher = null;
+      vmBookingInput.assignedId = null;
+    } else {
+      vmBookingInput.assignedId = parsedId;
+      selectedTeacher = `${name} ${surname}`;
+    }
+
+    selectTeacherOpen = false;
+  }
+
+  /* Create VM booking */
+  async function handleCreateVMBoooking() {
+    // Set booking owner to the creator if not set
+    if (!vmBookingInput.ownerId) {
+      vmBookingInput.ownerId = $userStore.id;
+    }
+
+    // Assign booking to the teacher who made it if not set
+    if (userAuthed && !vmBookingInput.assignedId) {
+      vmBookingInput.assignedId = $userStore.id;
+    }
+
+    // Validate submitted booking
+    if (!vmBookingInput.type) {
+      toast.error(`Please select a VM template`);
+      return;
+    } else if (!userAuthed && !vmBookingInput.assignedId) {
+      toast.error(`Please assign the booking to your teacher`);
+      return;
+    } else if (!vmCalendarDatePicked) {
+      toast.error(`Please select an expire date`);
+      return;
+    } else if (!vmBookingInput.message) {
+      toast.error(`Please add a comment describing the purpose of the booking`);
+      return;
+    }
+
+    try {
+      isLoading = true;
+
+      vmBookingInput.expiringAt = new Date(vmCalendarDatePicked).toISOString();
+      await vmService.createVMBooking(vmBookingInput);
+
+      toast.success(`VM booking created`);
+      goto('/');
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      isLoading = false;
+    }
+  }
 
   /* Create cluster booking */
   async function handleCreateClusterBoooking() {
+    clusterBookingInput.amountDays = Math.ceil((new Date(calendarDatePicked) - new Date()) / (1000 * 60 * 60 * 24));
+
     if (clusterBookingInput.amountDays < 1) {
       toast.error(`Please select an expire date`);
       return;
@@ -96,7 +171,139 @@
               </div>
               <!-- Virtual machine booking -->
               <Tabs.Content value="vm">
-                <div></div>
+                <form on:submit|preventDefault={handleCreateVMBoooking} class="grid items-center py-4 gap-4">
+                  <div class="grid gap-2">
+                    <div class="flex justify-between items-center">
+                      <Label for="studentCount">Virtual machine templates</Label>
+                      <div>
+                        <Badge class="w-auto">? VMs available</Badge>
+                      </div>
+                    </div>
+
+                    <!-- Select VM template component -->
+                    <Select.Root
+                      onSelectedChange={(value) => {
+                        vmBookingInput.type = value.value;
+                      }}
+                    >
+                      <Select.Trigger>
+                        <Select.Value placeholder="Select a template" />
+                      </Select.Trigger>
+                      <Select.Content>
+                        <Select.Group>
+                          {#each data.vmTemplates as vmTemplate}
+                            <Select.Item value={vmTemplate} label={vmTemplate}>{vmTemplate}</Select.Item>
+                          {/each}
+                        </Select.Group>
+                      </Select.Content>
+                      <Select.Input name="template" />
+                    </Select.Root>
+                  </div>
+
+                  <!-- Select student component -->
+                  {#if userAuthed}
+                    <div class="grid gap-2">
+                      <div class="flex justify-between items-center">
+                        <Label for="studentCount">Assign to student</Label>
+                      </div>
+                      <Popover.Root bind:open={selectStudentOpen}>
+                        <Popover.Trigger asChild let:builder>
+                          <Button builders={[builder]} variant="outline" class="justify-between px-3 {selectedStudent ?? 'text-muted-foreground'}">
+                            {selectedStudent ?? 'Select a student'}
+                            <ChevronDown class="h-4 w-4" />
+                          </Button>
+                        </Popover.Trigger>
+                        <Popover.Content class="p-0" align="end">
+                          <Command.Root>
+                            <Command.Input placeholder="Select a student..." />
+                            <Command.List>
+                              <Command.Empty>No students found.</Command.Empty>
+                              <Command.Group>
+                                {#each data.listOfUsers as user (user.id)}
+                                  {#if user.role === 'Student'}
+                                    <Command.Item value={`${user.name} ${user.surname} ${user.id}`} onSelect={handleStudentSelect} class="items-start px-4 py-2">
+                                      <p>{user.name} {user.surname}</p>
+                                    </Command.Item>
+                                  {/if}
+                                {/each}
+                              </Command.Group>
+                            </Command.List>
+                          </Command.Root>
+                        </Popover.Content>
+                      </Popover.Root>
+                    </div>
+                  {:else}
+                    <!-- Select teacher component -->
+                    <div class="grid gap-2">
+                      <div class="flex justify-between items-center">
+                        <Label for="teacherCount">Assign to teacher</Label>
+                      </div>
+                      <Popover.Root bind:open={selectTeacherOpen}>
+                        <Popover.Trigger asChild let:builder>
+                          <Button builders={[builder]} variant="outline" class="justify-between px-3 {selectedTeacher ?? 'text-muted-foreground'}">
+                            {selectedTeacher ?? 'Select a teacher'}
+                            <ChevronDown class="h-4 w-4" />
+                          </Button>
+                        </Popover.Trigger>
+                        <Popover.Content class="p-0" align="end">
+                          <Command.Root>
+                            <Command.Input placeholder="Select a teacher..." />
+                            <Command.List>
+                              <Command.Empty>No teachers found.</Command.Empty>
+                              <Command.Group>
+                                {#each data.listOfUsers as user (user.id)}
+                                  {#if user.role === 'Teacher'}
+                                    <Command.Item value={`${user.name} ${user.surname} ${user.id}`} onSelect={handleTeacherSelect} class="items-start px-4 py-2">
+                                      <p>{user.name} {user.surname}</p>
+                                    </Command.Item>
+                                  {/if}
+                                {/each}
+                              </Command.Group>
+                            </Command.List>
+                          </Command.Root>
+                        </Popover.Content>
+                      </Popover.Root>
+                    </div>
+                  {/if}
+
+                  <div class="grid gap-2">
+                    <Label for="dayCount">Booking expire date</Label>
+                    <!-- Date picker -->
+                    <Popover.Root>
+                      <Popover.Trigger asChild let:builder>
+                        <Button variant="outline" class={cn('justify-start text-left font-normal', !vmCalendarDatePicked && 'text-muted-foreground')} builders={[builder]}>
+                          <CalendarIcon class="mr-2 h-4 w-4" />
+                          {vmCalendarDatePicked ? vmCalendarDateFormated : 'Pick a date'}
+                        </Button>
+                      </Popover.Trigger>
+                      <Popover.Content class="w-auto p-0">
+                        <Calendar
+                          bind:value={vmCalendarDatePicked}
+                          initialFocus
+                          calendarLabel="Booking expire date"
+                          minValue={new CalendarDate(today(getLocalTimeZone()).year, today(getLocalTimeZone()).month, today(getLocalTimeZone()).day + 1)}
+                          maxValue={new CalendarDate(
+                            today(getLocalTimeZone()).year + (today(getLocalTimeZone()).month + 6 > 12 ? 1 : 0),
+                            (today(getLocalTimeZone()).month + 6) % 12 || 12,
+                            today(getLocalTimeZone()).day
+                          )}
+                        />
+                      </Popover.Content>
+                    </Popover.Root>
+                  </div>
+
+                  <div class="grid w-full gap-1.5">
+                    <Label for="comment">Comment about booking</Label>
+                    <Textarea class="max-h-20" placeholder="Describe the purpose of this VM booking" id="comment" bind:value={vmBookingInput.message} />
+                  </div>
+
+                  <Button type="submit" disabled={isLoading}
+                    >{#if isLoading}
+                      <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+                    {/if}
+                    Create booking</Button
+                  >
+                </form>
               </Tabs.Content>
               <!-- Cluster booking -->
               <Tabs.Content value="cluster">

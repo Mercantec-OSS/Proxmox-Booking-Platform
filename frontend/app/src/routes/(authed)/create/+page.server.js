@@ -2,35 +2,40 @@ import { clusterService } from '$lib/services/cluster-service';
 import { vmService } from '$lib/services/vm-service';
 import { userService } from '$lib/services/user-service';
 
-export async function load({ cookies }) {
+export async function load({ parent, cookies }) {
+  const { userInfo } = await parent();
   let vmTemplates = [];
-  let listofUsers = [];
-  let vmsAvailable;
-  let clustersAvailable;
+  let listOfUsers = [];
+  let clustersAvailable = '?';
 
   try {
-    // Run all fetches concurrently
     const token = cookies.get('token');
-    const [templateResults, vmsResults, usersResults, clustersResults] = await Promise.all([
-      vmService.getVMTemplatesBackend(token),
-      vmService.getVMsAvailableCountBackend(token),
-      userService.getAllUsersBackend(token),
-      clusterService.getClustersAvailableCountBackend(token)
-    ]);
+
+    // Define the promises for vm templates and list of user fetches
+    const fetchPromises = [vmService.getVMTemplatesBackend(token), userService.getAllUsersBackend(token)];
+
+    // Only fetch clusters available if user is Admin or Teacher
+    if (userInfo.role === 'Admin' || userInfo.role === 'Teacher') {
+      fetchPromises.push(clusterService.getClustersAvailableCountBackend(token));
+    }
+
+    // Run all fetches concurrently
+    const results = await Promise.all(fetchPromises);
 
     // Assign results
-    vmTemplates = templateResults;
-    vmsAvailable = vmsResults.length;
-    listofUsers = usersResults;
-    clustersAvailable = clustersResults.length;
+    [vmTemplates, listOfUsers] = results;
+
+    // Assign clusters result if it was fetched
+    if (results.length > 2) {
+      clustersAvailable = results[2].length;
+    }
   } catch (error) {
     console.error(error);
   }
 
   return {
     vmTemplates,
-    vmsAvailable,
     clustersAvailable,
-    listofUsers
+    listOfUsers
   };
 }

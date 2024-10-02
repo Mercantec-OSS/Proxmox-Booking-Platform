@@ -12,9 +12,11 @@
   import * as Avatar from '$lib/components/ui/avatar/index.js';
   import { Textarea } from '$lib/components/ui/textarea';
   import { Skeleton } from '$lib/components/ui/skeleton';
-  import { ChevronLeft, ArrowRight, Trash, Check } from 'lucide-svelte';
+  import { ChevronLeft, ArrowRight, Trash, Check, LoaderCircle } from 'lucide-svelte';
 
   export let data;
+  let loadingDelete = false;
+  let loadingAccept = false;
   let creds = { ip: '', username: '', password: '' };
   $: selectedBookingStore.set(data.vmData);
   $: userAuthed = data.userInfo.role === 'Admin' || data.userInfo.role === 'Teacher';
@@ -96,15 +98,23 @@
         <div class="flex items-center gap-2 md:ml-auto">
           <!-- Buttons for teacher/admin to accept or delete booking -->
           {#if !$selectedBookingStore.isAccepted}
-            <Button on:click={handleDeleteBooking} variant="outline" class="border-destructive text-destructive hover:bg-destructive/90 hover:text-white" size="sm">
-              <Trash class="mr-2 h-4 w-4" />
+            <Button on:click={handleDeleteBooking} disabled={loadingDelete} variant="outline" class="border-destructive text-destructive hover:bg-destructive/90 hover:text-white" size="sm">
+              {#if loadingDelete}
+                <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+              {:else}
+                <Trash class="mr-2 h-4 w-4" />
+              {/if}
               Delete
             </Button>
           {/if}
 
           {#if !$selectedBookingStore.isAccepted && userAuthed}
-            <Button on:click={handleAcceptBooking} variant="outline" class="border-green-600 text-green-600 hover:bg-green-600/90 hover:text-white" size="sm">
-              <Check class="mr-2 h-4 w-4" />
+            <Button on:click={handleAcceptBooking} disabled={loadingAccept} variant="outline" class="border-green-600 text-green-600 hover:bg-green-600/90 hover:text-white" size="sm">
+              {#if loadingAccept}
+                <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+              {:else}
+                <Check class="mr-2 h-4 w-4" />
+              {/if}
               Accept
             </Button>
           {/if}
