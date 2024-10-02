@@ -4,28 +4,36 @@ import { vmService } from '$lib/services/vm-service';
 
 export const load = async ({ parent, params, cookies }) => {
   const { userInfo } = await parent();
-
   let userData;
   let errorMessage;
   let clusterData = [];
   let vmData = [];
 
-  /* Return error if id is not an int */
+  /* Return early if id is not an int */
   if (!Number.isInteger(Number(params.slug))) {
-    errorMessage = 'Invalid user ID';
-  } else {
-    try {
-      /* Fetch user data based on id */
-      userData = await userService.getUserById(cookies.get('token'), params.slug);
+    return {
+      userData,
+      errorMessage: 'Invalid user ID',
+      clusterData,
+      vmData
+    };
+  }
 
-      // Fetch bookings if user is teacher or administrator
-      if (userInfo.role === 'Admin' || userInfo.role === 'Teacher') {
-        clusterData = await clusterService.getClusterBookingsByUserBackend(cookies.get('token'), userData.id);
-        vmData = await vmService.getVMBookingsByUserBackend(cookies.get('token'), userData.id);
-      }
-    } catch (error) {
-      errorMessage = error.message;
+  try {
+    const token = cookies.get('token');
+
+    // First, fetch user data
+    userData = await userService.getUserByIdBackend(token, params.slug);
+
+    // If user is teacher or administrator, fetch bookings concurrently
+    if (userInfo.role === 'Admin' || userInfo.role === 'Teacher') {
+      const [clusterResults, vmResults] = await Promise.all([clusterService.getClusterBookingsByUserBackend(token, userData.id), vmService.getVMBookingsByUserBackend(token, userData.id)]);
+
+      clusterData = clusterResults;
+      vmData = vmResults;
     }
+  } catch (error) {
+    errorMessage = error.message;
   }
 
   return {

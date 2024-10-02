@@ -110,7 +110,7 @@
 
     try {
       await clusterService.deleteClusterBooking($selectedBookingStore.id);
-      clusterListStore.set(await clusterService.getClusterBookingsFrontend());
+      clusterListStore.set(await clusterService.getClusterBookings());
       goto('/');
       toast.success(`Deleted booking #${$selectedBookingStore.id}`);
     } catch (error) {

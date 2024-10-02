@@ -62,7 +62,7 @@ export const vmService = {
       .json();
   },
 
-  async getVMBookingsFrontend() {
+  async getVMBookings() {
     return await clientApi.get('vm-booking/all').json();
   },
 
@@ -76,7 +76,7 @@ export const vmService = {
       .json();
   },
 
-  async getVMBookingsByUserFrontend(id) {
+  async getVMBookingsByUser(id) {
     return await backendApi.get(`vm-booking/owner/${id}`).json();
   },
 
@@ -98,12 +98,32 @@ export const vmService = {
     return await clientApi.get('vcenter/all/available').json();
   },
 
+  async getVMsAvailableCountBackend(cookie) {
+    return await backendApi
+      .get('vcenter/all/available', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
+  },
+
   async deleteVMBooking(id) {
     return await clientApi.delete(`vm-booking/delete/${id}`).text();
   },
 
   async getVMTemplates() {
     return await clientApi.get('script/vm/templates').json();
+  },
+
+  async getVMTemplatesBackend(cookie) {
+    return await backendApi
+      .get('script/vm/templates', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
   },
 
   async acceptVMBooking(id) {

@@ -48,7 +48,7 @@ const backendApi = ky.create({
 });
 
 export const userService = {
-  async getUserById(cookie, id) {
+  async getUserByIdBackend(cookie, id) {
     return await backendApi
       .get(`users/${id}`, {
         headers: {
@@ -60,6 +60,16 @@ export const userService = {
 
   async getAllUsers() {
     return await clientApi.get('users/all').json();
+  },
+
+  async getAllUsersBackend(cookie) {
+    return await backendApi
+      .get('users/all', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
   },
 
   async updaterole(user) {

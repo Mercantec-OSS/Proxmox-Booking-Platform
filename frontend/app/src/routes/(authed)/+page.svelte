@@ -17,9 +17,9 @@
 
   async function fetchBookings() {
     if (userAuthed) {
-      clusterListStore.set(await clusterService.getClusterBookingsFrontend());
+      clusterListStore.set(await clusterService.getClusterBookings());
     }
-    vmListStore.set(await vmService.getVMBookingsFrontend());
+    vmListStore.set(await vmService.getVMBookings());
   }
 
   /* Make an interval that refreshes all bookings every 10 seconds */

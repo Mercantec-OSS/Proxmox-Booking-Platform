@@ -52,7 +52,7 @@ export const clusterService = {
     return await clientApi.post('cluster-booking/create', { json: bookingDetails }).text();
   },
 
-  async getClusterBookingsFrontend() {
+  async getClusterBookings() {
     return await clientApi.get('cluster-booking/all').json();
   },
 
@@ -76,7 +76,7 @@ export const clusterService = {
       .json();
   },
 
-  async getClusterBookingsByUserFrontend(id) {
+  async getClusterBookingsByUser(id) {
     return await backendApi.get(`cluster-booking/owner/${id}`).json();
   },
 
@@ -96,6 +96,16 @@ export const clusterService = {
 
   async getClustersAvailableCount() {
     return await clientApi.get('vcenter/all/available').json();
+  },
+
+  async getClustersAvailableCountBackend(cookie) {
+    return await backendApi
+      .get('vcenter/all/available', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
   },
 
   async deleteClusterBooking(id) {

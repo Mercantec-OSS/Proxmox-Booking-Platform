@@ -67,7 +67,7 @@
 
     try {
       await vmService.deleteVMBooking($selectedBookingStore.id);
-      vmListStore.set(await vmService.getVMBookingsFrontend());
+      vmListStore.set(await vmService.getVMBookings());
       goto('/');
       toast.success(`Deleted booking #${$selectedBookingStore.id}`);
     } catch (error) {

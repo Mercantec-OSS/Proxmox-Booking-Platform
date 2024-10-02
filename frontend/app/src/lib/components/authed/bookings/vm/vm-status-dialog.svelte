@@ -46,7 +46,7 @@
     loadingDelete = true;
     try {
       await vmService.deleteVMBooking(id);
-      vmListStore.set(await vmService.getVMBookingsFrontend());
+      vmListStore.set(await vmService.getVMBookings());
 
       toast.success(`Booking deleted`);
     } catch (error) {
