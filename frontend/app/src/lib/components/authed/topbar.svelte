@@ -81,6 +81,10 @@
         <Breadcrumb.Item>
           <Breadcrumb.Page>Booking Details</Breadcrumb.Page>
         </Breadcrumb.Item>
+      {:else if $page.url.pathname.includes('create')}
+        <Breadcrumb.Item>
+          <Breadcrumb.Page>Create Booking</Breadcrumb.Page>
+        </Breadcrumb.Item>
       {/if}
     </Breadcrumb.List>
   </Breadcrumb.Root>

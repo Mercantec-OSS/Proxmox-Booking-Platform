@@ -158,7 +158,7 @@ ${esxiHosts}
 
 <DropdownMenu.Root>
   <DropdownMenu.Trigger asChild let:builder>
-    <Button variant="outline" size="sm" class="border-orange-500 text-orange-500" builders={[builder]}
+    <Button variant="outline" size="sm" class="border-orange-500 text-orange-500 hover:text-orange-500" builders={[builder]}
       >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
     >
   </DropdownMenu.Trigger>

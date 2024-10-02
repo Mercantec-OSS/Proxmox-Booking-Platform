@@ -35,7 +35,7 @@
     <div class="flex flex-col items-center gap-1 text-center">
       <h3 class="text-2xl font-bold tracking-tight">You have no server bookings</h3>
       <p class="text-muted-foreground text-sm">Get started by creating a new booking using the button below.</p>
-      <Button class="mt-4">Create Booking <CirclePlus class="h-4 w-4 ml-1" /></Button>
+      <Button href="/create" class="mt-4">Create Booking <CirclePlus class="h-4 w-4 ml-1" /></Button>
     </div>
   </div>
 {:else}
@@ -51,7 +51,7 @@
             <Tabs.Trigger value="vms">Virtual machines</Tabs.Trigger>
             <Tabs.Trigger value="clusters">Clusters</Tabs.Trigger>
           </Tabs.List>
-          <Button variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
+          <Button href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
         </div>
         <Tabs.Content value="vms">
           <!-- Virtual machine booking table  -->

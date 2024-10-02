@@ -129,7 +129,7 @@
 
 <DropdownMenu.Root bind:open>
   <DropdownMenu.Trigger asChild let:builder>
-    <Button variant="outline" size="sm" class="border-indigo-500 text-indigo-500" builders={[builder]}
+    <Button variant="outline" size="sm" class="border-indigo-500 text-indigo-500 hover:text-indigo-500" builders={[builder]}
       >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
     >
   </DropdownMenu.Trigger>
@@ -145,14 +145,11 @@
         <MonitorUp class="mr-2 size-4" />
         <span>Web console</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={handleFileDownload}>
-        <Download class="mr-2 size-4" />
-        <span>Download</span>
+      <DropdownMenu.Item on:click={handleResetPower}>
+        <Zap class="mr-2 size-4" />
+        <span>Reset power</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={refreshBooking}>
-        <RefreshCcw class="mr-2 size-4" />
-        <span>Refresh</span>
-      </DropdownMenu.Item>
+      <DropdownMenu.Separator />
       <DropdownMenu.Item
         on:click={() => {
           vmExtensionDialogOpen = true;
@@ -161,9 +158,13 @@
         <CalendarPlus class="mr-2 size-4" />
         <span>Extend booking</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={handleResetPower}>
-        <Zap class="mr-2 size-4" />
-        <span>Reset power</span>
+      <DropdownMenu.Item on:click={handleFileDownload}>
+        <Download class="mr-2 size-4" />
+        <span>Download</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={refreshBooking}>
+        <RefreshCcw class="mr-2 size-4" />
+        <span>Refresh</span>
       </DropdownMenu.Item>
       <DropdownMenu.Separator />
       <DropdownMenu.Item on:click={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
