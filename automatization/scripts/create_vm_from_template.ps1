@@ -28,8 +28,13 @@ $vm = New-VM -Name $vm_name -Template $vm_template -ResourcePool $ClusterObj -Da
 # Start the VM
 Start-VM -VM $vm
 
+if ($osType -match "live") {
+    Write-Host "VM is a live VM. Exiting."
+    exit
+}
+
 # Wait for VMware Tools to start
-$maxIterations = 30
+$maxIterations = 480
 $delaySeconds = 15
 for ($i = 1; $i -le $maxIterations; $i++) {
     $vm = Get-VM | Where-Object { $_.ExtensionData.Config.Name -eq $vm_name }
