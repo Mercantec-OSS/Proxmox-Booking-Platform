@@ -86,4 +86,17 @@ public class VmBookingService(Context context)
         _ = _dbService.VmBookings.Remove(booking);
         _ = await _dbService.SaveChangesAsync();
     }
+
+    public async Task<List<VmBooking>> GetExpiredAsync()
+    {
+        return await _dbService.VmBookings
+            .Where(b => b.ExpiredAt < DateTime.UtcNow)
+            .Include(b => b.Owner)
+            .Include(b => b.Assigned)
+            .Include(b => b.Extentions)
+            .ThenInclude(e => e.Owner)
+            .Include(b => b.Extentions)
+            .ThenInclude(e => e.Assigned)
+            .ToListAsync();
+    }
 }

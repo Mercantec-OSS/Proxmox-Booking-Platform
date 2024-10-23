@@ -1,20 +1,16 @@
 ﻿[ApiController]
 [Route("cluster-booking")]
-public class ClusterBookingController(Context context, ScriptService scriptService, ActivityService activityService, Config config, UserSession session) : ControllerBase
+public class ClusterBookingController(Context context, ScriptService scriptService, Config config, UserSession session, VCenterService vCenterService) : ControllerBase
 {
     private readonly ClusterBookingService _bookingService = new(context);
-    private readonly VCenterService _vcenterService = new(context);
+    private readonly VCenterService _vcenterService = vCenterService;
     private readonly EsxiHostService _esxiHostService = new(context);
-    private readonly ActivityService _activityService = activityService;
     private readonly EmailService _emailService = new(config);
 
     [HttpPost("create")]
     [ProducesResponseType(201)]
     public async Task<ActionResult> Create(ClusterBookingCreateDto bookingDTO)
     {
-        const string DATACENTER_NAME = "Datacenter";
-        const string CLUSTER_NAME = "Cluster";
-
         session.GetIfRoles
         (
             Models.User.UserRoles.Admin,
@@ -75,12 +71,7 @@ public class ClusterBookingController(Context context, ScriptService scriptServi
         foreach (VCenter vcenter in selectedVcenters)
             selectedHosts.AddRange(await _esxiHostService.GetByVcenterAsync(vcenter.Id));
 
-        await scriptService.ResetAndInstallVcenterAsync
-        (
-            selectedVcenters,
-            DATACENTER_NAME,
-            CLUSTER_NAME
-        );
+        await scriptService.ResetAndInstallVcenterAsync(selectedVcenters);
 
         _emailService.SendClusterBookingCreate(booking);
 

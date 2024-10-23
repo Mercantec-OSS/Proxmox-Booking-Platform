@@ -1,6 +1,14 @@
 #!/usr/bin/bash
-PROJECT_PATH=$(pwd)
+user=$(sudo whoami)
+if [ $user != "root" ]; then
+    echo "You need for root permissions"
+    exit 1
+fi
 
 git pull
-docker compose down
-docker compose up -d --build
+
+sudo rm -rf ./automatization/build/*
+sudo rm -rf ./backend/build/*
+sudo rm -rf ./frontend/build/*
+
+docker compose restart

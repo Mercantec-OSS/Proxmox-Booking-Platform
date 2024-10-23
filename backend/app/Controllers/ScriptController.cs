@@ -9,9 +9,6 @@ public class ScriptController(
     EsxiHostService esxiHostService
     ) : ControllerBase
 {
-    private const string DATACENTER_NAME = "Datacenter";
-    private const string CLUSTER_NAME = "Cluster";
-
     [HttpGet("cluster/host/reset-by-booking-id/{id}")]
     public async Task<ActionResult> ResetHosts(int id)
     {
@@ -47,7 +44,7 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
-        return Ok(await scriptService.CreateClusterBooking(booking.VCenters, DATACENTER_NAME, CLUSTER_NAME));
+        return Ok(await scriptService.CreateClusterBooking(booking.VCenters));
     }
 
     [HttpGet("cluster/vcenter/reset-and-install-by-booking-id/{id}")]
@@ -66,7 +63,7 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
-        return Ok(await scriptService.ResetAndInstallVcenterAsync(booking.VCenters, DATACENTER_NAME, CLUSTER_NAME));
+        return Ok(await scriptService.ResetAndInstallVcenterAsync(booking.VCenters));
     }
 
     [HttpGet("cluster/vcenter/install-by-vcenter-id/{id}")]
@@ -85,7 +82,7 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetVCenterNotFound());
         }
 
-        return Ok(await scriptService.InstallVCenterAsync(vcenter.Ip));
+        return Ok(await scriptService.InstallVCenterAsync(vcenter.JsonConfig));
     }
 
     [HttpGet("cluster/vcenter/reset-and-install-by-vcenter-id/{id}")]
@@ -105,7 +102,7 @@ public class ScriptController(
         }
 
         List<VCenter> vcenters = new List<VCenter> { vcenter };
-        return Ok(await scriptService.ResetAndInstallVcenterAsync(vcenters, DATACENTER_NAME, CLUSTER_NAME));
+        return Ok(await scriptService.ResetAndInstallVcenterAsync(vcenters));
     }
 
     [HttpGet("cluster/host/reset-by-id/{id}")]
@@ -170,5 +167,11 @@ public class ScriptController(
     {
         session.IsAuthenticated();
         return Ok(await scriptService.GetTemplatesAsync());
+    }
+
+    [HttpGet("vm/vcenter-info")]
+    public async Task<ActionResult> GetVcenterInfo()
+    {
+        return Ok(await scriptService.GetVcenterInfoAsync());
     }
 }

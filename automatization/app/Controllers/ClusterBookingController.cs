@@ -18,9 +18,10 @@ public class ClusterBookingController(CLusterBookingService clusterBookingServic
         [FromQuery] string hostUsername,
         [FromQuery] string hostPassword,
         [FromQuery] string hostIp,
+        [FromQuery] string datastoreName,
         [FromQuery] string afterThan = "")
     {
-        string taskUuid = clusterBookingService.CreateBackup(hostIp, hostUsername, hostPassword, afterThan);
+        string taskUuid = clusterBookingService.CreateBackup(hostIp, hostUsername, hostPassword, datastoreName, afterThan);
         return Ok(taskUuid);
     }
 
@@ -144,10 +145,10 @@ public class ClusterBookingController(CLusterBookingService clusterBookingServic
 
     [HttpPost("install-vcenter")]
     public IActionResult InstallVCenter(
-    [FromQuery] string vcenter_ip,
+    [FromBody] string base64JsonConfig,
     [FromQuery] string afterThan = "")
     {
-        string taskUuid = clusterBookingService.InstallVCenter(vcenter_ip, afterThan);
+        string taskUuid = clusterBookingService.InstallVCenter(base64JsonConfig, afterThan);
         return Ok(taskUuid);
     }
 }

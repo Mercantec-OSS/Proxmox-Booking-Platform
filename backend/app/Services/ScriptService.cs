@@ -99,6 +99,16 @@ public class ScriptService
         return data;
     }
 
+    public async Task<VmConnectionUriDto?> GetVmConnectionUriAsync(string vmName)
+    {
+        string url = $"vm-booking/connection-uri/{vmName}";
+
+        string responseText = await GetAsync($"{url}");
+        var data = JsonSerializer.Deserialize<VmConnectionUriDto>(responseText);
+
+        return data;
+    }
+
     public async Task<string> ResetPowerVmAsync(string vmName)
     {
         string url = $"vm-booking/reset-power/{vmName}";
@@ -109,6 +119,14 @@ public class ScriptService
     {
         string response = await GetAsync("vm-booking/get-templates");
         return JsonSerializer.Deserialize<List<string>>(response) ?? new();
+    }
+
+    public async Task<VCenterInfoDTO> GetVcenterInfoAsync()
+    {
+        string response = await GetAsync("vm-booking/vcenter-info");
+        VCenterInfoDTO data = JsonSerializer.Deserialize<VCenterInfoDTO>(response) ?? new();
+
+        return data;
     }
 
     // Cluster operations
@@ -125,7 +143,7 @@ public class ScriptService
         return await GetAsync($"{url}?{query}");
     }
 
-    public async Task<string> CreateBackupAsync(string hostUsername, string hostPassword, string hostIp, string afterTask = "")
+    public async Task<string> CreateBackupAsync(string hostUsername, string hostPassword, string hostIp, string datastoreName, string afterTask = "")
     {
         string url = $"cluster-booking/create-backup";
 
@@ -134,6 +152,7 @@ public class ScriptService
         query["hostPassword"] = hostPassword;
         query["hostIp"] = hostIp;
         query["readOutput"] = "true";
+        query["datastoreName"] = datastoreName;
         query["afterThan"] = afterTask;
 
         return await PostAsync($"{url}?{query}", new StringContent(""));
@@ -178,15 +197,15 @@ public class ScriptService
         return await PostAsync($"{url}?{query}", new StringContent(""));
     }
 
-    public async Task<string> InstallVCenterAsync(string vcenterIp, string afterTask = "")
+    public async Task<string> InstallVCenterAsync(string jsonConfig, string afterTask = "")
     {
         string url = $"cluster-booking/install-vcenter";
+        string base64Config = Convert.ToBase64String(Encoding.UTF8.GetBytes(jsonConfig));
 
         var query = HttpUtility.ParseQueryString("");
-        query["vcenter_ip"] = vcenterIp;
         query["afterThan"] = afterTask;
 
-        return await PostAsync($"{url}?{query}", new StringContent(""));
+        return await PostAsync($"{url}?{query}", new StringContent($"\"{base64Config}\"", Encoding.UTF8, "application/json"));
     }
 
     public async Task<string> CreateDatacenterAsync(string vcenterUsername, string vcenterPassword, string vcenterIp, string datacenterName, string afterTask = "")
@@ -259,18 +278,18 @@ public class ScriptService
         return await PostAsync($"{url}?{query}", new StringContent(""));
     }
 
-    public async Task<string> CreateClusterBooking(List<VCenter> vcenters, string datacenterName, string clusterName, string afterTask = "")
+    public async Task<string> CreateClusterBooking(List<VCenter> vcenters, string afterTask = "")
     {
         string lastTaskUuid = afterTask;
         foreach (var vcenter in vcenters)
         {
-            var taskUuid = await InstallVCenterAsync(vcenter.Ip, lastTaskUuid);
-            taskUuid = await CreateDatacenterAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, datacenterName, taskUuid);
-            taskUuid = await CreateClusterAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, datacenterName, clusterName, taskUuid);
+            var taskUuid = await InstallVCenterAsync(vcenter.JsonConfig, lastTaskUuid);
+            taskUuid = await CreateDatacenterAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, vcenter.DatacenterName, taskUuid);
+            taskUuid = await CreateClusterAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, vcenter.DatacenterName, vcenter.ClusterName, taskUuid);
 
             foreach (var host in vcenter.EsxiHosts)
             {
-                lastTaskUuid = await CreateHostAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, clusterName, host.UserName, host.Password, host.Ip, taskUuid);
+                lastTaskUuid = await CreateHostAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, vcenter.ClusterName, host.UserName, host.Password, host.Ip, taskUuid);
             }
         }
 
@@ -280,6 +299,7 @@ public class ScriptService
     public async Task<string> ResetHostAsync(EsxiHost host, string afterTask = "")
     {
         string taskUuid = afterTask;
+        taskUuid = await ResetLicenseAsync(host.UserName, host.Password, host.Ip, afterTask);
 
         taskUuid = await StopAndRemoveVMSAsync(host.UserName, host.Password, host.Ip, taskUuid);
         taskUuid = await MaintanceEnableAsync(host.UserName, host.Password, host.Ip, taskUuid);
@@ -299,7 +319,7 @@ public class ScriptService
         return taskUuid;
     }
 
-    public async Task<string> ResetAndInstallVcenterAsync(List<VCenter> vcenters, string datacenterName, string clusterName)
+    public async Task<string> ResetAndInstallVcenterAsync(List<VCenter> vcenters)
     {
         // reset task
         string lastTaskUuid = await ResetClusterBookingAsync(vcenters);
@@ -308,7 +328,7 @@ public class ScriptService
         lastTaskUuid = await RunShellAsync("sleep 600", lastTaskUuid);
 
         // install
-        lastTaskUuid = await CreateClusterBooking(vcenters, datacenterName, clusterName, lastTaskUuid);
+        lastTaskUuid = await CreateClusterBooking(vcenters, lastTaskUuid);
 
         return lastTaskUuid;
     }

@@ -1,11 +1,10 @@
 ﻿[ApiController]
 [Route("extention-request")]
-public class VmBookingExtentionController(Context context, ActivityService activityService, UserSession session) : ControllerBase
+public class VmBookingExtentionController(Context context, UserSession session) : ControllerBase
 {
     private readonly VmBookingExtentionService _vmBookingExtentionService = new(context);
     private readonly UserService _userService = new(context);
     private readonly VmBookingService _vmBookingService = new(context);
-    private readonly ActivityService _activityService = activityService;
 
     [HttpPost("create")]
     [ProducesResponseType(201)]
@@ -201,7 +200,6 @@ public class VmBookingExtentionController(Context context, ActivityService activ
         booking.IsAccepted = updateDTO.IsAccepted;
 
         await _vmBookingExtentionService.UpdateAsync(booking);
-        _activityService.CreateActivity(booking.OwnerId, booking.Id, Activity.ActivityEvent.Update, Activity.ActivityType.BookingRequest);
 
         return NoContent();
     }
@@ -225,7 +223,6 @@ public class VmBookingExtentionController(Context context, ActivityService activ
         }
 
         await _vmBookingExtentionService.DeleteAsync(booking);
-        _activityService.CreateActivity(booking.OwnerId, booking.Id, Activity.ActivityEvent.Delete, Activity.ActivityType.BookingRequest);
 
         return NoContent();
     }

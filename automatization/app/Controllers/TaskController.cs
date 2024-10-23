@@ -5,7 +5,7 @@
 public class TaskController : ControllerBase
 {
     [HttpPost("create")]
-    public IActionResult Create([FromBody] CommandModel command)
+    public IActionResult Create([FromBody] CommandModelDTO command)
     {
         if (command == null)
         {
@@ -20,7 +20,7 @@ public class TaskController : ControllerBase
         return Ok(task.Uuid);
     }
 
-    private ICommand GetCommandInstance(CommandModel command)
+    private ICommand GetCommandInstance(CommandModelDTO command)
     {
         return command.Type.ToLower() switch
         {

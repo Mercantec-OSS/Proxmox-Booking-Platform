@@ -6,9 +6,7 @@ if [ $# -ne 1 ]
 then
     echo "Incorrect number of arguments."
     echo "Usage:"
-    echo "./create_backup.sh '<username>__<password>__<esxi_host>'"
-    echo "Example:"
-    echo "./create_backup.sh 'root__password__10.1.60.120'"
+    echo "./reset_license.sh '<username>__<password>__<esxi_host>'"
     exit 1
 fi
 

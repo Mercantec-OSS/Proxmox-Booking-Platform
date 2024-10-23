@@ -1,11 +1,10 @@
 [ApiController]
 [Route("esxi-host")]
-public class EsxiController(Context context, ActivityService activityService, UserSession session) : ControllerBase
+public class EsxiController(Context context, UserSession session, VCenterService vCenterService) : ControllerBase
 {
-    private readonly VCenterService _vCenterService = new(context);
+    private readonly VCenterService _vCenterService = vCenterService;
     private readonly EsxiHostService _esxiHostService = new(context);
     private readonly ClusterBookingService _bookingService = new(context);
-    private readonly ActivityService _activityService = activityService;
 
     [HttpGet("{id}")]
     public async Task<ActionResult<EsxiHostGetDto>> Get(int id)

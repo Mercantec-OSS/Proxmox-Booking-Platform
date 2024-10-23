@@ -1,6 +1,6 @@
-﻿namespace VMwareBookingSystem.Models;
+﻿namespace DTOs;
 
-public class CommandModel
+public class CommandModelDTO
 {
     public string Type { get; set; } = "";
     public string Command { get; set; } = "";

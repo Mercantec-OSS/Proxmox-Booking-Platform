@@ -16,6 +16,7 @@ public class Config
     public string SMTP_PORT => ParseSMTPConnectionString()[1];
     public string SMTP_USER => ParseSMTPConnectionString()[2];
     public string SMTP_PASSWORD => ParseSMTPConnectionString()[3];
+    public string EMAIL_TEMPLATES_PATH => ParseVariable("EMAIL_TEMPLATES_PATH");
 
     public string VM_DEFAULT_USER => ParseVariable("VM_DEFAULT_USER");
     public string VM_ROOT_PASSWORD => ParseVariable("VM_ROOT_PASSWORD");

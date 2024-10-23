@@ -14,7 +14,8 @@
         "DEVOPS_URL": "http://10.132.128.20:6004",
         
         "AD_CONNECTION_STRING": "addr__domain__username__password",
-        "SMTP_CONNECTION_STRING": "addr__port__username__password"
+        "SMTP_CONNECTION_STRING": "addr__port__username__password",
+        "EMAIL_TEMPLATES_PATH": "src/emails/",
 
         "VM_ROOT_PASSWORD": "Password",
         "VM_DEFAULT_USER":"User"

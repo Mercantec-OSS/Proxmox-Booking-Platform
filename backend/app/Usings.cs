@@ -3,7 +3,6 @@ global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Models;
 global using Services;
-global using AutoServices;
 global using System.ComponentModel.DataAnnotations.Schema;
 global using System.Net;
 global using MailKit.Net.Smtp;

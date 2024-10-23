@@ -17,9 +17,9 @@ public class CLusterBookingService(ScriptFactory scriptFactory)
         return CreateTask(cmd, afterThan);
     }
 
-    public string CreateBackup(string hostIp, string hostUsername, string hostPassword, string afterThan)
+    public string CreateBackup(string hostIp, string hostUsername, string hostPassword, string datastoreName, string afterThan)
     {
-        ICommand command = scriptFactory.GetCreateBackupScript(hostIp, hostUsername, hostPassword);
+        ICommand command = scriptFactory.GetCreateBackupScript(hostIp, hostUsername, hostPassword, datastoreName);
         return CreateTask(command, afterThan);
     }
 
@@ -83,9 +83,20 @@ public class CLusterBookingService(ScriptFactory scriptFactory)
         return CreateTask(command, afterThan);
     }
 
-    public string InstallVCenter(string vcenterIp, string afterThan)
+    public string InstallVCenter(string base64JsonConfig, string afterThan)
     {
-        ICommand command = scriptFactory.GetInstallVcenterScript(vcenterIp);
-        return CreateTask(command, afterThan);
+        // write json config to file in temp folder
+        string jsonConfig = Encoding.UTF8.GetString(Convert.FromBase64String(base64JsonConfig));
+        string filePath = FileWriter.WriteToFile(jsonConfig);
+
+        // create task to install vcenter
+        ICommand command = scriptFactory.GetInstallVcenterScript(filePath);
+        string taskUuid = CreateTask(command, afterThan);
+
+        // task for remove json config file after install
+        ICommand removeConfigFileCommand = scriptFactory.GetRemoveJsonConfigScript(filePath);
+        CreateTask(removeConfigFileCommand, taskUuid);
+
+        return taskUuid;
     }
 }

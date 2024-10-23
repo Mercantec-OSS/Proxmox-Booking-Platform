@@ -48,6 +48,16 @@ public class ClusterBookingService(Context context)
             .ToListAsync();
     }
 
+    public async Task<List<ClusterBooking>> GetExpiredAsync()
+    {
+        return await _dbService.ClusterBookings
+            .Where(o => o.ExpiredAt < DateTime.UtcNow)
+            .Include(b => b.VCenters)
+            .ThenInclude(vc => vc.EsxiHosts)
+            .Include(b => b.Owner)
+            .ToListAsync();
+    }
+
     public async Task UpdateAsync(ClusterBooking booking)
     {
         _dbService.ClusterBookings.Update(booking);

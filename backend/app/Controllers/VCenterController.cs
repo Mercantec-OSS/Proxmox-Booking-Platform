@@ -1,10 +1,9 @@
 [ApiController]
 [Route("vcenter")]
-public class VCenterController(Context context, ActivityService activityService, UserSession session) : ControllerBase
+public class VCenterController(Context context, UserSession session, VCenterService vCenterService) : ControllerBase
 {
-    private readonly VCenterService _vCenterService = new(context);
+    private readonly VCenterService _vCenterService = vCenterService;
     private readonly EsxiHostService _esxiHostService = new(context);
-    private readonly ActivityService _activityService = activityService;
 
     [HttpGet("{id}")]
     public async Task<ActionResult<VCenterGetDto>> Get(int id)
@@ -98,7 +97,6 @@ public class VCenterController(Context context, ActivityService activityService,
         };
 
         await _vCenterService.CreateAsync(vcenter);
-        _activityService.CreateActivity(user.Id, vcenter.Id, Activity.ActivityEvent.Create, Activity.ActivityType.VCenter);
 
         return Ok("VCenter created.");
     }
@@ -150,7 +148,6 @@ public class VCenterController(Context context, ActivityService activityService,
         vcenter.UpdatedAt = DateTime.UtcNow;
 
         await _vCenterService.UpdateAsync(vcenter);
-        _activityService.CreateActivity(user.Id, vcenter.Id, Activity.ActivityEvent.Update, Activity.ActivityType.VCenter);
 
         return NoContent();
     }
@@ -179,7 +176,6 @@ public class VCenterController(Context context, ActivityService activityService,
         }
 
         await _vCenterService.DeleteAsync(vcenter);
-        _activityService.CreateActivity(user.Id, vcenter.Id, Activity.ActivityEvent.Delete, Activity.ActivityType.VCenter);
 
         return NoContent();
     }

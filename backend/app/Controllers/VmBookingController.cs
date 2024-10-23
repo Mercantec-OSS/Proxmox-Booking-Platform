@@ -1,11 +1,10 @@
 ﻿[ApiController]
 [Route("vm-booking")]
-public class VmBookingController(Context context, ScriptService scriptService, ActivityService activityService, Config config, UserSession session) : ControllerBase
+public class VmBookingController(Context context, ScriptService scriptService, Config config, UserSession session) : ControllerBase
 {
     private readonly VmBookingService _vmBookingService = new(context);
     private readonly UserService _userService = new(context);
     private readonly EmailService _emailService = new(config);
-    private readonly ActivityService _activityService = activityService;
 
     [HttpPost("create")]
     [ProducesResponseType(201)]

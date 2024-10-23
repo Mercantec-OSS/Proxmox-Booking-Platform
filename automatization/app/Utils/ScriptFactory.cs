@@ -12,16 +12,6 @@ public class ScriptFactory(Config config)
         return new PowerShellCommand($"{script} {args}");
     }
 
-    public ICommand GetVmScript(string vmName)
-    {
-        string scriptName = "get_vm.ps1";
-
-        string script = Path.Combine(config.SCRIPTS_PATH, scriptName);
-        string args = $"'{config.VM_VCENTER_USER}__{config.VM_VCENTER_PASSWORD}__{config.VM_VCENTER_IP}' '{vmName}'";
-
-        return new PowerShellCommand($"{script} {args}");
-    }
-
     public ICommand GetUpdateVmResourcesScript(string vmName, int cpu, int ram)
     {
         string scriptName = "update_vm_resources.ps1";
@@ -63,11 +53,11 @@ public class ScriptFactory(Config config)
     }
 
     // Cluster scripts
-    public ICommand GetCreateBackupScript(string hostIp, string hostUsername, string hostPassword) {
+    public ICommand GetCreateBackupScript(string hostIp, string hostUsername, string hostPassword, string datastoreName) {
         string scriptName = "create_backup.sh";
 
         string script = Path.Combine(config.SCRIPTS_PATH, scriptName);
-        string args = $"'{hostUsername}__{hostPassword}__{hostIp}'";
+        string args = $"'{hostUsername}__{hostPassword}__{hostIp}' '{datastoreName}'";
 
         return new ShellCommand($"{script} {args}");
     }
@@ -169,12 +159,12 @@ public class ScriptFactory(Config config)
         return new PowerShellCommand($"{script} {args}");
     }
 
-    public ICommand GetInstallVcenterScript(string vcenterIp)
+    public ICommand GetInstallVcenterScript(string configFile)
     {
         string scriptName = "install-vcenter.sh";
 
         string script = Path.Combine(config.SCRIPTS_PATH, scriptName);
-        string args = $"'{vcenterIp}'";
+        string args = $"'{configFile}'";
 
         return new ShellCommand($"{script} {args}");
     }
@@ -188,5 +178,10 @@ public class ScriptFactory(Config config)
         string args = $"'{config.VM_VCENTER_USER}__{config.VM_VCENTER_PASSWORD}__{config.VM_VCENTER_IP}'";
 
         return new PowerShellCommand($"{script} {args}");
+    }
+
+    public ICommand GetRemoveJsonConfigScript(string pathFile)
+    {
+        return new ShellCommand($"rm -rf {pathFile}");
     }
 }

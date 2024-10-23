@@ -24,6 +24,8 @@ services:
       - VM_CLUSTER_NAME=${VM_VCENTER_CLUSTER}
       - VM_DATASTORE_NAME=${VM_VCENTER_DATASTORE}
     volumes:
+      - ./automatization/app:/app
+      - ./automatization/build:/build
       - ./automatization/scripts:/scripts
 
   backend:
@@ -40,11 +42,15 @@ services:
       - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
       - AD_CONNECTION_STRING=${AD_ADDRESS}__${AD_DOMAIN}__${AD_USER}__${AD_PASSWORD}
       - SMTP_CONNECTION_STRING=${SMTP_ADDRESS}__${SMTP_PORT}__${SMTP_USER}__${SMTP_PASSWORD}
+      - EMAIL_TEMPLATES_PATH=/app/src/emails/
       - VM_ROOT_PASSWORD=${VM_ROOT_PASSWORD}
       - VM_DEFAULT_USER=${VM_DEFAULT_USER}
       - AUTO_MIGRATIONS=true
       - USE_SWAGGER=true
       - ALLOW_CORS=true
+    volumes:
+      - ./backend/app:/app
+      - ./backend/build:/build
 
   frontend:
     container_name: frontend-dev
@@ -56,13 +62,33 @@ services:
       - PUBLIC_VERSION=8.2.0
       - PUBLIC_CLIENT_API=/api
       - PUBLIC_BACKEND_API=http://backend:5000
-  
+    volumes:
+      - ./frontend/app:/app
+      - ./frontend/build:/build
+
+  db:
+    image: mysql
+    container_name: db-dev
+    restart: always
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - ./db/storage:/var/lib/mysql
+
   db-backup:
     build: ./backup
     container_name: backup-dev
     restart: unless-stopped
     volumes:
       - ./backup/backup-files:/backup
+      - ./backup/restore-backup:/restore
       - ./backup/backup_script.sh:/etc/periodic/daily/backup_script.sh
     environment:
-      - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
+      - HOST=${DB_ADDRESS}
+      - DATABASE=${DB_NAME}
+      - PORT=${DB_PORT}
+      - USER=${DB_USER}
+      - PASSWORD=${DB_PASSWORD}

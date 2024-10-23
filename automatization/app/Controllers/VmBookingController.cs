@@ -3,7 +3,7 @@
 [ApiController]
 [Route("vm-booking")]
 
-public class VmBookingController(VmBookingService vmBookingService) : ControllerBase
+public class VmBookingController(VmBookingService vmBookingService, Config config) : ControllerBase
 {
     [HttpPost("create")]
     [ProducesResponseType(201)]
@@ -28,14 +28,16 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
     }
 
     [HttpGet("get-vm/{vmName}")]
-    public ActionResult<VmDTO> GetVMResources(string vmName)
+    public async Task<ActionResult<VmDTO>> GetVMResources(string vmName)
     {
         if (string.IsNullOrWhiteSpace(vmName))
         {
             return BadRequest("Invalid uuid");
         }
 
-        VmDTO vm = vmBookingService.Get(vmName);
+        var client = new VCenterApiService(config);
+
+        VmDTO vm = await client.GetInfo(vmName);
         return Ok(vm);
     }
 
@@ -66,31 +68,10 @@ public class VmBookingController(VmBookingService vmBookingService) : Controller
         return Ok(VCenterInfoBackgroundService.GetInfo());
     }
 
-    [HttpGet("test")]
-    public async Task<IActionResult> Test(Config config)
+    [HttpGet("connection-uri/{vmName}")]
+    public async Task<IActionResult> GetWebConsoleUri(string vmName)
     {
-        string host = config.VM_VCENTER_IP;
-        string username = config.VM_VCENTER_USER;
-        string password = config.VM_VCENTER_PASSWORD;
-
-        // Створення базової авторизації
-        var credentials = $"{username}:{password}";
-        var base64Credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(credentials));
-
-        // Ігнорування SSL сертифікату
-        HttpClientHandler handler = new HttpClientHandler();
-        handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
-
-        HttpClient client = new HttpClient(handler);
-        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Credentials);
-
-        HttpResponseMessage response = await client.PostAsync($"https://{host}/api/session", null);
-
-        string responseBody = await response.Content.ReadAsStringAsync();
-        string token = responseBody.Replace("\"", "");
-
-        client.DefaultRequestHeaders.Add("vmware-api-session-id", token);
-
-        return Ok(token);
+        var client = new VCenterApiService(config);
+        return Ok(await client.GetVmConnectionUriAsync(vmName));
     }
 }
