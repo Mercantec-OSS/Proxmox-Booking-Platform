@@ -1,6 +1,5 @@
 <script>
   import UserInfo from '$lib/components/authed/user/user-info.svelte';
-  import BookingFiltering from '$lib/components/authed/bookings/booking-filtering.svelte';
   import BookingList from '$lib/components/authed/bookings/booking-list.svelte';
   import { clusterListStore, vmListStore, userStore } from '$lib/utils/store';
   import { toast } from 'svelte-sonner';
@@ -35,7 +34,7 @@
   });
 </script>
 
-<main class="flex flex-col flex-grow mx-4">
+<main class="flex flex-col flex-grow rounded-3xl bg-background">
   <div class="mx-auto mt-10">
     {#if data.userData}
       <UserInfo user={data.userData} />
@@ -45,10 +44,6 @@
   {#if $userStore.role === 'Admin' || $userStore.role === 'Teacher'}
     <!-- Button to open create booking drawer and filter bookings -->
     <div class="flex flex-col md:w-3/4 md:mx-auto my-10">
-      <div>
-        <BookingFiltering />
-      </div>
-
       <!-- List of all bookings -->
       <div class="flex flex-wrap justify-center gap-5 w-full mt-3">
         <BookingList />

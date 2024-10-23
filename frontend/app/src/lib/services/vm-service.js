@@ -62,7 +62,7 @@ export const vmService = {
       .json();
   },
 
-  async getVMBookingsFrontend() {
+  async getVMBookings() {
     return await clientApi.get('vm-booking/all').json();
   },
 
@@ -76,7 +76,7 @@ export const vmService = {
       .json();
   },
 
-  async getVMBookingsByUserFrontend(id) {
+  async getVMBookingsByUser(id) {
     return await backendApi.get(`vm-booking/owner/${id}`).json();
   },
 
@@ -84,8 +84,28 @@ export const vmService = {
     return await clientApi.get(`vm-booking/${id}`).json();
   },
 
+  async getVMBookingByIdBackend(cookie, id) {
+    return await backendApi
+      .get(`vm-booking/${id}`, {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
+  },
+
   async getVMsAvailableCount() {
     return await clientApi.get('vcenter/all/available').json();
+  },
+
+  async getVMsAvailableCountBackend(cookie) {
+    return await backendApi
+      .get('vcenter/all/available', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
   },
 
   async deleteVMBooking(id) {
@@ -94,6 +114,16 @@ export const vmService = {
 
   async getVMTemplates() {
     return await clientApi.get('script/vm/templates').json();
+  },
+
+  async getVMTemplatesBackend(cookie) {
+    return await backendApi
+      .get('script/vm/templates', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
   },
 
   async acceptVMBooking(id) {
@@ -108,9 +138,9 @@ export const vmService = {
     return await clientApi.put(`extention-request/accept-extention/${id}`).json();
   },
 
-  async getVmInfo(id) {
+  async getVmInfo(uuid) {
     return await clientApi
-      .get(`script/vm/get-ip/${id}`, {
+      .get(`script/vm/get-ip/${uuid}`, {
         retry: {
           limit: 3
         },

@@ -52,7 +52,7 @@ export const clusterService = {
     return await clientApi.post('cluster-booking/create', { json: bookingDetails }).text();
   },
 
-  async getClusterBookingsFrontend() {
+  async getClusterBookings() {
     return await clientApi.get('cluster-booking/all').json();
   },
 
@@ -76,7 +76,7 @@ export const clusterService = {
       .json();
   },
 
-  async getClusterBookingsByUserFrontend(id) {
+  async getClusterBookingsByUser(id) {
     return await backendApi.get(`cluster-booking/owner/${id}`).json();
   },
 
@@ -84,47 +84,44 @@ export const clusterService = {
     return await clientApi.get(`cluster-booking/${id}`).json();
   },
 
+  async getClusterBookingByIdBackend(cookie, id) {
+    return await backendApi
+      .get(`cluster-booking/${id}`, {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
+  },
+
   async getClustersAvailableCount() {
     return await clientApi.get('vcenter/all/available').json();
+  },
+
+  async getClustersAvailableCountBackend(cookie) {
+    return await backendApi
+      .get('vcenter/all/available', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
   },
 
   async deleteClusterBooking(id) {
     return await clientApi.delete(`cluster-booking/delete/${id}`).text();
   },
 
-  async bInstallVcenters(id) {
-    return await clientApi.get(`script/cluster/vcenter/install-by-booking-id/${id}`).text();
+  // Below is endpoint for cluster actions
+  async installVcenters(id) {
+    return await clientApi.get(`script/cluster/vcenter/install-by-booking-id/${id}`).json();
   },
 
-  async vInstallVcenter(id) {
-    return await clientApi.get(`script/vcenter/install-vcenter/${id}`).text();
+  async resetHosts(id) {
+    return await clientApi.get(`script/cluster/host/reset-by-booking-id/${id}`).json();
   },
 
-  async bResetHosts(id) {
-    return await clientApi.get(`script/cluster/host/reset-by-booking-id/${id}`).text();
-  },
-
-  async vResetHosts(id) {
-    return await clientApi.get(`script/vcenter/reset-hosts/${id}`).text();
-  },
-
-  async eResetHost(id) {
-    return await clientApi.get(`script/esxi-host/reset-host/${id}`).text();
-  },
-
-  async bResetAndInstall(id) {
-    return await clientApi.get(`script/cluster/vcenter/reset-and-install-by-booking-id/${id}`).text();
-  },
-
-  async vResetAndInstall(id) {
-    return await clientApi.get(`script/vcenter/reset-and-install/${id}`).text();
-  },
-
-  async bCreateWindowsVms(id) {
-    return await clientApi.get(`script/booking/create-windows-servers/${id}`).text();
-  },
-
-  async vCreateWindowsVms(id) {
-    return await clientApi.get(`script/vcenter/create-windows-servers/${id}`).text();
+  async resetAndInstall(id) {
+    return await clientApi.get(`script/cluster/vcenter/reset-and-install-by-booking-id/${id}`).json();
   }
 };

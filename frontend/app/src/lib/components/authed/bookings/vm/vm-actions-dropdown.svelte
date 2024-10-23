@@ -3,14 +3,14 @@
   import VMExtensionDialog from '$lib/components/authed/bookings/vm/vm-extension-dialog.svelte';
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
-  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, MonitorUp } from 'lucide-svelte';
+  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, ChevronDown, MonitorUp } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button/index.js';
-
-  export let vmInfoDialogOpen;
+  import { goto } from '$app/navigation';
 
   let vmExtensionDialogOpen;
+  let open = false;
 
   /* Alert dialog */
   let alertDialogOpen;
@@ -43,7 +43,7 @@
     try {
       const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
 
-      toast.success(`Refreshed booking #${$selectedBookingStore.id}`);
+      toast.success(`Refreshed booking details`);
 
       selectedBookingStore.set(updatedBooking);
 
@@ -53,6 +53,7 @@
       });
     } catch (error) {
       toast.error(error.message);
+      if (error.message === 'Booking not found') goto('/');
     }
   }
 
@@ -66,8 +67,8 @@
 
     try {
       await vmService.deleteVMBooking($selectedBookingStore.id);
-      vmListStore.set(await vmService.getVMBookingsFrontend());
-      vmInfoDialogOpen = false;
+      vmListStore.set(await vmService.getVMBookings());
+      goto('/');
       toast.success(`Deleted booking #${$selectedBookingStore.id}`);
     } catch (error) {
       toast.error(error.message);
@@ -110,7 +111,7 @@
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `vm_details_${$selectedBookingStore.id}.txt`;
+    link.download = `vm_${$selectedBookingStore.id}.txt`;
     link.click();
     window.URL.revokeObjectURL(url);
   }
@@ -126,41 +127,46 @@
 <!-- Dialog to request extension of booking -->
 <VMExtensionDialog bind:vmExtensionDialogOpen></VMExtensionDialog>
 
-<DropdownMenu.Root>
+<DropdownMenu.Root bind:open>
   <DropdownMenu.Trigger asChild let:builder>
-    <Button variant="outline" class="bg-primary-foreground" builders={[builder]}>Actions</Button>
+    <Button variant="outline" size="sm" class="border-indigo-500 text-indigo-500 hover:text-indigo-500" builders={[builder]}
+      >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
+    >
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>
     <DropdownMenu.Group>
       <DropdownMenu.Label>Booking actions</DropdownMenu.Label>
       <DropdownMenu.Separator />
-      {#if new Date() < new Date($selectedBookingStore.expiredAt)}
-      <DropdownMenu.Item>
+      <DropdownMenu.Item
+        on:click={() => {
+          window.open(`/api/web-console/${$selectedBookingStore.uuid}`, '_blank', 'noopener,noreferrer');
+        }}
+      >
         <MonitorUp class="mr-2 size-4" />
-          <a target="_blank" class="cursor-default" href="/api/web-console/{$selectedBookingStore.uuid}">Web console</a>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item on:click={handleFileDownload}>
-          <Download class="mr-2 size-4" />
-          <span>Download</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item on:click={refreshBooking}>
-          <RefreshCcw class="mr-2 size-4" />
-          <span>Refresh</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item
-          on:click={() => {
-            vmExtensionDialogOpen = true;
-          }}
-        >
-          <CalendarPlus class="mr-2 size-4" />
-          <span>Extend booking</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item on:click={handleResetPower}>
-          <Zap class="mr-2 size-4" />
-          <span>Reset power</span>
-        </DropdownMenu.Item>
-        <DropdownMenu.Separator />
-      {/if}
+        <span>Web console</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handleResetPower}>
+        <Zap class="mr-2 size-4" />
+        <span>Reset power</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Separator />
+      <DropdownMenu.Item
+        on:click={() => {
+          vmExtensionDialogOpen = true;
+        }}
+      >
+        <CalendarPlus class="mr-2 size-4" />
+        <span>Extend booking</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={handleFileDownload}>
+        <Download class="mr-2 size-4" />
+        <span>Download</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item on:click={refreshBooking}>
+        <RefreshCcw class="mr-2 size-4" />
+        <span>Refresh</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Separator />
       <DropdownMenu.Item on:click={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
         <Trash2 class="mr-2 size-4" />
         <span>Delete</span>

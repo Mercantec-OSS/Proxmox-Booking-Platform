@@ -1,6 +1,7 @@
 <script>
   import '../../app.css';
-  import Navbar from '$lib/components/authed/navbar.svelte';
+  import Topbar from '$lib/components/authed/topbar.svelte';
+  import Sidebar from '$lib/components/authed/sidebar.svelte';
   import { Toaster } from '$lib/components/ui/sonner';
   import { ModeWatcher } from 'mode-watcher';
 </script>
@@ -8,7 +9,10 @@
 <Toaster />
 <ModeWatcher />
 
-<div class="flex flex-col min-h-screen bg-background text-foreground">
-  <Navbar />
-  <slot />
+<div class="flex flex-col bg-background text-foreground">
+  <Sidebar />
+  <div class="flex flex-col min-h-screen w-full sm:py-4 sm:pl-14">
+    <Topbar />
+    <slot />
+  </div>
 </div>

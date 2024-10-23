@@ -21,7 +21,7 @@
   import * as Command from '$lib/components/ui/command/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
 
-  let userAuthed = $userStore.role !== 'Student';
+  $: userAuthed = $userStore.role === 'Admin' || $userStore.role === 'Teacher';
 
   let open = false;
   let isLoading = false;
@@ -69,7 +69,7 @@
     try {
       isLoading = true;
       await clusterService.createClusterBooking(clusterBookingInput);
-      clusterListStore.set(await clusterService.getClusterBookingsFrontend());
+      clusterListStore.set(await clusterService.getClusterBookings());
       clusterBookingInput = { amountStudents: null, amountDays: null };
       calendarDatePicked = null;
       open = false;
@@ -114,7 +114,7 @@
 
       vmBookingInput.expiringAt = new Date(vmCalendarDatePicked).toISOString();
       await vmService.createVMBooking(vmBookingInput);
-      vmListStore.set(await vmService.getVMBookingsFrontend());
+      vmListStore.set(await vmService.getVMBookings());
       vmBookingInput = { type: null, ownerId: null, assignedTo: null, expiringAt: null };
       vmCalendarDatePicked = null;
       open = false;
