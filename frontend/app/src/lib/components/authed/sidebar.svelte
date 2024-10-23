@@ -1,5 +1,6 @@
 <script>
-  import { Sun, Moon, LogOut, Home, ChartLine, CircleHelp } from 'lucide-svelte';
+//   import { Sun, Moon, LogOut, Home, ChartLine, CircleHelp } from 'lucide-svelte';
+  import { Sun, Moon, LogOut, Home, CircleHelp } from 'lucide-svelte';
   import { authService } from '$lib/services/auth-service';
   import { getCookie, deleteCookie } from '$lib/utils/cookie';
   import { goto } from '$app/navigation';
@@ -55,7 +56,7 @@
       <Tooltip.Content side="right">Dashboard</Tooltip.Content>
     </Tooltip.Root>
     <!-- Analytics nav link -->
-    <Tooltip.Root openDelay={400}>
+    <!-- <Tooltip.Root openDelay={400}>
       <Tooltip.Trigger asChild let:builder>
         <a
           href="/analytics"
@@ -68,7 +69,7 @@
         </a>
       </Tooltip.Trigger>
       <Tooltip.Content side="right">Analytics</Tooltip.Content>
-    </Tooltip.Root>
+    </Tooltip.Root> -->
     <!-- Help nav link -->
     <Tooltip.Root openDelay={400}>
       <Tooltip.Trigger asChild let:builder>

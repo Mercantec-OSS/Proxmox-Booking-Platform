@@ -1,5 +1,6 @@
 <script>
-  import { LogOut, Bell, User, PanelLeft, Home, ChartLine, CircleHelp } from 'lucide-svelte';
+//   import { LogOut, Bell, User, PanelLeft, Home, ChartLine, CircleHelp } from 'lucide-svelte';
+  import { LogOut, Bell, User, PanelLeft, Home, CircleHelp } from 'lucide-svelte';
   import { authService } from '$lib/services/auth-service';
   import { getCookie, deleteCookie } from '$lib/utils/cookie';
   import { goto } from '$app/navigation';
@@ -48,10 +49,10 @@
           <Home class="h-5 w-5" />
           Dashboard
         </a>
-        <a href="/analytics" class="{isActive('/analytics') ? 'text-foreground' : 'text-muted-foreground'} flex items-center gap-4 px-2.5">
+        <!-- <a href="/analytics" class="{isActive('/analytics') ? 'text-foreground' : 'text-muted-foreground'} flex items-center gap-4 px-2.5">
           <ChartLine class="h-5 w-5" />
           Analytics
-        </a>
+        </a> -->
         <a href="/help" class="{isActive('/help') ? 'text-foreground' : 'text-muted-foreground'} hover:text-foreground flex items-center gap-4 px-2.5">
           <CircleHelp class="h-5 w-5" />
           Help
