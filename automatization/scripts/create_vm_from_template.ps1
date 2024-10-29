@@ -28,8 +28,8 @@ $vm = New-VM -Name $vm_name -Template $vm_template -ResourcePool $ClusterObj -Da
 # Start the VM
 Start-VM -VM $vm
 
-if ($osType -match "live") {
-    Write-Host "VM is a live VM. Exiting."
+if ($vm_template -notmatch "psw") {
+    Write-Host "Password change is not required for this template. Exiting."
     exit
 }
 

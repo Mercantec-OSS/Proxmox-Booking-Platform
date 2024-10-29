@@ -25,6 +25,9 @@ export async function load({ parent, cookies }) {
     // Assign results
     [vmTemplates, listOfUsers] = results;
 
+    // sort by display name
+    vmTemplates.sort((a, b) => a.displayName.localeCompare(b.displayName));
+
     // Assign clusters result if it was fetched
     if (results.length > 2) {
       clustersAvailable = results[2].length;

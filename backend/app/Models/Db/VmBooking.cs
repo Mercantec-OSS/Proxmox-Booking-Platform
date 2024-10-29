@@ -50,7 +50,7 @@ public class VmBooking
             Owner = Owner?.MakeGetDto(),
             Assigned = Assigned?.MakeGetDto(),
             Message = Message,
-            Type = Type,
+            Type = TemplateGetDto.MakeGetDTO(Type).DisplayName,
             Login = Login,
             Password = Password,
             IsAccepted = IsAccepted,

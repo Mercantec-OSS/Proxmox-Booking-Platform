@@ -16,7 +16,7 @@ $null = Connect-VIServer -Server $vcenter[2] -User $vcenter[0] -Password $vcente
 $templates = Get-Template
 
 # Filter the templates to include only those with "template" in the name (case-insensitive)
-$filteredTemplates = $templates | Where-Object { $_.Name -match 'template' }
+$filteredTemplates = $templates | Where-Object { $_.Name -match 'pub' }
 
 # Return only the list of names
 $filteredTemplates.Name

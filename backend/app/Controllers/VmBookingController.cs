@@ -26,6 +26,13 @@ public class VmBookingController(Context context, ScriptService scriptService, C
             return UnprocessableEntity(ResponseMessage.GetErrorMessage($"Assigned user id:'{bookingDTO.AssignedId}' dont exist"));
         }
 
+        if  (bookingDTO.Type == null)
+        {
+            return UnprocessableEntity(ResponseMessage.GetErrorMessage("Type is required"));
+        }
+
+        TemplateGetDto? template = TemplateGetDto.MakeGetDTO(bookingDTO.Type);
+
         VmBooking booking = new()
         {
             Id = 0,
@@ -34,8 +41,8 @@ public class VmBookingController(Context context, ScriptService scriptService, C
             Type = bookingDTO.Type,
             Message = bookingDTO.Message,
             Name = $"{ownerUser.Id}_{Guid.NewGuid()}",
-            Login = VmCredentials.GetLoginByTemplate(bookingDTO.Type),
-            Password = VmCredentials.GenerateRandomPassword(),
+            Login = VmCredentials.GetLoginByTemplate(template),
+            Password = VmCredentials.GetPasswordByTemplate(template),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             ExpiredAt = bookingDTO.ExpiringAt,

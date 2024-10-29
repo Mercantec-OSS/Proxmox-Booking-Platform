@@ -190,9 +190,9 @@
                         <Select.Value placeholder="Select a template" />
                       </Select.Trigger>
                       <Select.Content>
-                        <Select.Group>
+                        <Select.Group class="h-60 overflow-y-scroll">
                           {#each data.vmTemplates as vmTemplate}
-                            <Select.Item value={vmTemplate} label={vmTemplate}>{vmTemplate}</Select.Item>
+                            <Select.Item value={vmTemplate.internalName} label={vmTemplate.displayName}>{vmTemplate.displayName}</Select.Item>
                           {/each}
                         </Select.Group>
                       </Select.Content>

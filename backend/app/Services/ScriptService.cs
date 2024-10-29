@@ -115,10 +115,11 @@ public class ScriptService
         return await PostAsync(url, new StringContent(""));
     }
 
-    public async Task<List<string>> GetTemplatesAsync()
+    public async Task<List<TemplateGetDto>> GetTemplatesAsync()
     {
         string response = await GetAsync("vm-booking/get-templates");
-        return JsonSerializer.Deserialize<List<string>>(response) ?? new();
+        List<string> templatesRaw = JsonSerializer.Deserialize<List<string>>(response) ?? new();
+        return templatesRaw.ConvertAll(TemplateGetDto.MakeGetDTO);
     }
 
     public async Task<VCenterInfoDTO> GetVcenterInfoAsync()

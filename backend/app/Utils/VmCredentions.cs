@@ -1,34 +1,37 @@
 public static class VmCredentials
 {
-    public static string GetLoginByTemplate(string template)
+    public static string GetLoginByTemplate(TemplateGetDto template)
     {
-        string login;
         Config config = new();
 
-        string preparedTemplate = template.ToLower();
-        List<string> tokens = preparedTemplate.Split("_").ToList();
-
-        // define for servers os
-        if (tokens.Contains("server"))
+        if (!template.Keywords.Contains("psw"))
         {
-            if (tokens.Contains("windows"))
-            {
-                login = "Administrator";
-            }
-            else
-            {
-                login = "root";
-            }
+            return "";
         }
 
-        // Define for other os types 
-        else
+        if (template.Keywords.Contains("lin") && template.Keywords.Contains("srv"))
         {
-            login = config.VM_DEFAULT_USER;
+            return "root";
         }
 
-        return login;
+        if (template.Keywords.Contains("win") && template.Keywords.Contains("srv"))
+        {
+            return "Administrator";
+        }
+
+        return config.VM_DEFAULT_USER;
     }
+
+    public static string GetPasswordByTemplate(TemplateGetDto template)
+    {
+        if (!template.Keywords.Contains("psw"))
+        {
+            return "";
+        }
+
+        return GenerateRandomPassword();
+    }
+
     public static string GenerateRandomPassword(int length = 6)
     {
         Random random = new Random();
