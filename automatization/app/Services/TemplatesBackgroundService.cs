@@ -24,7 +24,7 @@ public class TemplatesBackgroundService : BackgroundService
                 Console.WriteLine(ex.Message);
             }
 
-            await System.Threading.Tasks.Task.Delay(TimeSpan.FromMinutes(15), stoppingToken);
+            await System.Threading.Tasks.Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
         }
     }
 }
