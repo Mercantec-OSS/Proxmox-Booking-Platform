@@ -29,9 +29,10 @@
             <div>Make sure at your browser support JavaScript</div>
             <div>
                 To fix the issue, please open following URL 
-                <a href="https://@Model.HostIp/" target="_blank">https://@Model.HostIp/</a> 
+                <a href="https://@Model.HostIp/" target="_blank" onclick="refreshPage">https://@Model.HostIp/</a> 
                 and accept the certificate.
             </div>
+            <div>!Refresh page after certificate accept!</div>
         </p>
     </div>
     <script>
@@ -52,6 +53,13 @@
                 }
             });
         wmks.connect("@Model.Uri"); 
+
+        function refreshPage() {
+            console.log('Refreshing page...');
+            setTimeout(() => {location.reload()}, 7000);
+        }
+
+        document.querySelector('a[target]').addEventListener('click', refreshPage);
     </script>
 </body>
 
