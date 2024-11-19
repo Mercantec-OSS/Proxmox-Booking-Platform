@@ -20,7 +20,7 @@ datastore_name=$2
 sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" vim-cmd hostsvc/firmware/sync_config
 sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" vim-cmd hostsvc/firmware/backup_config
 file_path=$(sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" 'find / -name configBundle-*')
-dst_path=$(sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" "find / -name $datastore_name*")
+dst_path=$(sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" "find / -name '$datastore_name*'")
 command="cp '$file_path' '$dst_path/configBundle.tgz'"
 sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" sh -c "\"$command\""
 sshpass -p "$password" ssh -o StrictHostKeyChecking=accept-new "$username"@"$address" rm -f $file_path
