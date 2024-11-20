@@ -284,7 +284,7 @@ public class ScriptService
         string lastTaskUuid = afterTask;
         foreach (var vcenter in vcenters)
         {
-            var taskUuid = await InstallVCenterAsync(vcenter.JsonConfig, lastTaskUuid);
+            var taskUuid = await InstallVCenterAsync(vcenter.JsonConfig, afterTask);
             taskUuid = await CreateDatacenterAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, vcenter.DatacenterName, taskUuid);
             taskUuid = await CreateClusterAsync(vcenter.UserName, vcenter.Password, vcenter.Ip, vcenter.DatacenterName, vcenter.ClusterName, taskUuid);
 
