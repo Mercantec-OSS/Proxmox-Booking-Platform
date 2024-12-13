@@ -15,6 +15,11 @@
     <div id="wmksContainer" style="position:absolute;width:100%;height:100%">
         <div class="cred">
             <div>
+                <button id="sendCAD">
+                    Ctrl + Alt + Del
+                </button>
+            </div>
+            <div>
                 @Model.Login
             </div>
             <div>
@@ -38,6 +43,7 @@
     <script>
         const vmContainer = document.getElementById('wmksContainer');
         const statusMessage = document.getElementById('statusMessage');
+        const button = document.getElementById('sendCAD');
 
         var wmks = WMKS.createWMKS("wmksContainer", {})
             .register(WMKS.CONST.Events.CONNECTION_STATE_CHANGE, function (event, data) {
@@ -58,6 +64,10 @@
             console.log('Refreshing page...');
             setTimeout(() => {location.reload()}, 7000);
         }
+
+        button.addEventListener('click', function() {
+            wmks.sendCAD();
+        });
 
         document.querySelector('a[target]').addEventListener('click', refreshPage);
     </script>
