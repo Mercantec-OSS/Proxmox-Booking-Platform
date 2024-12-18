@@ -18,12 +18,15 @@
                 <button id="sendCAD">
                     Ctrl + Alt + Del
                 </button>
+                <button id="btnCreds">Creds</button>
             </div>
-            <div>
-                @Model.Login
-            </div>
-            <div>
-                @Model.Password
+            <div id="creds" style="display: none;">
+                <div>
+                    @Model.Login
+                </div>
+                <div>
+                    @Model.Password
+                </div>
             </div>
         </div>
     </div>
@@ -43,7 +46,9 @@
     <script>
         const vmContainer = document.getElementById('wmksContainer');
         const statusMessage = document.getElementById('statusMessage');
-        const button = document.getElementById('sendCAD');
+        const btnCAD = document.getElementById('sendCAD');
+        const btcCreds = document.getElementById('btnCreds');
+        const creds = document.getElementById('creds');
 
         var wmks = WMKS.createWMKS("wmksContainer", {})
             .register(WMKS.CONST.Events.CONNECTION_STATE_CHANGE, function (event, data) {
@@ -65,8 +70,13 @@
             setTimeout(() => {location.reload()}, 7000);
         }
 
-        button.addEventListener('click', function() {
+        btnCAD.addEventListener('click', function() {
             wmks.sendCAD();
+        });
+
+        btnCreds.addEventListener('click', function() {
+            creds.style.display = creds.style.display === 'none' ? 'block' : 'none';
+            setTimeout(() => {creds.style.display = 'none'}, 30000);
         });
 
         document.querySelector('a[target]').addEventListener('click', refreshPage);
