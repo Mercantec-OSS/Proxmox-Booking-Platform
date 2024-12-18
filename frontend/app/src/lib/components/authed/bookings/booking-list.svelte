@@ -61,6 +61,7 @@
                 <Table.Head class="table-cell"></Table.Head>
                 <Table.Head class="table-cell">Template</Table.Head>
                 <Table.Head class="table-cell">Note</Table.Head>
+                <Table.Head class="table-cell">UUID</Table.Head>
                 <Table.Head class="table-cell">Status</Table.Head>
                 <Table.Head class="table-cell">Owner</Table.Head>
                 <Table.Head class="table-cell">Assigned to</Table.Head>
@@ -89,6 +90,10 @@
                     <span class="block truncate">
                       "{vm.message}"
                     </span>
+                  </Table.Cell>
+                  <!-- Shows first 5 chart from machine UUID -->
+                  <Table.Cell>
+                    <span title="{vm.uuid}">{vm.uuid?.slice(0, 7)}...</span>
                   </Table.Cell>
                   <!-- Shows if booking is accepted or pending -->
                   <Table.Cell>

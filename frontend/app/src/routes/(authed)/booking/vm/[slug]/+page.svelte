@@ -129,9 +129,11 @@
           <Card.Root>
             <Card.Header>
               <Card.Title>Details</Card.Title>
-              <Card.Description>Information about the booking and it's owner</Card.Description>
-            </Card.Header>
-            <Card.Content>
+              <Card.Description>
+                  Information about the booking and it's owner
+                </Card.Description>
+              </Card.Header>
+              <Card.Content>
               <div class="grid gap-6">
                 <div class="grid gap-3">
                   <div class="inline-flex flex-wrap gap-x-7 gap-y-4 justify-between text-sm">
@@ -166,6 +168,14 @@
                     <p>{formatDateTime($selectedBookingStore.createdAt)}</p>
                     <ArrowRight class="size-4" />
                     <p>{formatDateTime($selectedBookingStore.expiredAt)}</p>
+                  </div>
+                </div>
+                <div class="text-sm mb-4">
+                  <div>
+                    Machine UUID
+                  </div>
+                  <div>
+                      {$selectedBookingStore.uuid}
                   </div>
                 </div>
                 <div class="grid gap-3">
