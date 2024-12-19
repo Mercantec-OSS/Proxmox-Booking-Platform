@@ -31,6 +31,12 @@ public class VmBookingController(Context context, ScriptService scriptService, C
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("Type is required"));
         }
 
+        // for teacher and admin make accepted booking
+        if (session.IsTeacher() || session.IsAdmin())
+        {
+            isAccepted = true;
+        }
+
         TemplateGetDto? template = TemplateGetDto.MakeGetDTO(bookingDTO.Type);
 
         VmBooking booking = new()
@@ -50,9 +56,18 @@ public class VmBookingController(Context context, ScriptService scriptService, C
         };
 
         await _vmBookingService.CreateAsync(booking);
-
         _emailService.SendVmBookingCreate(booking);
-        _emailService.SendVmBookingToAccept(booking);
+        
+        // if booking is accepted create vm
+        if (isAccepted)
+        {
+            await scriptService.CreateVmAsync(booking.Type, booking.Name, config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+        }
+
+        else
+        {
+            _emailService.SendVmBookingToAccept(booking);
+        }
 
         return Ok(true);
     }
