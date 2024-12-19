@@ -116,6 +116,10 @@ export const vmService = {
     return await clientApi.get('script/vm/templates').json();
   },
 
+  async resetVMTemplates() {
+    await clientApi.delete('script/vm/reset-templates');
+  },
+
   async getVMTemplatesBackend(cookie) {
     return await backendApi
       .get('script/vm/templates', {

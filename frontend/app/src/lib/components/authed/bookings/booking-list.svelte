@@ -8,7 +8,8 @@
   import * as Table from '$lib/components/ui/table';
   import * as Tabs from '$lib/components/ui/tabs';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import { ArrowUpRight, CirclePlus } from 'lucide-svelte';
+  import { ArrowUpRight, CirclePlus, ListRestart, ShieldEllipsis } from 'lucide-svelte';
+  import { vmService } from '$lib/services/vm-service';
 
   $: userAuthed = $userStore.role === 'Admin' || $userStore.role === 'Teacher';
   let activeTab = 'vms';
@@ -51,8 +52,21 @@
             <Tabs.Trigger value="vms">Virtual machines</Tabs.Trigger>
             <Tabs.Trigger value="clusters">Clusters</Tabs.Trigger>
           </Tabs.List>
-          <Button href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
+          <Button class='w-39' href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
         </div>
+        {#if userAuthed}
+        <div class="flex justify-end items-center">
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Button variant="outline" class='w-39'><ShieldEllipsis class="h-4 w-4 mr-1" />Teacher actions</Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <DropdownMenu.Item on:click="{vmService.resetVMTemplates}"><ListRestart class="h-4 w-4 mr-1" />Reset templates</DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+        </div>
+            
+        {/if}
         <Tabs.Content value="vms">
           <!-- Virtual machine booking table  -->
           <Table.Root>

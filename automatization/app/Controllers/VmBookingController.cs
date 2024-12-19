@@ -27,6 +27,14 @@ public class VmBookingController(VmBookingService vmBookingService, Config confi
         return Ok(TemplatesBackgroundService.GetTemplates());
     }
 
+    [HttpDelete("reset-templates")]
+    [ProducesResponseType(204)]
+    public IActionResult ResetTemplates()
+    {
+        TemplatesBackgroundService.ResetTemplates();
+        return NoContent();
+    }
+
     [HttpGet("get-vm/{vmName}")]
     public async Task<ActionResult<VmDTO>> GetVMResources(string vmName)
     {

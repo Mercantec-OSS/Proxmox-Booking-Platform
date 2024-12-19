@@ -169,6 +169,19 @@ public class ScriptController(
         return Ok(await scriptService.GetTemplatesAsync());
     }
 
+    [HttpDelete("vm/reset-templates")]
+    public async Task<ActionResult> ResetTemplates()
+    {
+        session.GetIfRoles
+        (
+            Models.User.UserRoles.Admin,
+            Models.User.UserRoles.Teacher
+        );
+
+        await scriptService.ResetTemplatesAsync();
+        return NoContent();
+    }
+
     [HttpGet("vm/vcenter-info")]
     public async Task<ActionResult> GetVcenterInfo()
     {

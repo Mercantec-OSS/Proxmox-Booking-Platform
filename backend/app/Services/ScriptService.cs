@@ -122,6 +122,11 @@ public class ScriptService
         return templatesRaw.ConvertAll(TemplateGetDto.MakeGetDTO);
     }
 
+    public async Task ResetTemplatesAsync()
+    {
+        await DeleteAsync("vm-booking/reset-templates");
+    }
+
     public async Task<VCenterInfoDTO> GetVcenterInfoAsync()
     {
         string response = await GetAsync("vm-booking/vcenter-info");

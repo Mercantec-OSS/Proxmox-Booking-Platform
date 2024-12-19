@@ -1,11 +1,18 @@
 public class TemplatesBackgroundService : BackgroundService
 {
     private static List<string> _data = new List<string>();
+    private static DateTime? lastUpdate = null;
     VmBookingService vmBookingService = new VmBookingService(new ScriptFactory(new Config()));
 
     public static List<string> GetTemplates()
     {
         return _data;
+    }
+
+    public static void ResetTemplates()
+    {
+        _data = new List<string>();
+        lastUpdate = null;
     }
 
     protected override async System.Threading.Tasks.Task ExecuteAsync(CancellationToken stoppingToken)
@@ -15,16 +22,21 @@ public class TemplatesBackgroundService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            try
+            // Update data every 5 minutes
+            if (lastUpdate == null || DateTime.UtcNow - lastUpdate > TimeSpan.FromMinutes(5))
             {
-                _data = vmBookingService.GetTemplates();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
+                try
+                {
+                    _data = vmBookingService.GetTemplates();
+                    lastUpdate = DateTime.UtcNow;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
 
-            await System.Threading.Tasks.Task.Delay(TimeSpan.FromMinutes(5), stoppingToken);
+            await System.Threading.Tasks.Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
         }
     }
 }
