@@ -155,5 +155,16 @@ export const vmService = {
 
   async resetVmPower(name) {
     await clientApi.get(`script/vm/reset-power/${name}`).json();
+  },
+
+  async getVcenterInfo() {    
+    return await clientApi
+      .get("script/vm/vcenter-info", {
+      retry: {
+          limit: 3
+      },
+      timeout: 60000
+      })
+      .json();
   }
 };
