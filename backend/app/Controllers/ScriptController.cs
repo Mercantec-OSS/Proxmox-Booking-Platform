@@ -1,7 +1,7 @@
 ﻿[Route("script")]
 [ApiController]
 public class ScriptController(
-    ScriptService scriptService, 
+    VCenterApiService vCenterApiService,
     UserSession session, 
     VmBookingService vmBookingService, 
     VmBookingScriptService vmBookingScriptService
@@ -19,14 +19,14 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
-        VmInfoGetDto? vmInfo = await scriptService.GetVmAsync(booking.Name);
+        VmInfoGetDto? vmInfo = await vCenterApiService.GetInfo(name);
         if (vmInfo == null)
         {
             return NotFound(ResponseMessage.GetErrorMessage("Error under converting vm info"));
         }
 
-        vmInfo.username = booking.Login;
-        vmInfo.password = booking.Password;
+        vmInfo.Username = booking.Login;
+        vmInfo.Password = booking.Password;
         
         return Ok(vmInfo);
     }

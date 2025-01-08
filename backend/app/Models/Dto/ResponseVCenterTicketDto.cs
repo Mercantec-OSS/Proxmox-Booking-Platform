@@ -1,6 +1,6 @@
 namespace Dto;
 
-public class VmConnectionUriDto
+public class ResponseVCenterTicketDto
 {
     [JsonPropertyName("ticket")]
     public string Uri { get; set; } = "";

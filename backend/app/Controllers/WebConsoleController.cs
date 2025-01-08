@@ -6,15 +6,15 @@ public class WebConsoleController : Controller
     private readonly UserService _userService;
     private readonly EmailService _emailService;
     private readonly UserSession _session;
-    private readonly ScriptService _scriptService;
+    private readonly VCenterApiService _vCenterApiService;
 
-    public WebConsoleController(Context context, Config config, UserSession session, ScriptService scriptService)
+    public WebConsoleController(Context context, Config config, UserSession session, VCenterApiService vCenterApiService)
     {
         _vmBookingService = new VmBookingService(context);
         _userService = new UserService(context);
         _emailService = new EmailService(config);
         _session = session;
-        _scriptService = scriptService;
+        _vCenterApiService = vCenterApiService;
     }
 
 
@@ -35,7 +35,7 @@ public class WebConsoleController : Controller
             return Unauthorized(ResponseMessage.GetBookingNotFound());
         }
 
-        var connectionUri = await _scriptService.GetVmConnectionUriAsync(vmUuid);
+        var connectionUri = await _vCenterApiService.GetVmConnectionUriAsync(vmUuid);
         if (connectionUri == null)
         {
             return NotFound(ResponseMessage.GetBookingNotFound());

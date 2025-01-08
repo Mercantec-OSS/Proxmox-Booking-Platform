@@ -1,9 +1,4 @@
-﻿using NuGet.DependencyResolver;
-using Org.BouncyCastle.Cms;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-
-public class EmailService
+﻿public class EmailService
 {
     private readonly Config _config;
     private string emailLocaltion;

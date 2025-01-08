@@ -34,14 +34,14 @@ public class SchedulerBackgroundService(IServiceScopeFactory scopeFactory) : Bac
     {
         using var scope = scopeFactory.CreateScope();
         var vmService = scope.ServiceProvider.GetRequiredService<VmBookingService>();
-        var scriptService = scope.ServiceProvider.GetRequiredService<ScriptService>();
+        var scriptService = scope.ServiceProvider.GetRequiredService<VmBookingScriptService>();
 
         var expiredBookings = await vmService.GetExpiredAsync();
 
         foreach (var booking in expiredBookings)
         {
             await vmService.DeleteAsync(booking);
-            await scriptService.DeleteVmAsync(booking.Name);
+            scriptService.Remove(booking.Name);
         }
     }
 }
