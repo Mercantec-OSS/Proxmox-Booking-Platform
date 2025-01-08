@@ -6,7 +6,6 @@ public class AuthorizationController(Context context, Config config, UserSession
     private readonly UserService _userService = new(context);
     private readonly StudentGroupService _groupService = new(context);
     private readonly EmailService _emailService = new(config);
-    private readonly LdapService _ldapService = new(config);
 
     [HttpGet("check-session")]
     public ActionResult<UserGetDto?> GetUser()
@@ -19,35 +18,6 @@ public class AuthorizationController(Context context, Config config, UserSession
     public async Task<ActionResult<TokenDto>> PostToken(UserLoginDto userDto)
     {
         User? user = await _userService.GetAsync(userDto.Email);
-
-        if (user == null)
-        {
-            //ad connection
-            bool userCanConnect = CheckAdConnection(userDto.Email, userDto.Password);
-
-            if (userCanConnect == false)
-            {
-                return BadRequest(ResponseMessage.GetWrongCredentials());
-            }
-
-            User? adUser = await _ldapService.GetStudentByEmailAsync(userDto.Email);
-
-            if (adUser == null)
-            {
-                return NotFound(ResponseMessage.GetUserNotFound());
-            }
-
-            UserCreateDto userCreate = new UserCreateDto
-            {
-                Email = adUser.Email.ToLower(),
-                Name = adUser.Name,
-                Password = userDto.Password,
-                Surname = adUser.Surname,
-            };
-
-            await CreateUser(userCreate, Models.User.UserRoles.Student);
-            user = await _userService.GetAsync(adUser.Email);
-        }
 
         if (user == null)
         {
@@ -178,19 +148,5 @@ public class AuthorizationController(Context context, Config config, UserSession
         await _userService.CreateAsync(newUser);
         _emailService.SendUserCreation(newUser);
         return newUser.MakeGetDto();
-    }
-
-    private bool CheckAdConnection(string email, string password)
-    {
-        string login = email.Split("@").First();
-
-        LdapConnection? connection = _ldapService.ConnectAsync(login, password);
-
-        if (connection != null && connection.Connected == true)
-        {
-            return true;
-        }
-
-        return false;
     }
 }
