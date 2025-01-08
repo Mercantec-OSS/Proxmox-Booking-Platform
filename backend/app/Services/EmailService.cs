@@ -234,66 +234,6 @@ public class EmailService
         await SendEmail(booking.Owner.Email, subject, bodyBuilder.HtmlBody = htmlContent);
     }
 
-    public async void SendClusterBookingCreate(ClusterBooking Clusterbooking)
-    {
-        BodyBuilder bodyBuilder = new BodyBuilder();
-
-        string htmlBody = File.ReadAllText(emailLocaltion + "BookingCreate.html");
-        string vcenterPrefab = File.ReadAllText(emailLocaltion + "VCenter.html");
-        string esxiPrefab = File.ReadAllText(emailLocaltion + "EsxiHosts.html");
-
-                string vcenterAndHosts = "";
-        foreach (VCenter vCenter in Clusterbooking.VCenters)
-        {
-            List<EsxiHost> vcenterHosts = vCenter.EsxiHosts.FindAll(h => h.VCenterId == vCenter.Id);
-            Dictionary<string, string> replacements = new()
-            {
-                { "##amoutOfEsxiHosts##", vcenterHosts.Count.ToString() },
-                { "##VCenterIP##", vCenter.Ip.ToString() },
-                { "##VCenterUser##", vCenter.UserName },
-                { "##VCenterPassword##", vCenter.Password },
-            };
-
-            string esxiHost = "";
-            foreach (EsxiHost host in vcenterHosts)
-            {
-                string esxi = ReplaceFromString(esxiPrefab, new()
-                {
-                    { "##hostIp##", host.Ip.ToString()},
-                    { "##hostUsername##", host.UserName},
-                    { "##hostPassword##", host.Password},
-                });
-
-                if (!replacements.TryGetValue("##firstHost##", out _))
-                {
-                    replacements.Add("##firstHost##", esxi.Substring("<tr>".Length, esxi.Length - "</tr>".Length));
-                    continue;
-                }
-
-                esxiHost += esxi;
-            }
-
-            replacements.Add("##hosts##", esxiHost);
-            vcenterAndHosts += ReplaceFromString(vcenterPrefab, replacements);
-        }
-
-        htmlBody = ReplaceFromString(htmlBody, new()
-        {
-            { "##name##", Clusterbooking.Owner.Name },
-            { "##surname##", Clusterbooking.Owner.Surname },
-            { "##email##", Clusterbooking.Owner.Email },
-            { "##role##", Clusterbooking.Owner.Role },
-            { "##bookingId##", Clusterbooking.Id.ToString()},
-            { "##bookingAoumtStudents##", Clusterbooking.AmountStudents.ToString() },
-            { "##vcentersAndHost##", vcenterAndHosts },
-            { "##created##", Clusterbooking.CreatedAt.ToString("ddd, dd MMM yyy HH:mm:ss") },
-            { "##expires##", Clusterbooking.ExpiredAt.ToString("ddd, dd MMM yyy HH:mm:ss") },
-        });
-        string subject = "Cluster booking created";
-
-        await SendEmail(Clusterbooking.Owner.Email, subject, bodyBuilder.HtmlBody = $"{htmlBody + vcenterPrefab + esxiPrefab}");
-    }
-
     private static string ReplaceFromString(string stringToReplaceFrom, Dictionary<string, string> replacements)
     {
         return replacements.Aggregate(stringToReplaceFrom, (current, replacment) =>

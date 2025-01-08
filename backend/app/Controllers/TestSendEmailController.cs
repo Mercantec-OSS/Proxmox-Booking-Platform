@@ -45,7 +45,7 @@ public class TestSendEmailController(Config config) : ControllerBase
         return Ok();
     }
 
-    [HttpGet("booking-request")]
+    [HttpGet("booking")]
     public ActionResult SendFakeEmails(string emailToSendToo = "")
     {
         User owner = new()
@@ -81,56 +81,5 @@ public class TestSendEmailController(Config config) : ControllerBase
         return Ok();
     }
 
-    [HttpGet("booking")]
-    public ActionResult CreateFakeBooking(string emailToSendToo = "")
-    {
-        try
-        {
-            Random random = new();
-            List<VCenter> vCenters = [];
-            List<EsxiHost> hosts = [];
-            for (int i = 0; i < 5; i++)
-            {
-                int id = random.Next();
-                vCenters.Add(new()
-                {
-                    Id = id,
-                    Ip = "1.1.1." + i,
-                    UserName = "admin",
-                    Password = "admin1",
-                });
 
-                for (int x = 0; x < random.Next(1, 6); x++)
-                {
-                    hosts.Add(new()
-                    {
-                        Ip = "1.1.1." + (i * 10 + x),
-                        UserName = "admin",
-                        Password = "admin",
-                        VCenterId = id,
-                    });
-                }
-            }
-            ClusterBooking booking = new()
-            {
-                Id = random.Next(),
-                AmountStudents = random.Next(),
-                CreatedAt = DateTime.UtcNow,
-                ExpiredAt = DateTime.UtcNow.AddDays(1),
-            };
-            User owner = new()
-            {
-                Email = !string.IsNullOrEmpty(emailToSendToo) ? emailToSendToo : "kkla.skp@edu.mercantec.dk",
-                Name = "admin",
-                Surname = "test",
-            };
-            // _emailService.SendBookingCreate(owner, booking, vCenters, hosts);
-
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ResponseMessage.GetErrorMessage($"Could not send email: {ex.Message}"));
-        }
-    }
 }
