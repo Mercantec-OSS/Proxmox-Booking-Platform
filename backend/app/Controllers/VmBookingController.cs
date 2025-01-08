@@ -1,8 +1,7 @@
 ﻿[ApiController]
 [Route("vm-booking")]
-public class VmBookingController(Context context, ScriptService scriptService, Config config, UserSession session) : ControllerBase
+public class VmBookingController(Context context, Config config, UserSession session, VmBookingScriptService vmBookingScriptService, VmBookingService _vmBookingService) : ControllerBase
 {
-    private readonly VmBookingService _vmBookingService = new(context);
     private readonly UserService _userService = new(context);
     private readonly EmailService _emailService = new(config);
 
@@ -61,7 +60,7 @@ public class VmBookingController(Context context, ScriptService scriptService, C
         // if booking is accepted create vm
         if (isAccepted)
         {
-            await scriptService.CreateVmAsync(booking.Type, booking.Name, config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+            vmBookingScriptService.Create(booking.Name, booking.Type, config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
         }
 
         else
@@ -175,7 +174,7 @@ public class VmBookingController(Context context, ScriptService scriptService, C
         await _vmBookingService.UpdateAsync(booking);
 
         _emailService.SendVmBookingaceepted(booking);
-        await scriptService.CreateVmAsync(booking.Type, booking.Name, config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+        vmBookingScriptService.Create(booking.Name, booking.Type, config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
 
         return NoContent();
     }
@@ -235,7 +234,7 @@ public class VmBookingController(Context context, ScriptService scriptService, C
         }
 
         await _vmBookingService.DeleteAsync(booking);
-        await scriptService.DeleteVmAsync(booking.Name);
+        vmBookingScriptService.Remove(booking.Name);
 
         return NoContent();
     }
