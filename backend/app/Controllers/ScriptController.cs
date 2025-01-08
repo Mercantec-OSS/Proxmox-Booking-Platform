@@ -49,7 +49,7 @@ public class ScriptController(
     public ActionResult GetTemplates()
     {
         session.IsAuthenticated();
-        return Ok(TemplatesBackgroundService.GetTemplates());
+        return Ok(TemplateGetDto.MakeGetDtoFromList(TemplatesBackgroundService.GetTemplates()));
     }
 
     [HttpDelete("vm/reset-templates")]

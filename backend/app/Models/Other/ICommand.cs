@@ -1,5 +1,4 @@
-﻿
-namespace Models;
+﻿namespace Models;
 
 public interface ICommand
 {

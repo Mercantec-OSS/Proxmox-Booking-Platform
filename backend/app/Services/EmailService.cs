@@ -11,12 +11,6 @@
 
     public async Task SendEmail(string recipientAddress, string subject, string body)
     {
-        if (_config.TEST_MODE)
-        {
-            Console.WriteLine($"TEST MODE: EMAIL NOT SEND! Mail to: {recipientAddress}, Subject: {subject}");
-            return;
-        }
-
         MimeMessage message = CreateEmail(recipientAddress, subject, body);
         await SendEmailAsync(message);
     }
