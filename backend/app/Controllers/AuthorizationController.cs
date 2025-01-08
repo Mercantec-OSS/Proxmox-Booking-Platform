@@ -1,11 +1,10 @@
 ﻿[ApiController]
 [Route("authorization")]
-public class AuthorizationController(Context context, Config config, UserSession session, JwtTokenService jwt) : ControllerBase
+public class AuthorizationController(Context context, UserSession session, JwtTokenService jwt) : ControllerBase
 {
-    private readonly Config _config = config;
     private readonly UserService _userService = new(context);
     private readonly StudentGroupService _groupService = new(context);
-    private readonly EmailService _emailService = new(config);
+    private readonly EmailService _emailService = new();
 
     [HttpGet("check-session")]
     public ActionResult<UserGetDto?> GetUser()

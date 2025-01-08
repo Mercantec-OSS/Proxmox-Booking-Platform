@@ -3,8 +3,8 @@
 public class VersionController : ControllerBase
 {
     [HttpGet("/version")]
-    public IActionResult GetVersion(Config config)
+    public IActionResult GetVersion()
     {
-        return Ok(config.VERSION);
+        return Ok(Config.VERSION);
     }
 }

@@ -1,24 +1,24 @@
 namespace Services;
 
-public class VmBookingScriptService(ScriptFactory scriptFactory)
+public class VmBookingScriptService()
 {
 
     public void Create(string name, string template, string vmRootPassword, string vmUser, string vmPassword)
     {
-        ICommand command = scriptFactory.GetCreateVmScript(name, template, vmRootPassword, vmUser, vmPassword);
-        command.Execute(false);
+        Script script = Script.GetCreateVmScript(name, template, vmRootPassword, vmUser, vmPassword);
+        script.Run(false);
     }
 
     public void Remove(string name)
     {
-        ICommand command = scriptFactory.GetRemoveVmScript(name);
-        command.Execute(false);
+        Script script = Script.GetRemoveVmScript(name);
+        script.Run(false);
     }
 
     public List<string> GetTemplates()
     {
-        ICommand command = scriptFactory.GetTemlatesScript();
-        string rawOutput = command.Execute(true);
+        Script script = Script.GetTemlatesScript();
+        string rawOutput = script.Run(true);
 
         string[] templateNames = rawOutput.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         return templateNames.ToList();
@@ -26,19 +26,19 @@ public class VmBookingScriptService(ScriptFactory scriptFactory)
 
     public void Update(string vmName, int cpu, int ram)
     {
-        ICommand command = scriptFactory.GetUpdateVmResourcesScript(vmName, cpu, ram);
-        command.Execute(false);
+        Script script = Script.GetUpdateVmResourcesScript(vmName, cpu, ram);
+        script.Run(false);
     }
 
     public void ResetPower(string vmName)
     {
-        ICommand command = scriptFactory.GetResetVmPowerScript(vmName);
-        command.Execute(false);
+        Script script = Script.GetResetVmPowerScript(vmName);
+        script.Run(false);
     }
 
     public string GetVcenterInfo()
     {
-        ICommand command = scriptFactory.GetVcenterInfoScript();
-        return command.Execute(true);
+        Script script = Script.GetVcenterInfoScript();
+        return script.Run(true);
     }
 }

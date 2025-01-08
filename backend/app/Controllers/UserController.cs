@@ -1,10 +1,10 @@
 ﻿[ApiController]
 [Route("users")]
-public class UserController(Context context, Config config, UserSession session) : ControllerBase
+public class UserController(Context context, UserSession session) : ControllerBase
 {
     private readonly UserService _userService = new(context);
     private readonly StudentGroupService _groupService = new(context);
-    private readonly EmailService _emailService = new(config);
+    private readonly EmailService _emailService = new();
 
     [HttpGet("{id}")]
     public async Task<ActionResult<UserGetDto>> GetUser(int id)

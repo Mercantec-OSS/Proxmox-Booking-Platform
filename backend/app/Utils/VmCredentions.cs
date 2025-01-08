@@ -2,8 +2,6 @@ public static class VmCredentials
 {
     public static string GetLoginByTemplate(TemplateGetDto template)
     {
-        Config config = new();
-
         if (!template.Keywords.Contains("psw"))
         {
             return "";
@@ -19,7 +17,7 @@ public static class VmCredentials
             return "Administrator";
         }
 
-        return config.VM_DEFAULT_USER;
+        return Config.VM_DEFAULT_USER;
     }
 
     public static string GetPasswordByTemplate(TemplateGetDto template)

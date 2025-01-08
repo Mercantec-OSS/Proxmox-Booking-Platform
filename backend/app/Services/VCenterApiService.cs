@@ -1,11 +1,9 @@
 public class VCenterApiService
 {
     private HttpClient _client;
-    private readonly Config _config;
 
-    public VCenterApiService(Config config)
+    public VCenterApiService()
     {
-        _config = config;
         _client = InitHttpClient();
         Login().Wait();
     }
@@ -24,12 +22,12 @@ public class VCenterApiService
     private async System.Threading.Tasks.Task Login()
     {
         // Add authorization header to client
-        var credentials = $"{_config.VM_VCENTER_USER}:{_config.VM_VCENTER_PASSWORD}";
+        var credentials = $"{Config.VM_VCENTER_USER}:{Config.VM_VCENTER_PASSWORD}";
         var base64Credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(credentials));
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64Credentials);
 
         // Get and prepare access token
-        HttpResponseMessage response = await _client.PostAsync($"https://{_config.VM_VCENTER_IP}/api/session", null);
+        HttpResponseMessage response = await _client.PostAsync($"https://{Config.VM_VCENTER_IP}/api/session", null);
         string responseBody = await response.Content.ReadAsStringAsync();
         string token = responseBody.Replace("\"", "");
 
@@ -39,7 +37,7 @@ public class VCenterApiService
 
     public async Task<ResponseVCenterVmDto?> SearchVmByNameAsync(string vmName)
     {
-        var vms = await _client.GetFromJsonAsync<List<ResponseVCenterVmDto>>($"https://{_config.VM_VCENTER_IP}/api/vcenter/vm?names={vmName}") ?? new List<ResponseVCenterVmDto>();
+        var vms = await _client.GetFromJsonAsync<List<ResponseVCenterVmDto>>($"https://{Config.VM_VCENTER_IP}/api/vcenter/vm?names={vmName}") ?? new List<ResponseVCenterVmDto>();
         return vms.FirstOrDefault();
     }
 
@@ -59,16 +57,16 @@ public class VCenterApiService
         var json = JsonSerializer.Serialize(data);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var connectionUri = await _client.PostAsync($"https://{_config.VM_VCENTER_IP}/api/vcenter/vm/{selectedVmName.InternName}/console/tickets", content);
+        var connectionUri = await _client.PostAsync($"https://{Config.VM_VCENTER_IP}/api/vcenter/vm/{selectedVmName.InternName}/console/tickets", content);
         ResponseVCenterTicketDto ticket = await connectionUri.Content.ReadFromJsonAsync<ResponseVCenterTicketDto>() ?? new ResponseVCenterTicketDto();
-        ticket.VcenterIp = _config.VM_VCENTER_IP;
+        ticket.VcenterIp = Config.VM_VCENTER_IP;
 
         return ticket;
     }
 
     public async Task<string> GetVmIpAsync(string internName)
     {
-        string uri = $"https://{_config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/guest/networking/interfaces";
+        string uri = $"https://{Config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/guest/networking/interfaces";
 
         var machines = await _client.GetFromJsonAsync<List<ResponseVmIpDto>>(uri) ?? new List<ResponseVmIpDto>();
         var selectedMachine = machines.FirstOrDefault(new ResponseVmIpDto());
@@ -79,7 +77,7 @@ public class VCenterApiService
 
     public async Task<int> GetCpuCount(string internName)
     {
-        var uri = $"https://{_config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/hardware/cpu";
+        var uri = $"https://{Config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/hardware/cpu";
         var cpuCountData = await _client.GetFromJsonAsync<ResponseVmCpuDto>(uri) ?? new ResponseVmCpuDto();
 
         return cpuCountData.Count;
@@ -87,7 +85,7 @@ public class VCenterApiService
 
     public async Task<int> GetRamSize(string internName)
     {
-        var uri = $"https://{_config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/hardware/memory";
+        var uri = $"https://{Config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/hardware/memory";
         var ramSizeData = await _client.GetFromJsonAsync<ResponseVmRamDto>(uri) ?? new ResponseVmRamDto();
 
         return ramSizeData.SizeGB;

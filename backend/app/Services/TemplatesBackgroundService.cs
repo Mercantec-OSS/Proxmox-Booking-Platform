@@ -2,7 +2,7 @@ public class TemplatesBackgroundService : BackgroundService
 {
     private static List<string> _data = new List<string>();
     private static DateTime? lastUpdate = null;
-    VmBookingScriptService vmBookingScriptService = new VmBookingScriptService(new ScriptFactory(new Config()));
+    VmBookingScriptService vmBookingScriptService = new VmBookingScriptService();
 
     public static List<string> GetTemplates()
     {

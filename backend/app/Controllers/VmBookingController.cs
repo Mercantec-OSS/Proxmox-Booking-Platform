@@ -1,9 +1,9 @@
 ﻿[ApiController]
 [Route("vm-booking")]
-public class VmBookingController(Context context, Config config, UserSession session, VmBookingScriptService vmBookingScriptService, VmBookingService _vmBookingService) : ControllerBase
+public class VmBookingController(Context context, UserSession session, VmBookingScriptService vmBookingScriptService, VmBookingService _vmBookingService) : ControllerBase
 {
     private readonly UserService _userService = new(context);
-    private readonly EmailService _emailService = new(config);
+    private readonly EmailService _emailService = new();
 
     [HttpPost("create")]
     [ProducesResponseType(201)]
@@ -60,7 +60,7 @@ public class VmBookingController(Context context, Config config, UserSession ses
         // if booking is accepted create vm
         if (isAccepted)
         {
-            vmBookingScriptService.Create(booking.Name, booking.Type, config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+            vmBookingScriptService.Create(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
         }
 
         else
@@ -174,7 +174,7 @@ public class VmBookingController(Context context, Config config, UserSession ses
         await _vmBookingService.UpdateAsync(booking);
 
         _emailService.SendVmBookingaceepted(booking);
-        vmBookingScriptService.Create(booking.Name, booking.Type, config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+        vmBookingScriptService.Create(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
 
         return NoContent();
     }

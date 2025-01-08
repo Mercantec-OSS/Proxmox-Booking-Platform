@@ -8,11 +8,11 @@ public class WebConsoleController : Controller
     private readonly UserSession _session;
     private readonly VCenterApiService _vCenterApiService;
 
-    public WebConsoleController(Context context, Config config, UserSession session, VCenterApiService vCenterApiService)
+    public WebConsoleController(Context context, UserSession session, VCenterApiService vCenterApiService)
     {
         _vmBookingService = new VmBookingService(context);
         _userService = new UserService(context);
-        _emailService = new EmailService(config);
+        _emailService = new EmailService();
         _session = session;
         _vCenterApiService = vCenterApiService;
     }

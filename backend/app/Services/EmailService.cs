@@ -1,12 +1,10 @@
 ﻿public class EmailService
 {
-    private readonly Config _config;
     private string emailLocaltion;
 
-    public EmailService(Config config)
+    public EmailService()
     {
-        _config = config;
-        emailLocaltion = _config.EMAIL_TEMPLATES_PATH;
+        emailLocaltion = Config.EMAIL_TEMPLATES_PATH;
     }
 
     public async Task SendEmail(string recipientAddress, string subject, string body)
@@ -18,7 +16,7 @@
     private MimeMessage CreateEmail(string recipientAddress, string subject, string body)
     {
         MimeMessage message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Mercantec VM booking system", _config.SMTP_USER));
+        message.From.Add(new MailboxAddress("Mercantec VM booking system", Config.SMTP_USER));
         message.To.Add(new MailboxAddress("", recipientAddress));
         message.Subject = subject;
         message.Body = new TextPart("HTML") { Text = body };
@@ -32,8 +30,8 @@
         {
             try
             {
-                await smtpClient.ConnectAsync(_config.SMTP_ADDRESS, int.Parse(_config.SMTP_PORT), true);
-                await smtpClient.AuthenticateAsync(_config.SMTP_USER, _config.SMTP_PASSWORD);
+                await smtpClient.ConnectAsync(Config.SMTP_ADDRESS, int.Parse(Config.SMTP_PORT), true);
+                await smtpClient.AuthenticateAsync(Config.SMTP_USER, Config.SMTP_PASSWORD);
 
                 await smtpClient.SendAsync(message);
                 await smtpClient.DisconnectAsync(true);
