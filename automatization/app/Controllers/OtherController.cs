@@ -28,6 +28,6 @@ public class OtherController(Config config) : ControllerBase
     [HttpGet("/version")]
     public IActionResult GetVersion()
     {
-        return Ok(config.VERSION);
+        return Ok(TemplatesBackgroundService.GetTemplates());
     }
 }

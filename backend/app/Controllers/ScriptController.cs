@@ -183,8 +183,8 @@ public class ScriptController(
     }
 
     [HttpGet("vm/vcenter-info")]
-    public async Task<ActionResult> GetVcenterInfo()
+    public ActionResult GetVcenterInfo()
     {
-        return Ok(await scriptService.GetVcenterInfoAsync());
+        return Ok(VCenterInfoBackgroundService.GetInfo());
     }
 }

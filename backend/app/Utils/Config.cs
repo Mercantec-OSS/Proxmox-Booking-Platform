@@ -11,7 +11,6 @@ public class Config
     public string AD_USER => ParseAdConnectionString()[2];
     public string AD_PASSWORD => ParseAdConnectionString()[3];
    
-
     public string SMTP_ADDRESS => ParseSMTPConnectionString()[0];
     public string SMTP_PORT => ParseSMTPConnectionString()[1];
     public string SMTP_USER => ParseSMTPConnectionString()[2];
@@ -20,6 +19,13 @@ public class Config
 
     public string VM_DEFAULT_USER => ParseVariable("VM_DEFAULT_USER");
     public string VM_ROOT_PASSWORD => ParseVariable("VM_ROOT_PASSWORD");
+
+    public string SCRIPTS_PATH => ParseVariable("SCRIPTS_PATH");
+    public string VM_VCENTER_IP => ParseVariable("VM_VCENTER_IP");
+    public string VM_VCENTER_USER => ParseVariable("VM_VCENTER_USER");
+    public string VM_VCENTER_PASSWORD => ParseVariable("VM_VCENTER_PASSWORD");
+    public string VM_CLUSTER_NAME => ParseVariable("VM_CLUSTER_NAME");
+    public string VM_DATASTORE_NAME => ParseVariable("VM_DATASTORE_NAME");
 
     private string ParseVariable(string variableName) {
         string variable = Environment.GetEnvironmentVariable(variableName) ?? "";

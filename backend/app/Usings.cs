@@ -16,3 +16,7 @@ global using System.IdentityModel.Tokens.Jwt;
 global using Microsoft.IdentityModel.Tokens;
 global using System.Text.Json;
 global using System.Web;
+global using System;
+global using System.Diagnostics;
+global using System.Net.Http.Headers;
+
