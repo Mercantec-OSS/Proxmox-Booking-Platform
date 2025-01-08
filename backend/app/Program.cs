@@ -15,6 +15,7 @@ builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddSingleton<Config>();
 builder.Services.AddHostedService<SchedulerBackgroundService>();
 builder.Services.AddHostedService<VCenterInfoBackgroundService>();
+builder.Services.AddHostedService<TemplatesBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 
 // CORS

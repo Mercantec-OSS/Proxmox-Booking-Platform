@@ -163,14 +163,14 @@ public class ScriptController(
     }
 
     [HttpGet("vm/templates")]
-    public async Task<ActionResult> GetTemplates()
+    public ActionResult GetTemplates()
     {
         session.IsAuthenticated();
-        return Ok(await scriptService.GetTemplatesAsync());
+        return Ok(TemplatesBackgroundService.GetTemplates());
     }
 
     [HttpDelete("vm/reset-templates")]
-    public async Task<ActionResult> ResetTemplates()
+    public ActionResult ResetTemplates()
     {
         session.GetIfRoles
         (
@@ -178,7 +178,7 @@ public class ScriptController(
             Models.User.UserRoles.Teacher
         );
 
-        await scriptService.ResetTemplatesAsync();
+        TemplatesBackgroundService.ResetTemplates();
         return NoContent();
     }
 
