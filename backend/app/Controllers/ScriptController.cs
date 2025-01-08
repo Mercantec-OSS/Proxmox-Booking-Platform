@@ -10,11 +10,22 @@ public class ScriptController(
     [HttpGet("vm/get-ip/{name}")]
     public async Task<ActionResult> GetVmIp(string name)
     {
-        session.IsAuthenticated();
-
+        User user = session.GetIfAuthenticated();
         VmBooking? booking = await vmBookingService.GetByNameAsync(name);
 
         if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
+
+        // Deny access to the booking if the user is a student and the booking is not his
+        if (session.IsStudent() && booking.OwnerId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
+
+        // Deny access to the booking if the user is a teacher and the booking is not his
+        if (session.IsTeacher() && booking.OwnerId != user.Id)
         {
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
@@ -30,6 +41,7 @@ public class ScriptController(
         
         return Ok(vmInfo);
     }
+
     [HttpGet("vm/reset-power/{name}")]
     public async Task<ActionResult> ResetVmPower(string name)
     {
@@ -42,6 +54,32 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
         vmBookingScriptService.ResetPower(booking.Name);
+        return NoContent();
+    }
+
+    [HttpPut("vm/update-resources")]
+    public async Task<ActionResult> UpdateVmResources(VmUpdateResourcesDto dto)
+    {
+        var user = session.GetIfRoles
+        (
+            Models.User.UserRoles.Admin,
+            Models.User.UserRoles.Teacher
+        );
+
+        VmBooking? booking = await vmBookingService.GetByNameAsync(dto.Uuid);
+
+        if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
+
+        // Deny access to the booking if the user is a teacher and the booking is not his
+        if (user.IsTeacher() && booking.OwnerId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
+
+        vmBookingScriptService.Update(booking.Name, dto.Cpu, dto.Ram);
         return NoContent();
     }
 
