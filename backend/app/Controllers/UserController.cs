@@ -1,10 +1,13 @@
 ﻿[ApiController]
 [Route("users")]
-public class UserController(Context context, UserSession session) : ControllerBase
+public class UserController(
+    Context context, 
+    UserSession session,
+    EmailService emailService
+    ) : ControllerBase
 {
     private readonly UserService _userService = new(context);
     private readonly StudentGroupService _groupService = new(context);
-    private readonly EmailService _emailService = new();
 
     [HttpGet("{id}")]
     public async Task<ActionResult<UserGetDto>> GetUser(int id)
@@ -103,7 +106,9 @@ public class UserController(Context context, UserSession session) : ControllerBa
         user.Email = userDTO.Email;
         user.UpdatedAt = DateTime.UtcNow;
 
-        await _emailService.sendUserUpdate(UserInfo, user);
+        Email email = Email.GetUserUpdate(UserInfo, user);
+        await emailService.SendAsync(email);
+
         await _userService.UpdateAsync(user);
 
         return NoContent();
@@ -142,7 +147,9 @@ public class UserController(Context context, UserSession session) : ControllerBa
 
         user.Role = userDTO.Role;
 
-        await _emailService.SendUserRoleUpdate(user, previousRole.Role);
+        Email email = Email.GetUserRoleUpdate(user, previousRole.Role);
+        await emailService.SendAsync(email);
+
         await _userService.UpdateAsync(user);
 
         return NoContent();

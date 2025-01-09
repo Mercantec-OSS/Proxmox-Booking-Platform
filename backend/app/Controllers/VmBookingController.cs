@@ -1,9 +1,14 @@
 ﻿[ApiController]
 [Route("vm-booking")]
-public class VmBookingController(Context context, UserSession session, VmBookingScriptService vmBookingScriptService, VmBookingService _vmBookingService) : ControllerBase
+public class VmBookingController(
+    Context context, 
+    UserSession session, 
+    VmBookingScriptService vmBookingScriptService, 
+    VmBookingService _vmBookingService,
+    EmailService emailService
+    ) : ControllerBase
 {
     private readonly UserService _userService = new(context);
-    private readonly EmailService _emailService = new();
 
     [HttpPost("create")]
     [ProducesResponseType(201)]
@@ -55,7 +60,9 @@ public class VmBookingController(Context context, UserSession session, VmBooking
         };
 
         await _vmBookingService.CreateAsync(booking);
-        _emailService.SendVmBookingCreate(booking);
+
+        Email email = Email.GetVmBookingCreate(booking);
+        await emailService.SendAsync(email);
         
         // if booking is accepted create vm
         if (isAccepted)
@@ -65,7 +72,9 @@ public class VmBookingController(Context context, UserSession session, VmBooking
 
         else
         {
-            _emailService.SendVmBookingToAccept(booking);
+            Email emailAccept = Email.GetVmBookingToAccept(booking);
+            await emailService.SendAsync(emailAccept);
+
         }
 
         return Ok(true);
@@ -173,7 +182,8 @@ public class VmBookingController(Context context, UserSession session, VmBooking
         booking.IsAccepted = true;
         await _vmBookingService.UpdateAsync(booking);
 
-        _emailService.SendVmBookingaceepted(booking);
+        Email email = Email.GetVmBookingAccepted(booking);
+        await emailService.SendAsync(email);
         vmBookingScriptService.Create(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
 
         return NoContent();
@@ -201,7 +211,9 @@ public class VmBookingController(Context context, UserSession session, VmBooking
 
         await _vmBookingService.UpdateAsync(booking);
 
-        _emailService.SendVmBookingUpdated(booking);
+        Email email = Email.GetVmBookingUpdated(booking);
+        await emailService.SendAsync(email);
+
         return NoContent();
     }
 

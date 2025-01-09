@@ -1,12 +1,9 @@
-﻿using System.Text.RegularExpressions;
-
-
-namespace Models;
+﻿namespace Models;
 
 public class Script
 {
-    private readonly string command;
-    private readonly string interpreter;
+    public readonly string Command;
+    public readonly string Interpreter;
 
     public Script(ScriptType scriptType, string command = "")
     {
@@ -14,60 +11,17 @@ public class Script
         switch (scriptType)
         {
             case ScriptType.Bash:
-                interpreter = "/bin/bash";
+                Interpreter = "/bin/bash";
                 break;
             case ScriptType.PowerShell:
-                interpreter = "/usr/bin/pwsh";
+                Interpreter = "/usr/bin/pwsh";
                 break;
             default:
-                interpreter = "/bin/bash";
+                Interpreter = "/bin/bash";
                 break;
         }
 
-        this.command = command;
-    }
-    public string CommandString => Regex.Replace(command, @"'([^']*)'", "x");
-
-    public string Run(bool readOutput)
-    {
-        return Execute(command, readOutput);
-    }
-    private string Execute(string command, bool readOutput)
-    {
-        string output = "";
-
-        ProcessStartInfo processStartInfo = new ProcessStartInfo
-        {
-            FileName = interpreter,
-            Arguments = $"-c \"{command}\"",
-            UseShellExecute = false,
-            RedirectStandardOutput = true,
-        };
-
-        using (Process process = new Process())
-        {
-            try
-            {
-                process.StartInfo = processStartInfo;
-                process.Start();
-
-                if (readOutput)
-                {
-                    output = process.StandardOutput.ReadToEnd();
-                }
-                else {
-                    output = "Command was started";
-                }
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error executing command: " + ex.Message);
-                output = $"Error executing command: {ex.Message}";
-            }
-        }
-
-        return output;
+        this.Command = command;
     }
 
     public enum ScriptType

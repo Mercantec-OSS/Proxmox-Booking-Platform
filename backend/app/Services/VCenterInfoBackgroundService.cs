@@ -1,7 +1,7 @@
 public class VCenterInfoBackgroundService : BackgroundService
 {
     private static VCenterInfoDTO _data = new VCenterInfoDTO();
-    VmBookingScriptService vmBookingService = new VmBookingScriptService();
+    VmBookingScriptService vmBookingService = new VmBookingScriptService(new ScriptService());
 
     public static VCenterInfoDTO GetInfo()
     {

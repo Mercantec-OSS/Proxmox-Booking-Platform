@@ -1,10 +1,14 @@
 ﻿[ApiController]
 [Route("authorization")]
-public class AuthorizationController(Context context, UserSession session, JwtTokenService jwt) : ControllerBase
+public class AuthorizationController(
+    Context context, 
+    UserSession session, 
+    JwtTokenService jwt,
+    EmailService emailService
+    ) : ControllerBase
 {
     private readonly UserService _userService = new(context);
     private readonly StudentGroupService _groupService = new(context);
-    private readonly EmailService _emailService = new();
 
     [HttpGet("check-session")]
     public ActionResult<UserGetDto?> GetUser()
@@ -145,7 +149,10 @@ public class AuthorizationController(Context context, UserSession session, JwtTo
         }
 
         await _userService.CreateAsync(newUser);
-        _emailService.SendUserCreation(newUser);
+
+        Email email = Email.GetUserCreation(newUser);
+        await emailService.SendAsync(email);
+
         return newUser.MakeGetDto();
     }
 }

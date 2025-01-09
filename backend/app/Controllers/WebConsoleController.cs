@@ -4,7 +4,6 @@ public class WebConsoleController : Controller
 {
     private readonly VmBookingService _vmBookingService;
     private readonly UserService _userService;
-    private readonly EmailService _emailService;
     private readonly UserSession _session;
     private readonly VCenterApiService _vCenterApiService;
 
@@ -12,7 +11,6 @@ public class WebConsoleController : Controller
     {
         _vmBookingService = new VmBookingService(context);
         _userService = new UserService(context);
-        _emailService = new EmailService();
         _session = session;
         _vCenterApiService = vCenterApiService;
     }
