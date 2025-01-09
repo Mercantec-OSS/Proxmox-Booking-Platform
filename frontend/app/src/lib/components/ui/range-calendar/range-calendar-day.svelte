@@ -2,19 +2,17 @@
 	import { RangeCalendar as RangeCalendarPrimitive } from "bits-ui";
 	import { buttonVariants } from "$lib/components/ui/button/index.js";
 	import { cn } from "$lib/utils/utils.js";
-	export let date;
-	export let month;
-	let className = undefined;
+
+	let { ref = $bindable(null), class: className, ...restProps } = $props();
+
 	export { className as class };
 </script>
 
 <RangeCalendarPrimitive.Day
-	on:click
-	{date}
-	{month}
+	bind:ref
 	class={cn(
 		buttonVariants({ variant: "ghost" }),
-		"h-9 w-9 p-0 font-normal data-[selected]:opacity-100",
+		"size-9 p-0 font-normal data-[selected]:opacity-100",
 		"[&[data-today]:not([data-selected])]:bg-accent [&[data-today]:not([data-selected])]:text-accent-foreground",
 		// Selection Start
 		"data-[selection-start]:bg-primary data-[selection-start]:text-primary-foreground data-[selection-start]:hover:bg-primary data-[selection-start]:hover:text-primary-foreground data-[selection-start]:focus:bg-primary data-[selection-start]:focus:text-primary-foreground",
@@ -28,12 +26,5 @@
 		"data-[unavailable]:text-destructive-foreground data-[unavailable]:line-through",
 		className
 	)}
-	{...$$restProps}
-	let:disabled
-	let:unavailable
-	let:builder
->
-	<slot {disabled} {unavailable} {builder}>
-		{date.day}
-	</slot>
-</RangeCalendarPrimitive.Day>
+	{...restProps}
+/>

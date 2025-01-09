@@ -8,25 +8,23 @@
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
   import { goto } from '$app/navigation';
 
-  let open = false;
+  let open = $state(false);
 
-  /* Alert dialog */
-  let alertDialogOpen = false;
-  let alertTitle = null;
-  let alertDescription = null;
+  // Alert dialog state management
+  let alertDialogOpen = $state(false);
+  let alertTitle = $state(null);
+  let alertDescription = $state(null);
   let resolveAction;
 
-  /* Promt user with alert before executing an action */
-  /* Run when the user presses confirm or cancel using on:notify on the alert component */
+  // Handles user response from alert dialog and resolves the promise
   function handleAnswer(event) {
     alertDialogOpen = false;
-    // Resolve the prompUser promise when the event is handled
     if (resolveAction) {
       resolveAction(event.detail.confirmed);
     }
   }
 
-  /* Show the alert dialog with inputted text and return/resolve with true or false depending on what button the user clicked */
+  // Returns a promise that resolves when user responds to alert dialog
   function promptUser(title, description) {
     return new Promise((resolve) => {
       alertTitle = title;
@@ -36,7 +34,7 @@
     });
   }
 
-  /* Booking action: install vCenter action */
+  // Initiates vCenter installation process for all vCenters in booking
   async function bookingInstallVcenters() {
     const userConfirmed = await promptUser('Confirm Installation of All vCenters', 'You are about to install all vCenters in your booking. Please confirm to proceed.');
     if (!userConfirmed) return;
@@ -49,7 +47,7 @@
     }
   }
 
-  /* Booking action: reset hosts */
+  // Resets all hosts across vCenters, wiping configurations
   async function bookingResetHosts() {
     const userConfirmed = await promptUser(
       'Confirm Host Reset in All vCenters',
@@ -65,7 +63,7 @@
     }
   }
 
-  /* Booking action: reset and install */
+  // Performs full reset and reinstallation of vCenters and hosts
   async function bookingResetAndInstall() {
     const userConfirmed = await promptUser(
       'Confirm vCenter and Hosts Reset and Reinstallation',
@@ -81,7 +79,7 @@
     }
   }
 
-  /* Refresh specific booking based on id */
+  // Syncs booking data with backend and updates local stores
   async function refreshBooking() {
     try {
       const updatedBooking = await clusterService.getClusterBookingById($selectedBookingStore.id);
@@ -100,7 +98,7 @@
     }
   }
 
-  /* Delete a booking */
+  // Handles booking deletion with user confirmation
   async function deleteBooking() {
     const userConfirmed = await promptUser(
       'Confirm Booking Deletion',
@@ -118,7 +116,7 @@
     }
   }
 
-  /* Download a txt with all relevant information about the booking */
+  // Generates and downloads booking details as text file
   function handleFileDownload() {
     const booking = $selectedBookingStore;
     const owner = booking.owner;
@@ -153,7 +151,6 @@ ${esxiHosts}
   }
 </script>
 
-<!-- Alert dialog to confirm or cancel an action -->
 <AlertDialog bind:alertTitle bind:alertDescription bind:open={alertDialogOpen} on:notify={handleAnswer} />
 
 <DropdownMenu.Root>

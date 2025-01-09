@@ -1,10 +1,8 @@
 <script>
 	import { cn } from "$lib/utils/utils.js";
-	export let el = undefined;
-	let className = undefined;
-	export { className as class };
+	let { ref = $bindable(null), class: className, children, ...restProps } = $props();
 </script>
 
-<div bind:this={el} class={cn("mt-auto flex flex-col gap-2 p-4", className)} {...$$restProps}>
-	<slot />
+<div bind:this={ref} class={cn("mt-auto flex flex-col gap-2 p-4", className)} {...restProps}>
+	{@render children?.()}
 </div>

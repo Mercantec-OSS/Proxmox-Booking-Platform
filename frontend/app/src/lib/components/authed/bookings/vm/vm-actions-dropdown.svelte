@@ -9,26 +9,24 @@
   import { Button } from '$lib/components/ui/button/index.js';
   import { goto } from '$app/navigation';
 
-  let vmExtensionDialogOpen;
-  let open = false;
+  let vmExtensionDialogOpen = $state(false);
+  let open = $state(false);
 
-  /* Alert dialog */
-  let alertDialogOpen;
-  let alertTitle = null;
-  let alertDescription = null;
+  // Alert dialog state management
+  let alertDialogOpen = $state(false);
+  let alertTitle = $state(null);
+  let alertDescription = $state(null);
   let resolveAction;
 
-  /* Promt user with alert before executing an action */
-  /* Run when the user presses confirm or cancel using on:notify on the alert component */
+  // Handles user response from alert dialog and resolves the promise
   function handleAnswer(event) {
     alertDialogOpen = false;
-    // Resolve the prompUser promise when the event is handled
     if (resolveAction) {
       resolveAction(event.detail.confirmed);
     }
   }
 
-  /* Show the alert dialog with inputted text and return/resolve with true or false depending on what button the user clicked */
+  // Returns a promise that resolves when user responds to alert dialog
   function promptUser(title, description) {
     return new Promise((resolve) => {
       alertTitle = title;
@@ -38,13 +36,11 @@
     });
   }
 
-  /* Refresh specific booking based on id */
+  // Syncs booking data with backend and updates local stores
   async function refreshBooking() {
     try {
       const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
-
       toast.success(`Refreshed booking details`);
-
       selectedBookingStore.set(updatedBooking);
 
       vmListStore.update((bookings) => {
@@ -57,7 +53,7 @@
     }
   }
 
-  /* Delete a booking */
+  // Handles booking deletion with user confirmation
   async function deleteBooking() {
     const userConfirmed = await promptUser(
       'Confirm Booking Deletion',
@@ -75,35 +71,25 @@
     }
   }
 
-  /* Download a txt with all relevant information about the booking */
+  // Generates and downloads booking details as text file
   function handleFileDownload() {
     let output = '';
+    output += `Booking ID: ${$selectedBookingStore.id}\n\n`;
 
-    // Add the booking details
-    output += `Booking ID: ${$selectedBookingStore.id}\n`;
-    output += '\n';
-
-    // Add server login details
     output += `Server Details:\n`;
     output += `- Ip: ${$selectedBookingStore.ip}\n`;
     output += `- Password: ${$selectedBookingStore.password}\n`;
     output += `- Template: ${$selectedBookingStore.type.name}\n`;
-    output += `- UUID: ${$selectedBookingStore.uuid}\n`;
-    output += '\n';
+    output += `- UUID: ${$selectedBookingStore.uuid}\n\n`;
 
-    // Add owner details
     output += 'Owner:\n';
     output += `- Profile: ${window.location.href}user/${$selectedBookingStore.owner.id}\n`;
-    output += `- Name: ${$selectedBookingStore.owner.name} ${$selectedBookingStore.owner.surname}\n`;
-    output += '\n';
+    output += `- Name: ${$selectedBookingStore.owner.name} ${$selectedBookingStore.owner.surname}\n\n`;
 
-    // Add teacher assigned to details
     output += 'Teacher assigned to:\n';
     output += `- Profile: ${window.location.href}user/${$selectedBookingStore.assigned.id}\n`;
-    output += `- Name: ${$selectedBookingStore.assigned.name} ${$selectedBookingStore.assigned.surname}\n`;
-    output += '\n';
+    output += `- Name: ${$selectedBookingStore.assigned.name} ${$selectedBookingStore.assigned.surname}\n\n`;
 
-    // Add booking dates
     output += `Created At: ${new Date($selectedBookingStore.createdAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}\n`;
     output += `Expired At: ${new Date($selectedBookingStore.expiredAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}\n`;
 
@@ -121,10 +107,8 @@
   }
 </script>
 
-<!-- Alert dialog to confirm or cancel an action -->
-<AlertDialog bind:alertTitle bind:alertDescription bind:open={alertDialogOpen} on:notify={handleAnswer} />
+<AlertDialog bind:alertTitle bind:alertDescription bind:open={alertDialogOpen} onnotify={handleAnswer} />
 
-<!-- Dialog to request extension of booking -->
 <VMExtensionDialog bind:vmExtensionDialogOpen></VMExtensionDialog>
 
 <DropdownMenu.Root bind:open>
@@ -138,36 +122,36 @@
       <DropdownMenu.Label>Booking actions</DropdownMenu.Label>
       <DropdownMenu.Separator />
       <DropdownMenu.Item
-        on:click={() => {
+        onclick={() => {
           window.open(`/api/web-console/${$selectedBookingStore.uuid}`, '_blank', 'noopener,noreferrer');
         }}
       >
         <MonitorUp class="mr-2 size-4" />
         <span>Web console</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={handleResetPower}>
+      <DropdownMenu.Item onclick={handleResetPower}>
         <Zap class="mr-2 size-4" />
         <span>Reset power</span>
       </DropdownMenu.Item>
       <DropdownMenu.Separator />
       <DropdownMenu.Item
-        on:click={() => {
+        onclick={() => {
           vmExtensionDialogOpen = true;
         }}
       >
         <CalendarPlus class="mr-2 size-4" />
         <span>Extend booking</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={handleFileDownload}>
+      <DropdownMenu.Item onclick={handleFileDownload}>
         <Download class="mr-2 size-4" />
         <span>Download</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={refreshBooking}>
+      <DropdownMenu.Item onclick={refreshBooking}>
         <RefreshCcw class="mr-2 size-4" />
         <span>Refresh</span>
       </DropdownMenu.Item>
       <DropdownMenu.Separator />
-      <DropdownMenu.Item on:click={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
+      <DropdownMenu.Item onclick={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
         <Trash2 class="mr-2 size-4" />
         <span>Delete</span>
       </DropdownMenu.Item>

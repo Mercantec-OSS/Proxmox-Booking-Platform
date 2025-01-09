@@ -1,23 +1,40 @@
+<script module>
+	import { getContext, setContext } from "svelte";
+	export function setToggleGroupCtx(props) {
+		setContext("toggleGroup", props);
+	}
+
+	export function getToggleGroupCtx() {
+		return getContext("toggleGroup");
+	}
+</script>
+
 <script>
 	import { ToggleGroup as ToggleGroupPrimitive } from "bits-ui";
-	import { setToggleGroupCtx } from "./index.js";
 	import { cn } from "$lib/utils/utils.js";
-	let className = undefined;
-	export { className as class };
-	export let variant = "default";
-	export let size = "default";
-	export let value = undefined;
+
+	let {
+		ref = $bindable(null),
+		value = $bindable(),
+		class: className,
+		size = "default",
+		variant = "default",
+		...restProps
+	} = $props();
+
 	setToggleGroupCtx({
 		variant,
 		size,
 	});
 </script>
 
+<!--
+Discriminated Unions + Destructing (required for bindable) do not
+get along, so we shut typescript up by casting `value` to `never`.
+-->
 <ToggleGroupPrimitive.Root
-	class={cn("flex items-center justify-center gap-1", className)}
 	bind:value
-	{...$$restProps}
-	let:builder
->
-	<slot {builder} />
-</ToggleGroupPrimitive.Root>
+	bind:ref
+	class={cn("flex items-center justify-center gap-1", className)}
+	{...restProps}
+/>

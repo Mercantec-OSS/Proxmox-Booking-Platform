@@ -8,11 +8,14 @@
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import { vmService } from '$lib/services/vm-service';
 
-  export let vmStatusDialogOpen = false;
-  let loadingDelete = false;
-  let loadingAccept = false;
+  let { vmStatusDialogOpen } = $props();
+  let loadingDelete = $state(false);
+  let loadingAccept = $state(false);
 
-  /* Refresh specific booking based on id */
+  /**
+   * Syncs local booking state with backend data
+   * Updates both selected booking and bookinglist stores
+   */
   async function refreshBooking() {
     try {
       const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
@@ -27,12 +30,15 @@
     }
   }
 
+  /**
+   * Handles accepting a VM booking request
+   * Updates UI state and refreshes data on success
+   */
   async function handleAcceptBooking(id) {
     loadingAccept = true;
     try {
       await vmService.acceptVMBooking(id);
       await refreshBooking(id);
-
       toast.success(`Accepted booking`);
     } catch (error) {
       toast.error(error.message);
@@ -42,12 +48,15 @@
     }
   }
 
+  /**
+   * Handles VM booking deletion
+   * Refreshes booking list after successful deletion
+   */
   async function handleDeleteBooking(id) {
     loadingDelete = true;
     try {
       await vmService.deleteVMBooking(id);
       vmListStore.set(await vmService.getVMBookings());
-
       toast.success(`Booking deleted`);
     } catch (error) {
       toast.error(error.message);
@@ -58,7 +67,6 @@
   }
 </script>
 
-<!-- Main dialog component -->
 <Dialog.Root bind:open={vmStatusDialogOpen}>
   <Dialog.Content class="bg-primary-foreground">
     <Dialog.Header>
@@ -70,7 +78,7 @@
       <Textarea disabled id="comment" bind:value={$selectedBookingStore.message} />
     </div>
     <Dialog.Footer>
-      <Button disabled={loadingDelete} variant="outline" on:click={() => handleDeleteBooking($selectedBookingStore.id)}>
+      <Button disabled={loadingDelete} variant="outline" onclick={() => handleDeleteBooking($selectedBookingStore.id)}>
         {#if loadingDelete}
           <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
         {:else}
@@ -79,7 +87,7 @@
         Delete
       </Button>
       {#if new Date() < new Date($selectedBookingStore.expiredAt)}
-        <Button disabled={loadingAccept} on:click={() => handleAcceptBooking($selectedBookingStore.id)}>
+        <Button disabled={loadingAccept} onclick={() => handleAcceptBooking($selectedBookingStore.id)}>
           {#if loadingAccept}
             <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
           {/if}

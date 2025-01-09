@@ -1,15 +1,12 @@
 <script>
 	import { Avatar as AvatarPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils/utils.js";
-	let className = undefined;
-	export let src = undefined;
-	export let alt = undefined;
-	export { className as class };
+
+	let { ref = $bindable(null), class: className, ...restProps } = $props();
 </script>
 
 <AvatarPrimitive.Image
-	{src}
-	{alt}
+	bind:ref
 	class={cn("aspect-square h-full w-full", className)}
-	{...$$restProps}
+	{...restProps}
 />

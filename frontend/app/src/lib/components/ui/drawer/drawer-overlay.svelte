@@ -1,15 +1,12 @@
 <script>
 	import { Drawer as DrawerPrimitive } from "vaul-svelte";
 	import { cn } from "$lib/utils/utils.js";
-	export let el = undefined;
-	let className = undefined;
-	export { className as class };
+
+	let { ref = $bindable(null), class: className, ...restProps } = $props();
 </script>
 
 <DrawerPrimitive.Overlay
-	bind:el
+	bind:ref
 	class={cn("fixed inset-0 z-50 bg-black/80", className)}
-	{...$$restProps}
->
-	<slot />
-</DrawerPrimitive.Overlay>
+	{...restProps}
+/>

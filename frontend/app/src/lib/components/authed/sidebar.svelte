@@ -1,5 +1,4 @@
 <script>
-//   import { Sun, Moon, LogOut, Home, ChartLine, CircleHelp } from 'lucide-svelte';
   import { Sun, Moon, LogOut, Home, CircleHelp } from 'lucide-svelte';
   import { authService } from '$lib/services/auth-service';
   import { getCookie, deleteCookie } from '$lib/utils/cookie';

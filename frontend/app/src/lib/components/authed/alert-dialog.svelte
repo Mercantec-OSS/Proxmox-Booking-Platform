@@ -2,9 +2,7 @@
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
   import { createEventDispatcher } from 'svelte';
 
-  export let alertTitle;
-  export let alertDescription;
-  export let open = false;
+  let { alertTitle, alertDescription, open = false } = $props();
   const dispatch = createEventDispatcher();
 
   function handleCancel() {

@@ -8,8 +8,8 @@
   import { toast } from 'svelte-sonner';
   import { LoaderCircle } from 'lucide-svelte';
 
-  let credentials = { name: '', surname: '', email: '', password: '' };
-  let isLoading = false;
+  let credentials = $state({ name: '', surname: '', email: '', password: '' });
+  let isLoading = $state(false);
 
   async function handleRegister(credentials) {
     try {
@@ -31,7 +31,13 @@
 </script>
 
 <main class="flex flex-col flex-grow items-center justify-center">
-  <form name="registration" on:submit|preventDefault={handleRegister(credentials)}>
+  <form
+    name="registration"
+    onsubmit={(e) => {
+      e.preventDefault();
+      handleRegister(credentials);
+    }}
+  >
     <Card.Root class="max-w-sm">
       <Card.Header>
         <Card.Title class="text-xl">Sign Up</Card.Title>

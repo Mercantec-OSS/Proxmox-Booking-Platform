@@ -1,5 +1,4 @@
 <script>
-//   import { LogOut, Bell, User, PanelLeft, Home, ChartLine, CircleHelp } from 'lucide-svelte';
   import { LogOut, Bell, User, PanelLeft, Home, CircleHelp } from 'lucide-svelte';
   import { authService } from '$lib/services/auth-service';
   import { getCookie, deleteCookie } from '$lib/utils/cookie';
@@ -12,6 +11,7 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as HoverCard from '$lib/components/ui/hover-card';
+
   async function handleLogout() {
     try {
       await authService.logout(getCookie('token'));
@@ -57,7 +57,7 @@
           <CircleHelp class="h-5 w-5" />
           Help
         </a>
-        <Button variant="outline" on:click={handleLogout} class="text-muted-foreground hover:text-foreground flex items-center gap-2 px-2.5">
+        <Button variant="outline" onclick={handleLogout} class="text-muted-foreground hover:text-foreground flex items-center gap-2 px-2.5">
           <LogOut class="h-4 w-4" />
           Logout
         </Button>
@@ -113,17 +113,17 @@
       <DropdownMenu.Label>My Account</DropdownMenu.Label>
       <DropdownMenu.Separator />
       <DropdownMenu.Item
-        on:click={() => {
+        onclick={() => {
           goto(`/user/${$userStore.id}`);
         }}><User class="size-4 mr-2" />Profile</DropdownMenu.Item
       >
       <DropdownMenu.Item
-        on:click={() => {
+        onclick={() => {
           goto('/help');
         }}><CircleHelp class="size-4 mr-2" />Help</DropdownMenu.Item
       >
       <DropdownMenu.Separator />
-      <DropdownMenu.Item on:click={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
+      <DropdownMenu.Item onclick={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>
 </header>

@@ -6,10 +6,10 @@
   import { clusterService } from '$lib/services/cluster-service';
   import { vmService } from '$lib/services/vm-service';
 
-  export let data;
+  const { data } = $props();
   let bookingUpdateIntervalId;
   let bookingUpdateInterval;
-  let userAuthed = data.userInfo.role !== 'Student';
+  let userAuthed = $state(data.userInfo.role !== 'Student');
 
   /* Update stores (global vars) to the data returned from the fetch requests in SSR */
   clusterListStore.set(data.clusterData);

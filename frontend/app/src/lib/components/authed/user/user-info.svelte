@@ -1,5 +1,3 @@
-<!-- Component to show name, surname, email and role on user page -->
-
 <script>
   import * as Avatar from '$lib/components/ui/avatar/index.js';
   import { Badge } from '$lib/components/ui/badge';
@@ -8,11 +6,10 @@
   import { toast } from 'svelte-sonner';
   import { userStore } from '$lib/utils/store';
 
-  export let user;
+  let { user } = $props();
 
   async function updateRole(role) {
     user.role = role;
-
     try {
       await userService.updaterole(user);
       toast.success(`Changed ${user.name}'s role to ${role}`);
@@ -23,7 +20,6 @@
 </script>
 
 <div class="flex flex-wrap gap-x-5 items-center">
-  <!-- Avatar -->
   <Avatar.Root class="select-none">
     <Avatar.Fallback>{user.name[0]}{user.surname[0]}</Avatar.Fallback>
   </Avatar.Root>
@@ -45,7 +41,7 @@
       <Select.Content>
         <Select.Group>
           <Select.Label>Roles</Select.Label>
-          <Select.Item value="Administrator" label="Administrator">Administrator</Select.Item>
+          <Select.Item value="Admin" label="Admin">Admin</Select.Item>
           <Select.Item select value="Teacher" label="Teacher">Teacher</Select.Item>
           <Select.Item value="Student" label="Student">Student</Select.Item>
         </Select.Group>

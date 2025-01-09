@@ -8,10 +8,13 @@
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import { vmService } from '$lib/services/vm-service';
 
-  export let vmExtensionRequestDialogOpen = false;
-  let loadingAccept = false;
+  let { vmExtensionRequestDialogOpen } = $props();
+  let loadingAccept = $state(false);
 
-  /* Refresh specific booking based on id */
+  /**
+   * Refreshes booking data from API and updates stores
+   * Shows error toast if refresh fails
+   */
   async function refreshBooking() {
     try {
       const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
@@ -26,13 +29,16 @@
     }
   }
 
+  /**
+   * Accepts booking extension and refreshes data
+   * @param {number} id - Extension request ID
+   */
   async function handleAcceptExtension(id) {
-    vmExtensionRequestDialogOpen = false
+    vmExtensionRequestDialogOpen = false;
     loadingAccept = true;
     try {
       await vmService.acceptExtendVmBooking(id);
       await refreshBooking(id);
-
       toast.success(`Accepted booking extension`);
     } catch (error) {
       toast.error(error.message);
@@ -42,6 +48,10 @@
     }
   }
 
+  /**
+   * Formats date to "01 Jan 11:59 PM" style string
+   * @param {string} date - ISO date string
+   */
   function formatDateTime(date) {
     const options = {
       day: '2-digit',
@@ -54,7 +64,6 @@
   }
 </script>
 
-<!-- Main dialog component -->
 <Dialog.Root bind:open={vmExtensionRequestDialogOpen}>
   <Dialog.Content class="bg-primary-foreground">
     <Dialog.Header>
@@ -78,9 +87,9 @@
         <Textarea disabled id="comment" bind:value={$selectedBookingStore.activeExtension.message} />
       </div>
       <Dialog.Footer>
-        <Button variant="outline" on:click={() => (vmExtensionRequestDialogOpen = false)}>Cancel</Button>
+        <Button variant="outline" onclick={() => (vmExtensionRequestDialogOpen = false)}>Cancel</Button>
         {#if new Date() < new Date($selectedBookingStore.expiredAt)}
-          <Button disabled={loadingAccept} on:click={() => handleAcceptExtension($selectedBookingStore.activeExtension.id)}>
+          <Button disabled={loadingAccept} onclick={() => handleAcceptExtension($selectedBookingStore.activeExtension.id)}>
             {#if loadingAccept}
               <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
             {/if}
@@ -88,6 +97,6 @@
           </Button>
         {/if}
       </Dialog.Footer>
-    </div></Dialog.Content
-  >
+    </div>
+  </Dialog.Content>
 </Dialog.Root>

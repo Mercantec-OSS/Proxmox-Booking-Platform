@@ -14,12 +14,17 @@
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { ChevronLeft, ArrowRight, Trash, Check, LoaderCircle } from 'lucide-svelte';
 
-  export let data;
-  let loadingDelete = false;
-  let loadingAccept = false;
-  let creds = { ip: '', username: '', password: '' };
-  $: selectedBookingStore.set(data.vmData);
-  $: userAuthed = data.userInfo.role === 'Admin' || data.userInfo.role === 'Teacher';
+  const { data } = $props();
+
+  let loadingDelete = $state(false);
+  let loadingAccept = $state(false);
+  let creds = $state({ ip: '', username: '', password: '' });
+
+  $effect(() => {
+    selectedBookingStore.set(data.vmData);
+  });
+
+  let userAuthed = $derived(data.userInfo.role === 'Admin' || data.userInfo.role === 'Teacher');
 
   function formatDateTime(date) {
     const options = {
@@ -98,7 +103,7 @@
         <div class="flex items-center gap-2 md:ml-auto">
           <!-- Buttons for teacher/admin to accept or delete booking -->
           {#if !$selectedBookingStore.isAccepted}
-            <Button on:click={handleDeleteBooking} disabled={loadingDelete} variant="outline" class="border-destructive text-destructive hover:bg-destructive/90 hover:text-white" size="sm">
+            <Button onclick={handleDeleteBooking} disabled={loadingDelete} variant="outline" class="border-destructive text-destructive hover:bg-destructive/90 hover:text-white" size="sm">
               {#if loadingDelete}
                 <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
               {:else}
@@ -109,7 +114,7 @@
           {/if}
 
           {#if !$selectedBookingStore.isAccepted && userAuthed}
-            <Button on:click={handleAcceptBooking} disabled={loadingAccept} variant="outline" class="border-green-600 text-green-600 hover:bg-green-600/90 hover:text-white" size="sm">
+            <Button onclick={handleAcceptBooking} disabled={loadingAccept} variant="outline" class="border-green-600 text-green-600 hover:bg-green-600/90 hover:text-white" size="sm">
               {#if loadingAccept}
                 <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
               {:else}
@@ -129,11 +134,9 @@
           <Card.Root>
             <Card.Header>
               <Card.Title>Details</Card.Title>
-              <Card.Description>
-                  Information about the booking and it's owner
-                </Card.Description>
-              </Card.Header>
-              <Card.Content>
+              <Card.Description>Information about the booking and it's owner</Card.Description>
+            </Card.Header>
+            <Card.Content>
               <div class="grid gap-6">
                 <div class="grid gap-3">
                   <div class="inline-flex flex-wrap gap-x-7 gap-y-4 justify-between text-sm">
@@ -171,11 +174,9 @@
                   </div>
                 </div>
                 <div class="text-sm mb-4">
+                  <div>Machine UUID</div>
                   <div>
-                    Machine UUID
-                  </div>
-                  <div>
-                      {$selectedBookingStore.uuid}
+                    {$selectedBookingStore.uuid}
                   </div>
                 </div>
                 <div class="grid gap-3">

@@ -1,10 +1,12 @@
 <script>
 	import { Drawer as DrawerPrimitive } from "vaul-svelte";
-	export let shouldScaleBackground = true;
-	export let open = false;
-	export let activeSnapPoint = undefined;
+
+	let {
+		shouldScaleBackground = true,
+		open = $bindable(false),
+		activeSnapPoint = $bindable(null),
+		...restProps
+	} = $props();
 </script>
 
-<DrawerPrimitive.Root {shouldScaleBackground} bind:open bind:activeSnapPoint {...$$restProps}>
-	<slot />
-</DrawerPrimitive.Root>
+<DrawerPrimitive.Root {shouldScaleBackground} bind:open bind:activeSnapPoint {...restProps} />

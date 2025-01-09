@@ -6,12 +6,15 @@
   import { goto } from '$app/navigation';
   import { afterNavigate } from '$app/navigation';
 
-  export let data;
+  const { data } = $props();
 
-  $: userStore.set(data.userInfo);
-  $: clusterListStore.set(data.clusterData);
-  $: vmListStore.set(data.vmData);
-  $: userAuthed = $userStore.role === 'Admin' || $userStore.role === 'Teacher';
+  $effect(() => {
+    userStore.set(data.userInfo);
+    clusterListStore.set(data.clusterData);
+    vmListStore.set(data.vmData);
+  });
+
+  let userAuthed = $derived($userStore.role === 'Admin' || $userStore.role === 'Teacher');
 
   // Function to check for and display errors
   function checkErrors() {

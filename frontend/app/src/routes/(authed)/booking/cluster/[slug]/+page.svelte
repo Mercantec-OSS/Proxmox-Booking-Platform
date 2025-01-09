@@ -12,8 +12,11 @@
   import * as Avatar from '$lib/components/ui/avatar/index.js';
   import { ChevronLeft, ArrowRight } from 'lucide-svelte';
 
-  export let data;
-  $: selectedBookingStore.set(data.clusterData);
+  const { data } = $props();
+
+  $effect(() => {
+    selectedBookingStore.set(data.clusterData);
+  });
 
   function formatDateTime(date) {
     const options = {
