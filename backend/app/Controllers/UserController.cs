@@ -1,20 +1,18 @@
 ﻿[ApiController]
 [Route("users")]
 public class UserController(
-    Context context, 
     UserSession session,
-    EmailService emailService
+    EmailService emailService,
+    UserRepository userRepository,
+    GroupRepository groupRepository
     ) : ControllerBase
 {
-    private readonly UserService _userService = new(context);
-    private readonly StudentGroupService _groupService = new(context);
-
     [HttpGet("{id}")]
     public async Task<ActionResult<UserGetDto>> GetUser(int id)
     {
         session.GetIfAuthenticated();
 
-        User? user = await _userService.GetAsync(id);
+        User? user = await userRepository.GetAsync(id);
 
         if (user == null)
         {
@@ -29,7 +27,7 @@ public class UserController(
     {
         session.GetIfAuthenticated();
 
-        var allUsers = await _userService.GetAllAsync();
+        var allUsers = await userRepository.GetAllAsync();
         return Ok(allUsers.ConvertAll(u => u.MakeGetDto()));
     }
 
@@ -38,7 +36,7 @@ public class UserController(
     {
         session.GetIfAuthenticated();
 
-        User? user = await _userService.GetAsync(id);
+        User? user = await userRepository.GetAsync(id);
         
         if (user == null)
         {
@@ -53,14 +51,14 @@ public class UserController(
     {
         session.GetIfAuthenticated();
 
-        Group? group = await _groupService.GetByIDAsync(id);
+        Group? group = await groupRepository.GetByIDAsync(id);
         
         if (group == null)
         {
             return NotFound(ResponseMessage.GetClassNotFound());
         }
 
-        var classUsers = await _userService.GetByClassAsync(id);
+        var classUsers = await userRepository.GetByClassAsync(id);
         return Ok(group.Members.ConvertAll(u => u.MakeGetDto()));
     }
 
@@ -69,14 +67,14 @@ public class UserController(
     {
         session.GetIfAuthenticated();
 
-        Group? group = await _groupService.GetByClassAsync(className);
+        Group? group = await groupRepository.GetByClassAsync(className);
         
         if (group == null)
         {
             return NotFound(ResponseMessage.GetClassNotFound());
         }
 
-        var classUsers = await _userService.GetByClassAsync(group.Id);
+        var classUsers = await userRepository.GetByClassAsync(group.Id);
         return Ok(group.Members.ConvertAll(u => u.MakeGetDto()));
     }
 
@@ -86,7 +84,7 @@ public class UserController(
     {
         session.GetIfAuthenticated();
 
-        User? user = await _userService.GetAsync(userDTO.Id);
+        User? user = await userRepository.GetAsync(userDTO.Id);
         
         if (user == null)
         {
@@ -109,7 +107,7 @@ public class UserController(
         Email email = Email.GetUserUpdate(UserInfo, user);
         await emailService.SendAsync(email);
 
-        await _userService.UpdateAsync(user);
+        await userRepository.UpdateAsync(user);
 
         return NoContent();
     }
@@ -120,7 +118,7 @@ public class UserController(
     {
         session.GetIfAuthenticated();
 
-        User? user = await _userService.GetAsync(userDTO.Id);
+        User? user = await userRepository.GetAsync(userDTO.Id);
 
         if (user == null)
         {
@@ -150,7 +148,7 @@ public class UserController(
         Email email = Email.GetUserRoleUpdate(user, previousRole.Role);
         await emailService.SendAsync(email);
 
-        await _userService.UpdateAsync(user);
+        await userRepository.UpdateAsync(user);
 
         return NoContent();
     }
@@ -165,7 +163,7 @@ public class UserController(
             Models.User.UserRoles.Teacher
         );
 
-        User? user = await _userService.GetAsync(userId);
+        User? user = await userRepository.GetAsync(userId);
 
         if (user == null)
         {
@@ -178,7 +176,7 @@ public class UserController(
         }
 
         user.GroupId = classId;
-        await _userService.UpdateAsync(user);
+        await userRepository.UpdateAsync(user);
 
         return NoContent();
     }
@@ -192,14 +190,14 @@ public class UserController(
             Models.User.UserRoles.Admin
         );
 
-        User? user = await _userService.GetAsync(id);
+        User? user = await userRepository.GetAsync(id);
 
         if (user == null)
         {
             return NotFound(ResponseMessage.GetUserNotFound());
         }
 
-        await _userService.DeleteAsync(user);
+        await userRepository.DeleteAsync(user);
         return NoContent();
     }
 }

@@ -6,16 +6,6 @@ public class Email
     public string Subject { get; set; } = "";
     public string Body { get; set; } = "";
 
-    public static Email GetEmail(string recipient, string subject, string body)
-    {
-        return new Email
-        {
-            Recipient = recipient,
-            Subject = subject,
-            Body = body
-        };
-    }
-
     public static Email GetUserCreation(User recipient)
     {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "UserCreation.html"));
@@ -32,7 +22,7 @@ public class Email
 
         string subject = $"Welcome to VM Ware {recipient.Name} {recipient.Surname}.";
 
-        return GetEmail(recipient.Email, subject, htmlContent);
+        return new Email(){Recipient=recipient.Email, Subject=subject, Body=htmlContent};
     }
 
     public static Email GetUserRoleUpdate(User recipient, string earlierRole)
@@ -40,7 +30,7 @@ public class Email
         string Subject = $"{recipient.Name} {recipient.Surname} your role has been changed.";
         string Body = $"Your role has changed from {earlierRole} to {recipient.Role}.";
 
-        return GetEmail(recipient.Email, Subject, Body);
+        return new Email(){Recipient=recipient.Email, Subject=Subject, Body=Body};
     }
 
     public static Email GetUserUpdate(User recipient, User modifier)
@@ -62,7 +52,7 @@ public class Email
 
         string subject = $"{recipient.Name} {recipient.Surname} your account has been changed.";
 
-        return GetEmail(recipient.Email, subject, htmlContent);
+        return new Email(){Recipient=recipient.Email, Subject=subject, Body=htmlContent};
     }
 
     public static Email GetVmBookingCreate(VmBooking booking)
@@ -86,7 +76,7 @@ public class Email
 
         string subject = "Booking request created";
 
-        return GetEmail(booking.Owner.Email, subject, htmlContent);
+        return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
     public static Email GetVmBookingToAccept(VmBooking booking)
@@ -108,7 +98,7 @@ public class Email
 
 
         string subject = $"{booking.Owner.Name} {booking.Owner.Surname} requests a booking";
-        return GetEmail(booking.Assigned.Email, subject, htmlContent);
+        return new Email(){Recipient=booking.Assigned.Email, Subject=subject, Body=htmlContent};
     }
 
     public static Email GetVmBookingAccepted(VmBooking booking)
@@ -132,7 +122,7 @@ public class Email
 
         string subject = "Booking accepted";
 
-        return GetEmail(booking.Owner.Email, subject, htmlContent);
+        return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
     public static Email GetVmBookingExpired(VmBooking booking)
@@ -151,7 +141,7 @@ public class Email
 
         string subject = "Booking expired";
 
-        return GetEmail(booking.Owner.Email, subject, htmlContent);
+        return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
     public static Email GetVmBookingUpdated(VmBooking booking)
@@ -173,7 +163,7 @@ public class Email
 
         string subject = "Booking updated";
 
-        return GetEmail(booking.Owner.Email, subject, htmlContent);
+        return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
     private static string ReplaceFromString(string stringToReplaceFrom, Dictionary<string, string> replacements)

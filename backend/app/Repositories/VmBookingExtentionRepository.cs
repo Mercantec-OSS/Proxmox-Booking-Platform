@@ -1,6 +1,6 @@
-﻿namespace Services;
+﻿namespace Repositories;
 
-public class VmBookingExtentionService(Context context)
+public class VmBookingExtentionRepository(Context context)
 {
     private readonly Context _dbService = context;
 

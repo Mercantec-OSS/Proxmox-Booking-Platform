@@ -1,4 +1,5 @@
 ﻿global using Dto;
+global using Repositories;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Models;

@@ -1,15 +1,12 @@
 ﻿[ApiController]
 [Route("authorization")]
 public class AuthorizationController(
-    Context context, 
+    UserRepository userRepository,
     UserSession session, 
     JwtTokenService jwt,
     EmailService emailService
     ) : ControllerBase
 {
-    private readonly UserService _userService = new(context);
-    private readonly StudentGroupService _groupService = new(context);
-
     [HttpGet("check-session")]
     public ActionResult<UserGetDto?> GetUser()
     {
@@ -20,7 +17,7 @@ public class AuthorizationController(
     [HttpPost("login")]
     public async Task<ActionResult<TokenDto>> PostToken(UserLoginDto userDto)
     {
-        User? user = await _userService.GetAsync(userDto.Email);
+        User? user = await userRepository.GetAsync(userDto.Email);
 
         if (user == null)
         {
@@ -60,7 +57,7 @@ public class AuthorizationController(
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await _userService.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(userDto.Email) != null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
@@ -80,7 +77,7 @@ public class AuthorizationController(
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await _userService.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(userDto.Email) != null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
@@ -99,7 +96,7 @@ public class AuthorizationController(
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await _userService.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(userDto.Email) != null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
@@ -118,7 +115,7 @@ public class AuthorizationController(
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await _userService.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(userDto.Email) != null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
@@ -135,20 +132,13 @@ public class AuthorizationController(
             Surname = userDto.Surname,
             Email = userDto.Email.ToLower(),
             Role = userRole.ToString(),
+            GroupId = userDto.GroupId,
             Password = Password.GetHash(userDto.Password),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };
 
-        Group? group = null;
-
-        if (userRole == Models.User.UserRoles.Student)
-        {
-            group = await _groupService.GetByIDAsync(newUser.GroupId ?? -1);
-            newUser.GroupId = userDto.GroupId;
-        }
-
-        await _userService.CreateAsync(newUser);
+        await userRepository.CreateAsync(newUser);
 
         Email email = Email.GetUserCreation(newUser);
         await emailService.SendAsync(email);

@@ -1,16 +1,16 @@
 public class UserSession
 {
-    private readonly UserService _userService;
+    private readonly UserRepository _userRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly JwtTokenService _jwtTokenService;
     private User UserFromToken => GetUserFromToken();
     public User User => GetUserFromDb();
 
-    public UserSession(Context dbContext, IHttpContextAccessor httpContextAccessor, JwtTokenService jwtTokenService)
+    public UserSession(UserRepository userRepository, IHttpContextAccessor httpContextAccessor, JwtTokenService jwtTokenService)
     {
         _httpContextAccessor = httpContextAccessor;
         _jwtTokenService = jwtTokenService;
-        _userService = new UserService(dbContext);
+        _userRepository = userRepository;
     }
 
     private string GetToken()
@@ -38,7 +38,7 @@ public class UserSession
 
     private User GetUserFromDb()
     {
-        User user = _userService.GetAsync(UserFromToken.Id).Result ?? throw new HttpException(HttpStatusCode.Unauthorized, "User not found in DB");
+        User user = _userRepository.GetAsync(UserFromToken.Id).Result ?? throw new HttpException(HttpStatusCode.Unauthorized, "User not found in DB");
         return user;
     }
 

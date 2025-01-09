@@ -1,6 +1,6 @@
-﻿namespace Services;
+﻿namespace Repositories;
 
-public class UserService(Context context)
+public class UserRepository(Context context)
 {
     private readonly Context _dbService = context;
 

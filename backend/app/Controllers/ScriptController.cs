@@ -3,7 +3,7 @@
 public class ScriptController(
     VCenterApiService vCenterApiService,
     UserSession session, 
-    VmBookingService vmBookingService, 
+    VmBookingRepository vmBookingRepository,
     VmBookingScriptService vmBookingScriptService
     ) : ControllerBase
 {
@@ -11,7 +11,7 @@ public class ScriptController(
     public async Task<ActionResult> GetVmIp(string name)
     {
         User user = session.GetIfAuthenticated();
-        VmBooking? booking = await vmBookingService.GetByNameAsync(name);
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(name);
 
         if (booking == null)
         {
@@ -47,7 +47,7 @@ public class ScriptController(
     {
         session.IsAuthenticated();
 
-        VmBooking? booking = await vmBookingService.GetByNameAsync(name);
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(name);
 
         if (booking == null)
         {
@@ -66,7 +66,7 @@ public class ScriptController(
             Models.User.UserRoles.Teacher
         );
 
-        VmBooking? booking = await vmBookingService.GetByNameAsync(dto.Uuid);
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(dto.Uuid);
 
         if (booking == null)
         {

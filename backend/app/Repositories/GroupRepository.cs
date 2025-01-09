@@ -1,6 +1,6 @@
-﻿namespace Services;
+﻿namespace Repositories;
 
-public class StudentGroupService(Context context)
+public class GroupRepository(Context context)
 {
     private readonly Context _dbService = context;
 

@@ -1,14 +1,14 @@
 ﻿[ApiController]
 [Route("groups")]
-public class GroupController(Context context) : ControllerBase
+public class GroupController(
+    GroupRepository groupRepository,
+    UserRepository userRepository
+    ) : ControllerBase
 {
-    private readonly StudentGroupService _studentGroupService = new(context);
-    private readonly UserService _userService = new(context);
-
     [HttpGet("{id}")]
     public async Task<ActionResult> GetById(int id)
     {
-        Group? studentGroup = await _studentGroupService.GetByIDAsync(id);
+        Group? studentGroup = await groupRepository.GetByIDAsync(id);
 
         if (studentGroup == null)
             return NotFound(ResponseMessage.GetClassNotFound());
@@ -19,7 +19,7 @@ public class GroupController(Context context) : ControllerBase
     [HttpGet("all")]
     public async Task<ActionResult> GetAll()
     {
-        List<Group> studentGroups = await _studentGroupService.GetAsync();
+        List<Group> studentGroups = await groupRepository.GetAsync();
         return Ok(studentGroups.ConvertAll(g => g.MakeGetDto()));
     }
 
@@ -27,7 +27,7 @@ public class GroupController(Context context) : ControllerBase
     [HttpGet("name/{name}")]
     public async Task<ActionResult> GetByClassName(string name)
     {
-        Group? studentGroup = await _studentGroupService.GetByClassAsync(name);
+        Group? studentGroup = await groupRepository.GetByClassAsync(name);
 
         if (studentGroup == null)
             return NotFound(ResponseMessage.GetClassNotFound());
@@ -38,7 +38,7 @@ public class GroupController(Context context) : ControllerBase
     [HttpGet("user-id/{id}")]
     public async Task<ActionResult> GetByUserId(int id)
     {
-        User? user = await _userService.GetAsync(id);
+        User? user = await userRepository.GetAsync(id);
 
         if (user == null)
             return NotFound(ResponseMessage.GetUserNotFound());
@@ -46,7 +46,7 @@ public class GroupController(Context context) : ControllerBase
         if (user.GroupId == null)
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User havn't a class assigned."));
 
-        Group? studentGroup = await _studentGroupService.GetByIDAsync(user.GroupId ?? 0);
+        Group? studentGroup = await groupRepository.GetByIDAsync(user.GroupId ?? 0);
 
         return Ok(studentGroup?.MakeGetDto());
     }

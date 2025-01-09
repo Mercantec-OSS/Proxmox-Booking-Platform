@@ -1,23 +1,21 @@
 ﻿[ApiController]
 [Route("vm-booking")]
 public class VmBookingController(
-    Context context, 
     UserSession session, 
     VmBookingScriptService vmBookingScriptService, 
-    VmBookingService _vmBookingService,
+    VmBookingRepository vmBookingRepository,
+    UserRepository userRepository,
     EmailService emailService
     ) : ControllerBase
 {
-    private readonly UserService _userService = new(context);
-
     [HttpPost("create")]
     [ProducesResponseType(201)]
     public async Task<ActionResult> CreateRequestBooking(VmBookingCreateDto bookingDTO)
     {
         session.GetIfAuthenticated();
 
-        User? ownerUser = await _userService.GetAsync(bookingDTO.OwnerId ?? -1);
-        User? assignedToUser = await _userService.GetAsync(bookingDTO.AssignedId ?? -1);
+        User? ownerUser = await userRepository.GetAsync(bookingDTO.OwnerId ?? -1);
+        User? assignedToUser = await userRepository.GetAsync(bookingDTO.AssignedId ?? -1);
         bool isAccepted = false;
 
         if (ownerUser == null)
@@ -59,7 +57,7 @@ public class VmBookingController(
             IsAccepted = isAccepted,
         };
 
-        await _vmBookingService.CreateAsync(booking);
+        await vmBookingRepository.CreateAsync(booking);
 
         Email email = Email.GetVmBookingCreate(booking);
         await emailService.SendAsync(email);
@@ -89,14 +87,14 @@ public class VmBookingController(
         // All students bookings
         if (session.IsStudent())
         {
-            List<VmBooking> selectedVmBookings = await _vmBookingService.GetByOnwerIdAsync(user.Id);
+            List<VmBooking> selectedVmBookings = await vmBookingRepository.GetByOnwerIdAsync(user.Id);
             bookingsToReturn.AddRange(selectedVmBookings);
         }
 
         // Selected bookings for teacher
         else if (session.IsTeacher())
         {
-            List<VmBooking> allBookings = await _vmBookingService.GetAllAsync();
+            List<VmBooking> allBookings = await vmBookingRepository.GetAllAsync();
             List<VmBooking> selectedVmBookings = allBookings.Where(booking => booking.OwnerId == user.Id || booking.AssignedId == user.Id).ToList();
             bookingsToReturn.AddRange(selectedVmBookings);
         }
@@ -104,7 +102,7 @@ public class VmBookingController(
         // all bookings for admin and moderator
         else
         {
-            List<VmBooking> allBookings = await _vmBookingService.GetAllAsync();
+            List<VmBooking> allBookings = await vmBookingRepository.GetAllAsync();
             bookingsToReturn.AddRange(allBookings);
         }
 
@@ -115,7 +113,7 @@ public class VmBookingController(
     public async Task<ActionResult> GetSingle(int id)
     {
         User user = session.GetIfAuthenticated();
-        VmBooking? booking = await _vmBookingService.GetByIdAsync(id);
+        VmBooking? booking = await vmBookingRepository.GetByIdAsync(id);
 
         if (booking == null)
         {
@@ -140,7 +138,7 @@ public class VmBookingController(
             Models.User.UserRoles.Moderator
         );
 
-        List<VmBooking>? bookings = await _vmBookingService.GetByAssignedToIdAsync(id);
+        List<VmBooking>? bookings = await vmBookingRepository.GetByAssignedToIdAsync(id);
         return Ok(bookings.ConvertAll(b => b.MakeGetDTO()));
     }
 
@@ -154,7 +152,7 @@ public class VmBookingController(
             return Unauthorized(ResponseMessage.GetUserUnauthorized());
         }
 
-        List<VmBooking> bookings = await _vmBookingService.GetByOnwerIdAsync(id);
+        List<VmBooking> bookings = await vmBookingRepository.GetByOnwerIdAsync(id);
         return Ok(bookings.ConvertAll(b => b.MakeGetDTO()));
     }
 
@@ -168,7 +166,7 @@ public class VmBookingController(
             Models.User.UserRoles.Teacher
         );
 
-        VmBooking? booking = await _vmBookingService.GetByIdAsync(id);
+        VmBooking? booking = await vmBookingRepository.GetByIdAsync(id);
 
         if (booking == null)
         {
@@ -180,7 +178,7 @@ public class VmBookingController(
         }
 
         booking.IsAccepted = true;
-        await _vmBookingService.UpdateAsync(booking);
+        await vmBookingRepository.UpdateAsync(booking);
 
         Email email = Email.GetVmBookingAccepted(booking);
         await emailService.SendAsync(email);
@@ -199,7 +197,7 @@ public class VmBookingController(
             Models.User.UserRoles.Student
         );
 
-        VmBooking? booking = await _vmBookingService.GetByIdAsync(updateDto.Id);
+        VmBooking? booking = await vmBookingRepository.GetByIdAsync(updateDto.Id);
         
         if (booking == null)
         {
@@ -209,7 +207,7 @@ public class VmBookingController(
         booking.ExpiredAt = updateDto.NewExpiringDate;
         booking.IsAccepted = updateDto.IsAccepted;
 
-        await _vmBookingService.UpdateAsync(booking);
+        await vmBookingRepository.UpdateAsync(booking);
 
         Email email = Email.GetVmBookingUpdated(booking);
         await emailService.SendAsync(email);
@@ -227,7 +225,7 @@ public class VmBookingController(
             Models.User.UserRoles.Student
         );
 
-        VmBooking? booking = await _vmBookingService.GetByIdAsync(id);
+        VmBooking? booking = await vmBookingRepository.GetByIdAsync(id);
 
         if (booking == null)
         {
@@ -245,7 +243,7 @@ public class VmBookingController(
             return Unauthorized(ResponseMessage.GetUserUnauthorized());
         }
 
-        await _vmBookingService.DeleteAsync(booking);
+        await vmBookingRepository.DeleteAsync(booking);
         vmBookingScriptService.Remove(booking.Name);
 
         return NoContent();

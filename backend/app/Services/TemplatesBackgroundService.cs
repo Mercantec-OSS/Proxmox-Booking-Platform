@@ -1,8 +1,7 @@
-public class TemplatesBackgroundService : BackgroundService
+public class TemplatesBackgroundService(IServiceScopeFactory scopeFactory) : BackgroundService
 {
     private static List<string> _data = new List<string>();
     private static DateTime? lastUpdate = null;
-    VmBookingScriptService vmBookingScriptService = new VmBookingScriptService(new ScriptService());
 
     public static List<string> GetTemplates()
     {
@@ -22,6 +21,9 @@ public class TemplatesBackgroundService : BackgroundService
 
         while (!stoppingToken.IsCancellationRequested)
         {
+            using var scope = scopeFactory.CreateScope();
+            VmBookingScriptService vmBookingScriptService = scope.ServiceProvider.GetRequiredService<VmBookingScriptService>();
+
             // Update data every 5 minutes
             if (lastUpdate == null || DateTime.UtcNow - lastUpdate > TimeSpan.FromMinutes(5))
             {
