@@ -19,15 +19,6 @@
     Student: 3
   };
 
-  // Maintains sorted user list based on role hierarchy
-  $effect(() => {
-    listOfUsers = [...listOfUsers].sort((a, b) => {
-      const roleA = rolePriority[a.role] || 99;
-      const roleB = rolePriority[b.role] || 99;
-      return roleA - roleB;
-    });
-  });
-
   // Handles user profile navigation with loading states
   async function redirectUser(id) {
     selectedUser = id;
@@ -49,6 +40,11 @@
 
     try {
       listOfUsers = await userService.getAllUsers();
+      listOfUsers.sort((a, b) => {
+        const roleA = rolePriority[a.role] || 99;
+        const roleB = rolePriority[b.role] || 99;
+        return roleA - roleB;
+      });
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -64,7 +60,7 @@
 
 <Button
   variant="outline"
-  on:click={() => {
+  onclick={() => {
     open = true;
   }}
 >

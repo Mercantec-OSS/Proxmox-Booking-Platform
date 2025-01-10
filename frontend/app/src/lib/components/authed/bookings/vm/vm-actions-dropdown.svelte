@@ -112,8 +112,8 @@
 <VMExtensionDialog bind:vmExtensionDialogOpen></VMExtensionDialog>
 
 <DropdownMenu.Root bind:open>
-  <DropdownMenu.Trigger asChild let:builder>
-    <Button variant="outline" size="sm" class="border-indigo-500 text-indigo-500 hover:text-indigo-500" builders={[builder]}
+  <DropdownMenu.Trigger>
+    <Button variant="outline" size="sm" class="border-indigo-500 text-indigo-500 hover:text-indigo-500"
       >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
     >
   </DropdownMenu.Trigger>

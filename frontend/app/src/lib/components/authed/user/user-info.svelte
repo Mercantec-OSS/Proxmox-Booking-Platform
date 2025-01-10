@@ -8,7 +8,15 @@
 
   let { user } = $props();
 
+  let selectedRole = $state(user.role);
+
+  $effect(() => {
+    if (selectedRole === user.role) return;
+    updateRole(selectedRole);
+  });
+
   async function updateRole(role) {
+    console.log('updateRole', role);
     user.role = role;
     try {
       await userService.updaterole(user);
@@ -30,23 +38,30 @@
   <p>{new Date(user.creationAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</p>
   <!-- Role -->
   {#if $userStore.role === 'Admin'}
-    <Select.Root
-      onSelectedChange={(value) => {
-        updateRole(value.value);
-      }}
-    >
+    <!-- <Select.Root onSelectedChange={(value) => {}}>
       <Select.Trigger class="w-[180px]" aria-label="Select user role">
         <Select.Value placeholder={user.role} />
       </Select.Trigger>
       <Select.Content>
         <Select.Group>
           <Select.Label>Roles</Select.Label>
-          <Select.Item value="Admin" label="Admin">Admin</Select.Item>
-          <Select.Item select value="Teacher" label="Teacher">Teacher</Select.Item>
-          <Select.Item value="Student" label="Student">Student</Select.Item>
+          <Select.Item value="Admin">Admin</Select.Item>
+          <Select.Item select value="Teacher">Teacher</Select.Item>
+          <Select.Item value="Student">Student</Select.Item>
         </Select.Group>
       </Select.Content>
       <Select.Input name="roles" />
+    </Select.Root> -->
+
+    <Select.Root type="single" bind:value={selectedRole}>
+      <Select.Trigger class="w-[180px]" aria-label="Select user role">
+        {selectedRole}
+      </Select.Trigger>
+      <Select.Content>
+        <Select.Item value="Admin">Admin</Select.Item>
+        <Select.Item value="Teacher">Teacher</Select.Item>
+        <Select.Item value="Student">Student</Select.Item>
+      </Select.Content>
     </Select.Root>
   {:else}
     <Badge>{user.role}</Badge>

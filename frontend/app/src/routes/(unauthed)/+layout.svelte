@@ -3,6 +3,8 @@
   import Navbar from '$lib/components/unauthed/navbar.svelte';
   import { Toaster } from '$lib/components/ui/sonner';
   import { ModeWatcher } from 'mode-watcher';
+
+  let { children } = $props();
 </script>
 
 <Toaster />
@@ -10,5 +12,5 @@
 
 <div class="flex flex-col min-h-screen bg-background text-foreground">
   <Navbar />
-  <slot />
+  {@render children()}
 </div>

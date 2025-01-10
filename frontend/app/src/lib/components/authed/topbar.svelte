@@ -29,11 +29,9 @@
 
 <header class="sticky top-0 z-30 bg-background flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
   <Sheet.Root>
-    <Sheet.Trigger asChild let:builder>
-      <Button builders={[builder]} size="icon" variant="outline" class="sm:hidden">
-        <PanelLeft class="h-5 w-5" />
-        <span class="sr-only">Toggle Menu</span>
-      </Button>
+    <Sheet.Trigger class="sm:hidden">
+      <PanelLeft class="h-5 w-5" />
+      <span class="sr-only">Toggle Menu</span>
     </Sheet.Trigger>
     <Sheet.Content side="left" class="sm:max-w-xs">
       <nav class="grid gap-6 text-lg font-medium">
@@ -93,8 +91,8 @@
     <UserSearch />
   </div>
   <HoverCard.Root openDelay={200} closeDelay={150}>
-    <HoverCard.Trigger asChild let:builder>
-      <Button builders={[builder]} variant="outline" size="icon" class="hidden md:flex"><Bell /></Button>
+    <HoverCard.Trigger>
+      <Button variant="outline" size="icon" class="hidden md:flex"><Bell /></Button>
     </HoverCard.Trigger>
     <HoverCard.Content>
       <div class="flex justify-between space-x-4">
@@ -104,8 +102,8 @@
   </HoverCard.Root>
 
   <DropdownMenu.Root>
-    <DropdownMenu.Trigger asChild let:builder>
-      <Button variant="outline" size="icon" class="overflow-hidden rounded-full" builders={[builder]}>
+    <DropdownMenu.Trigger>
+      <Button variant="outline" size="icon" class="overflow-hidden rounded-full">
         <User />
       </Button>
     </DropdownMenu.Trigger>

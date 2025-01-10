@@ -3,10 +3,10 @@
   import * as Table from '$lib/components/ui/table';
   import { vmService } from '$lib/services/vm-service';
 
-  // Reactive state for vCenter cluster metrics
+  // Reactive state for vCenter metrics
   let data = $state({ info: null });
 
-  // Fetches latest cluster resource utilization data
+  // Fetches latest resource utilization data
   async function fetchVcenterInfo() {
     data.info = await vmService.getVcenterInfo();
   }

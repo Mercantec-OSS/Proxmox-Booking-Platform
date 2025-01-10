@@ -1,7 +1,7 @@
 <script>
 	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
 	import Circle from "lucide-svelte/icons/circle";
-	import { cn } from "$lib/utils/utils.js";
+	import { cn } from "$lib/utils.js";
 
 	let { ref = $bindable(null), class: className, children: childrenProp, ...restProps } = $props();
 </script>

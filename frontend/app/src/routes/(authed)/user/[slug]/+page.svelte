@@ -1,18 +1,14 @@
 <script>
   import UserInfo from '$lib/components/authed/user/user-info.svelte';
   import BookingList from '$lib/components/authed/bookings/booking-list.svelte';
-  import { clusterListStore, vmListStore, userStore } from '$lib/utils/store';
+  import { vmListStore, userStore } from '$lib/utils/store';
   import { toast } from 'svelte-sonner';
-  import { goto } from '$app/navigation';
-  import { afterNavigate } from '$app/navigation';
+  import { goto, afterNavigate } from '$app/navigation';
 
   const { data } = $props();
 
-  $effect(() => {
-    userStore.set(data.userInfo);
-    clusterListStore.set(data.clusterData);
-    vmListStore.set(data.vmData);
-  });
+  userStore.set(data.userInfo);
+  vmListStore.set(data.vmData);
 
   let userAuthed = $derived($userStore.role === 'Admin' || $userStore.role === 'Teacher');
 
@@ -27,7 +23,7 @@
     }
 
     // Show toast if user has no bookings
-    if (userAuthed && $clusterListStore.length === 0 && $vmListStore.length === 0) {
+    if (userAuthed && $vmListStore.length === 0) {
       toast.error(`User has no bookings`);
     }
   }

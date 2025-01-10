@@ -7,7 +7,7 @@
   import { Button } from '$lib/components/ui/button/index.js';
   import { LoaderCircle, CalendarIcon } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
-  import { cn } from '$lib/utils/utils.js';
+  import { cn } from '$lib/utils.js';
   import { Calendar } from '$lib/components/ui/calendar';
   import * as Popover from '$lib/components/ui/popover';
   import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
@@ -81,8 +81,8 @@
     </Dialog.Header>
     <div class="flex flex-col gap-y-4">
       <Popover.Root>
-        <Popover.Trigger asChild let:builder>
-          <Button variant="outline" class={cn('justify-start text-left font-normal', !calendarDatePicked && 'text-muted-foreground')} builders={[builder]}>
+        <Popover.Trigger>
+          <Button variant="outline" class={cn('justify-start text-left font-normal', !calendarDatePicked && 'text-muted-foreground')}>
             <CalendarIcon class="mr-2 h-4 w-4" />
             {calendarDatePicked ? calendarDateFormated : 'Pick a date'}
           </Button>

@@ -2,7 +2,7 @@
 	import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
 	import Check from "lucide-svelte/icons/check";
 	import Minus from "lucide-svelte/icons/minus";
-	import { cn } from "$lib/utils/utils.js";
+	import { cn } from "$lib/utils.js";
 	let {
 		ref = $bindable(null),
 		checked = $bindable(false),

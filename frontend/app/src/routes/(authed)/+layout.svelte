@@ -4,6 +4,8 @@
   import Sidebar from '$lib/components/authed/sidebar.svelte';
   import { Toaster } from '$lib/components/ui/sonner';
   import { ModeWatcher } from 'mode-watcher';
+
+  let { children } = $props();
 </script>
 
 <Toaster />
@@ -13,6 +15,6 @@
   <Sidebar />
   <div class="flex flex-col min-h-screen w-full sm:py-4 sm:pl-14">
     <Topbar />
-    <slot />
+    {@render children()}
   </div>
 </div>

@@ -1,16 +1,14 @@
 <script>
-  import { vmListStore, clusterListStore, userStore } from '$lib/utils/store';
+  import { vmListStore, userStore } from '$lib/utils/store';
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card';
   import * as Table from '$lib/components/ui/table';
-  import * as Tabs from '$lib/components/ui/tabs';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { ArrowUpRight, CirclePlus, ListRestart, ShieldEllipsis } from 'lucide-svelte';
   import { vmService } from '$lib/services/vm-service';
 
   let userAuthed = $derived($userStore.role === 'Admin' || $userStore.role === 'Teacher');
-  let activeTab = $state('vms');
 
   // Formats date to "DD MMM HH:mm AM/PM" format
   function formatDateTime(date) {
@@ -23,14 +21,9 @@
     };
     return new Date(date).toLocaleString(undefined, options).replace(',', '');
   }
-
-  // Calculates total ESXi hosts across all vCenters in a cluster
-  function countEsxiHosts(cluster) {
-    return cluster.vCenters.reduce((total, vCenter) => total + vCenter.esxiHosts.length, 0);
-  }
 </script>
 
-{#if $vmListStore.length === 0 && $clusterListStore.length === 0}
+{#if $vmListStore.length === 0}
   <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
     <div class="flex flex-col items-center gap-1 text-center">
       <h3 class="text-2xl font-bold tracking-tight">You have no bookings</h3>
@@ -42,151 +35,89 @@
   <Card.Root>
     <Card.Header>
       <Card.Title>Bookings</Card.Title>
-      <Card.Description>View and manage your cluster and virtual machine bookings</Card.Description>
+      <Card.Description>View and manage your virtual machine bookings</Card.Description>
     </Card.Header>
     <Card.Content>
-      <Tabs.Root bind:value={activeTab}>
-        <div class="flex justify-between items-center">
-          <Tabs.List class="grid w-full md:w-96 grid-cols-2">
-            <Tabs.Trigger value="vms">Virtual machines</Tabs.Trigger>
-            <Tabs.Trigger value="clusters">Clusters</Tabs.Trigger>
-          </Tabs.List>
-          <div class="space-x-2">
-            <Button class="w-39" href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
-            {#if userAuthed}
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Button variant="outline" class="w-39"><ShieldEllipsis class="h-4 w-4 mr-1" />Teacher actions</Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  <DropdownMenu.Item onclick={vmService.resetVMTemplates}><ListRestart class="h-4 w-4 mr-1" />Reset templates</DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            {/if}
-          </div>
-        </div>
-        <Tabs.Content value="vms">
-          <Table.Root>
-            <Table.Header>
-              <Table.Row>
-                <Table.Head class="table-cell"></Table.Head>
-                <Table.Head class="table-cell">Template</Table.Head>
-                <Table.Head class="table-cell">Note</Table.Head>
-                <Table.Head class="table-cell">UUID</Table.Head>
-                <Table.Head class="table-cell">Status</Table.Head>
-                <Table.Head class="table-cell">Owner</Table.Head>
-                <Table.Head class="table-cell">Assigned to</Table.Head>
-                <Table.Head class="table-cell">Created at</Table.Head>
-                <Table.Head class="table-cell">Expire at</Table.Head>
-                <Table.Head>
-                  <span class="sr-only">Open booking</span>
-                </Table.Head>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {#each $vmListStore as vm (`${vm.id}-vm`)}
-                <Table.Row>
-                  <Table.Cell class="table-cell">
-                    <div class="flex gap-x-3 items-center">
-                      <div class="h-9 w-1 rounded-full bg-indigo-500"></div>
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Badge variant="outline">{vm.type}</Badge>
-                  </Table.Cell>
-                  <Table.Cell class="max-w-sm lg:max-w-md">
-                    <span class="block truncate">
-                      "{vm.message}"
-                    </span>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <span title={vm.uuid}>{vm.uuid?.slice(0, 7)}...</span>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Badge variant={vm.isAccepted ? 'outline' : 'destructive'}>{vm.isAccepted ? 'Confirmed' : 'Pending'}</Badge>
-                  </Table.Cell>
-                  <Table.Cell class="table-cell">
-                    <a href="/user/{vm.owner.id}" class="flex items-center gap-1">
-                      <span>{vm.owner.name}</span>
-                      <ArrowUpRight class="h-4 w-4" />
-                    </a>
-                  </Table.Cell>
-                  <Table.Cell class="table-cell">
-                    <a href="/user/{vm.assigned.id}" class="flex items-center gap-1">
-                      <span>{vm.assigned.name}</span>
-                      <ArrowUpRight class="h-4 w-4" />
-                    </a>
-                  </Table.Cell>
-                  <Table.Cell class="table-cell">{formatDateTime(vm.createdAt)}</Table.Cell>
-                  <Table.Cell class="table-cell">{formatDateTime(vm.expiredAt)}</Table.Cell>
-                  <Table.Cell>
-                    <Button href="/booking/vm/{vm.id}" size="sm" class="ml-auto gap-1">
-                      View
-                      <ArrowUpRight class="h-4 w-4" />
-                    </Button>
-                  </Table.Cell>
-                </Table.Row>
-              {/each}
-            </Table.Body>
-          </Table.Root>
-        </Tabs.Content>
-        <Tabs.Content value="clusters">
-          <Table.Root>
-            <Table.Header>
-              <Table.Row>
-                <Table.Head class="table-cell"></Table.Head>
-                <Table.Head class="table-cell">Students</Table.Head>
-                <Table.Head class="table-cell">vCenters</Table.Head>
-                <Table.Head class="table-cell">ESXi hosts</Table.Head>
-                <Table.Head class="table-cell">Owner</Table.Head>
-                <Table.Head class="table-cell">Created at</Table.Head>
-                <Table.Head class="table-cell">Expire at</Table.Head>
-                <Table.Head>
-                  <span class="sr-only">Open booking</span>
-                </Table.Head>
-              </Table.Row>
-            </Table.Header>
-            <Table.Body>
-              {#each $clusterListStore as cluster (`${cluster.id}-cluster`)}
-                <Table.Row>
-                  <Table.Cell class="table-cell">
-                    <div class="flex gap-x-3 items-center">
-                      <div class="h-9 w-1 rounded-full bg-orange-500"></div>
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell>
-                    {cluster.amountStudents}x Students
-                  </Table.Cell>
-                  <Table.Cell>
-                    {cluster.vCenters.length}x vCenters
-                  </Table.Cell>
-                  <Table.Cell>
-                    {countEsxiHosts(cluster)}x ESXi hosts
-                  </Table.Cell>
-                  <Table.Cell class="table-cell">
-                    <a href="/user/{cluster.owner.id}" class="flex items-center gap-1">
-                      <span>{cluster.owner.name}</span>
-                      <ArrowUpRight class="h-4 w-4" />
-                    </a>
-                  </Table.Cell>
-                  <Table.Cell class="table-cell">{formatDateTime(cluster.createdAt)}</Table.Cell>
-                  <Table.Cell class="table-cell">{formatDateTime(cluster.expiredAt)}</Table.Cell>
-                  <Table.Cell>
-                    <Button href="/booking/cluster/{cluster.id}" size="sm" class="ml-auto gap-1">
-                      View
-                      <ArrowUpRight class="h-4 w-4" />
-                    </Button>
-                  </Table.Cell>
-                </Table.Row>
-              {/each}
-            </Table.Body>
-          </Table.Root>
-        </Tabs.Content>
-      </Tabs.Root>
+      <div class="flex space-x-2 justify-end">
+        <Button class="w-39" href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
+        {#if userAuthed}
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger>
+              <Button variant="outline" class="w-39"><ShieldEllipsis class="h-4 w-4 mr-1" />Teacher actions</Button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Content>
+              <DropdownMenu.Item onclick={vmService.resetVMTemplates}><ListRestart class="h-4 w-4 mr-1" />Reset templates</DropdownMenu.Item>
+            </DropdownMenu.Content>
+          </DropdownMenu.Root>
+        {/if}
+      </div>
+      <Table.Root>
+        <Table.Header>
+          <Table.Row>
+            <Table.Head class="table-cell"></Table.Head>
+            <Table.Head class="table-cell">Template</Table.Head>
+            <Table.Head class="table-cell">Note</Table.Head>
+            <Table.Head class="table-cell">UUID</Table.Head>
+            <Table.Head class="table-cell">Status</Table.Head>
+            <Table.Head class="table-cell">Owner</Table.Head>
+            <Table.Head class="table-cell">Assigned to</Table.Head>
+            <Table.Head class="table-cell">Created at</Table.Head>
+            <Table.Head class="table-cell">Expire at</Table.Head>
+            <Table.Head>
+              <span class="sr-only">Open booking</span>
+            </Table.Head>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {#each $vmListStore as vm (`${vm.id}-vm`)}
+            <Table.Row>
+              <Table.Cell class="table-cell">
+                <div class="flex gap-x-3 items-center">
+                  <div class="h-9 w-1 rounded-full bg-indigo-500"></div>
+                </div>
+              </Table.Cell>
+              <Table.Cell>
+                <Badge variant="outline">{vm.type}</Badge>
+              </Table.Cell>
+              <Table.Cell class="max-w-sm lg:max-w-md">
+                <span class="block truncate">
+                  "{vm.message}"
+                </span>
+              </Table.Cell>
+              <Table.Cell>
+                <span title={vm.uuid}>{vm.uuid?.slice(0, 7)}...</span>
+              </Table.Cell>
+              <Table.Cell>
+                <Badge variant={vm.isAccepted ? 'outline' : 'destructive'}>{vm.isAccepted ? 'Confirmed' : 'Pending'}</Badge>
+              </Table.Cell>
+              <Table.Cell class="table-cell">
+                <a href="/user/{vm.owner.id}" class="flex items-center gap-1">
+                  <span>{vm.owner.name}</span>
+                  <ArrowUpRight class="h-4 w-4" />
+                </a>
+              </Table.Cell>
+              <Table.Cell class="table-cell">
+                <a href="/user/{vm.assigned.id}" class="flex items-center gap-1">
+                  <span>{vm.assigned.name}</span>
+                  <ArrowUpRight class="h-4 w-4" />
+                </a>
+              </Table.Cell>
+              <Table.Cell class="table-cell">{formatDateTime(vm.createdAt)}</Table.Cell>
+              <Table.Cell class="table-cell">{formatDateTime(vm.expiredAt)}</Table.Cell>
+              <Table.Cell>
+                <Button href="/booking/vm/{vm.id}" size="sm" class="ml-auto gap-1">
+                  View
+                  <ArrowUpRight class="h-4 w-4" />
+                </Button>
+              </Table.Cell>
+            </Table.Row>
+          {/each}
+        </Table.Body>
+      </Table.Root>
     </Card.Content>
     <Card.Footer>
       <div class="text-muted-foreground text-xs">
-        Showing <strong>1-{activeTab === 'vms' ? $vmListStore.length : $clusterListStore.length}</strong> of <strong>{$vmListStore.length + $clusterListStore.length}</strong> bookings
+        Showing <strong>1-{$vmListStore.length}</strong> of <strong>{$vmListStore.length}</strong> bookings
       </div>
     </Card.Footer>
   </Card.Root>

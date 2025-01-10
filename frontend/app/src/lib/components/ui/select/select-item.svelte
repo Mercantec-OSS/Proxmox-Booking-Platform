@@ -1,7 +1,7 @@
 <script>
 	import Check from "lucide-svelte/icons/check";
 	import { Select as SelectPrimitive } from "bits-ui";
-	import { cn } from "$lib/utils/utils.js";
+	import { cn } from "$lib/utils.js";
 
 	let {
 		ref = $bindable(null),
