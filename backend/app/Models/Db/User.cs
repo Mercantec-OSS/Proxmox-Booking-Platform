@@ -53,4 +53,9 @@ public class User
             CreatedAt = DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc)
         };
     }
+
+    public bool IsAdmin() => Role == UserRoles.Admin.ToString();
+    public bool IsTeacher() => Role == UserRoles.Teacher.ToString();
+    public bool IsModerator() => Role == UserRoles.Moderator.ToString();
+    public bool IsStudent() => Role == UserRoles.Student.ToString();
 }

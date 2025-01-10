@@ -8,7 +8,6 @@ fi
 git pull
 docker compose down
 
-sudo rm -rf ./automatization/build/*
 sudo rm -rf ./backend/build/*
 sudo rm -rf ./frontend/build/*
 

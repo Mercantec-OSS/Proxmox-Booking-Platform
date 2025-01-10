@@ -4,11 +4,8 @@ public class Context(DbContextOptions<Context> options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<Group> studentGroups => Set<Group>();
-    public DbSet<ClusterBooking> ClusterBookings => Set<ClusterBooking>();
     public DbSet<VmBooking> VmBookings => Set<VmBooking>();
     public DbSet<VmBookingExtention> VmBookingExtention => Set<VmBookingExtention>();
-    public DbSet<VCenter> VCenters => Set<VCenter>();
-    public DbSet<EsxiHost> EsxiHosts => Set<EsxiHost>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         // User
@@ -41,12 +38,6 @@ public class Context(DbContextOptions<Context> options) : DbContext(options)
             .Property(x => x.Name)
             .IsRequired();
 
-        // Cluster booking
-        modelBuilder.Entity<ClusterBooking>()
-            .HasOne(b => b.Owner)
-            .WithMany()
-            .HasForeignKey("OwnerId");
-
         // Vm booking
         modelBuilder.Entity<VmBooking>()
             .HasOne(b => b.Owner)
@@ -63,18 +54,6 @@ public class Context(DbContextOptions<Context> options) : DbContext(options)
             .WithOne()
             .HasForeignKey("BookingId");
         
-        // VCenter
-        modelBuilder.Entity<VCenter>()
-            .HasOne(v => v.ClusterBooking)
-            .WithMany(b => b.VCenters)
-            .HasForeignKey("BookingId")
-            .IsRequired(false);
-
-        // Host
-        modelBuilder.Entity<EsxiHost>()
-            .HasOne(h => h.VCenter)
-            .WithMany(v => v.EsxiHosts)
-            .HasForeignKey("VCenterId");
     }
 
     static public void MakeMigration(WebApplication app)

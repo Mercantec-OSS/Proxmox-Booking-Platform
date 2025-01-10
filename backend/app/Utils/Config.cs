@@ -1,27 +1,26 @@
-public class Config
+public static class Config
 {
-    public string VERSION => ParseVariable("VERSION");
-    public bool TEST_MODE => ParseVariable("TEST_MODE").ToLower() == "true";
-    public string DB_CONNECTION_STRING => ParseVariable("DB_CONNECTION_STRING");
-    public string JWT_SECRET => ParseVariable("JWT_SECRET");
-    public string DEVOPS_URL => ParseVariable("DEVOPS_URL");
+    public static string VERSION => ParseVariable("VERSION");
+    public static string DB_CONNECTION_STRING => ParseVariable("DB_CONNECTION_STRING");
+    public static string JWT_SECRET => ParseVariable("JWT_SECRET");
 
-    public string AD_ADDRESS => ParseAdConnectionString()[0];
-    public string AD_DOMAIN => ParseAdConnectionString()[1];
-    public string AD_USER => ParseAdConnectionString()[2];
-    public string AD_PASSWORD => ParseAdConnectionString()[3];
-   
+    public static string SMTP_ADDRESS => ParseSMTPConnectionString()[0];
+    public static string SMTP_PORT => ParseSMTPConnectionString()[1];
+    public static string SMTP_USER => ParseSMTPConnectionString()[2];
+    public static string SMTP_PASSWORD => ParseSMTPConnectionString()[3];
+    public static string EMAIL_TEMPLATES_PATH => ParseVariable("EMAIL_TEMPLATES_PATH");
 
-    public string SMTP_ADDRESS => ParseSMTPConnectionString()[0];
-    public string SMTP_PORT => ParseSMTPConnectionString()[1];
-    public string SMTP_USER => ParseSMTPConnectionString()[2];
-    public string SMTP_PASSWORD => ParseSMTPConnectionString()[3];
-    public string EMAIL_TEMPLATES_PATH => ParseVariable("EMAIL_TEMPLATES_PATH");
+    public static string VM_DEFAULT_USER => ParseVariable("VM_DEFAULT_USER");
+    public static string VM_ROOT_PASSWORD => ParseVariable("VM_ROOT_PASSWORD");
 
-    public string VM_DEFAULT_USER => ParseVariable("VM_DEFAULT_USER");
-    public string VM_ROOT_PASSWORD => ParseVariable("VM_ROOT_PASSWORD");
+    public static string SCRIPTS_PATH => ParseVariable("SCRIPTS_PATH");
+    public static string VM_VCENTER_IP => ParseVariable("VM_VCENTER_IP");
+    public static string VM_VCENTER_USER => ParseVariable("VM_VCENTER_USER");
+    public static string VM_VCENTER_PASSWORD => ParseVariable("VM_VCENTER_PASSWORD");
+    public static string VM_CLUSTER_NAME => ParseVariable("VM_CLUSTER_NAME");
+    public static string VM_DATASTORE_NAME => ParseVariable("VM_DATASTORE_NAME");
 
-    private string ParseVariable(string variableName) {
+    private static string ParseVariable(string variableName) {
         string variable = Environment.GetEnvironmentVariable(variableName) ?? "";
         if (string.IsNullOrEmpty(variable)) {
             string errorMsg = $"{variableName} is not set";
@@ -30,19 +29,7 @@ public class Config
         return variable;
     }
 
-    private string[] ParseAdConnectionString() {
-        string adConnectionString = ParseVariable("AD_CONNECTION_STRING");
-        string[] stringArgs = adConnectionString.Split("__");
-
-        if (stringArgs.Length != 4) {
-            string errorMsg = $"AD_CONNECTION_STRING is not in the correct format: '{adConnectionString}'";
-            throw new Exception(errorMsg);
-        }
-
-        return stringArgs;
-    }
-
-    private string[] ParseSMTPConnectionString() {
+    private static string[] ParseSMTPConnectionString() {
         string smtpConnectionString = ParseVariable("SMTP_CONNECTION_STRING");
         string[] stringArgs = smtpConnectionString.Split("__");
 

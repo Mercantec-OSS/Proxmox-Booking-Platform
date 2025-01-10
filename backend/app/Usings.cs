@@ -1,4 +1,5 @@
 ﻿global using Dto;
+global using Repositories;
 global using Microsoft.AspNetCore.Mvc;
 global using Microsoft.EntityFrameworkCore;
 global using Models;
@@ -10,9 +11,11 @@ global using MimeKit;
 global using System.Security.Cryptography;
 global using System.Text;
 global using System.Text.Json.Serialization;
-global using Novell.Directory.Ldap;
 global using System.Security.Claims;
 global using System.IdentityModel.Tokens.Jwt;
 global using Microsoft.IdentityModel.Tokens;
 global using System.Text.Json;
-global using System.Web;
+global using System;
+global using System.Diagnostics;
+global using System.Net.Http.Headers;
+

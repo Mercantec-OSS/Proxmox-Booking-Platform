@@ -3,17 +3,20 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<VmBookingRepository>();
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<GroupRepository>();
+builder.Services.AddScoped<VmBookingExtentionRepository>();
 builder.Services.AddScoped<ScriptService>();
-builder.Services.AddScoped<LdapService>();
-builder.Services.AddScoped<ClusterBookingService>();
-builder.Services.AddScoped<VmBookingService>();
-builder.Services.AddScoped<EsxiHostService>();
-builder.Services.AddScoped<VCenterService>();
+builder.Services.AddScoped<VmBookingScriptService>();
+builder.Services.AddScoped<VCenterApiService>();
 builder.Services.AddScoped<UserSession>();
 builder.Services.AddScoped<JwtTokenService>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddSingleton<JwtTokenService>();
-builder.Services.AddSingleton<Config>();
 builder.Services.AddHostedService<SchedulerBackgroundService>();
+builder.Services.AddHostedService<VCenterInfoBackgroundService>();
+builder.Services.AddHostedService<TemplatesBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 
 // CORS

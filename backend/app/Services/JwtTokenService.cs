@@ -1,4 +1,4 @@
-public class JwtTokenService(Config config)
+public class JwtTokenService()
 {
     private readonly TimeSpan _expirationTime = TimeSpan.FromDays(7);
     public string CreateToken(User user)
@@ -81,7 +81,7 @@ public class JwtTokenService(Config config)
     {
         using (SHA256 sha256 = SHA256.Create())
         {
-            return sha256.ComputeHash(Encoding.UTF8.GetBytes(config.JWT_SECRET));
+            return sha256.ComputeHash(Encoding.UTF8.GetBytes(Config.JWT_SECRET));
         }
     }
 

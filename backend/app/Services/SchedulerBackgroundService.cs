@@ -26,7 +26,6 @@ public class SchedulerBackgroundService(IServiceScopeFactory scopeFactory) : Bac
         if (now.Hour == 2 && now.Minute == 0)
         {
             await DeleteExpiredVmBookings();
-            await DeleteExpiredClusterBookings();
             await Task.Delay(TimeSpan.FromMinutes(1));
         }
     }
@@ -34,30 +33,18 @@ public class SchedulerBackgroundService(IServiceScopeFactory scopeFactory) : Bac
     private async Task DeleteExpiredVmBookings()
     {
         using var scope = scopeFactory.CreateScope();
-        var vmService = scope.ServiceProvider.GetRequiredService<VmBookingService>();
-        var scriptService = scope.ServiceProvider.GetRequiredService<ScriptService>();
-
-        var expiredBookings = await vmService.GetExpiredAsync();
-
-        foreach (var booking in expiredBookings)
-        {
-            await vmService.DeleteAsync(booking);
-            await scriptService.DeleteVmAsync(booking.Name);
-        }
-    }
-
-    private async Task DeleteExpiredClusterBookings()
-    {
-        using var scope = scopeFactory.CreateScope();
-        var clusterService = scope.ServiceProvider.GetRequiredService<ClusterBookingService>();
-        var scriptService = scope.ServiceProvider.GetRequiredService<ScriptService>();
-
-        var expiredBookings = await clusterService.GetExpiredAsync();
+        var vmRepository = scope.ServiceProvider.GetRequiredService<VmBookingRepository>();
+        var scriptService = scope.ServiceProvider.GetRequiredService<VmBookingScriptService>();
+        var emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
+        var expiredBookings = await vmRepository.GetExpiredAsync();
 
         foreach (var booking in expiredBookings)
         {
-            await clusterService.DeleteAsync(booking);
-            await scriptService.ResetClusterBookingAsync(booking.VCenters);
+            Email email = Email.GetVmBookingExpired(booking);
+            await emailService.SendAsync(email);
+
+            await vmRepository.DeleteAsync(booking);
+            scriptService.Remove(booking.Name);
         }
     }
 }

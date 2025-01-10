@@ -1,13 +1,12 @@
 ﻿[ApiController]
 [Route("authorization")]
-public class AuthorizationController(Context context, Config config, UserSession session, JwtTokenService jwt) : ControllerBase
+public class AuthorizationController(
+    UserRepository userRepository,
+    UserSession session, 
+    JwtTokenService jwt,
+    EmailService emailService
+    ) : ControllerBase
 {
-    private readonly Config _config = config;
-    private readonly UserService _userService = new(context);
-    private readonly StudentGroupService _groupService = new(context);
-    private readonly EmailService _emailService = new(config);
-    private readonly LdapService _ldapService = new(config);
-
     [HttpGet("check-session")]
     public ActionResult<UserGetDto?> GetUser()
     {
@@ -18,36 +17,7 @@ public class AuthorizationController(Context context, Config config, UserSession
     [HttpPost("login")]
     public async Task<ActionResult<TokenDto>> PostToken(UserLoginDto userDto)
     {
-        User? user = await _userService.GetAsync(userDto.Email);
-
-        if (user == null)
-        {
-            //ad connection
-            bool userCanConnect = CheckAdConnection(userDto.Email, userDto.Password);
-
-            if (userCanConnect == false)
-            {
-                return BadRequest(ResponseMessage.GetWrongCredentials());
-            }
-
-            User? adUser = await _ldapService.GetStudentByEmailAsync(userDto.Email);
-
-            if (adUser == null)
-            {
-                return NotFound(ResponseMessage.GetUserNotFound());
-            }
-
-            UserCreateDto userCreate = new UserCreateDto
-            {
-                Email = adUser.Email.ToLower(),
-                Name = adUser.Name,
-                Password = userDto.Password,
-                Surname = adUser.Surname,
-            };
-
-            await CreateUser(userCreate, Models.User.UserRoles.Student);
-            user = await _userService.GetAsync(adUser.Email);
-        }
+        User? user = await userRepository.GetAsync(userDto.Email);
 
         if (user == null)
         {
@@ -87,7 +57,7 @@ public class AuthorizationController(Context context, Config config, UserSession
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await _userService.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(userDto.Email) != null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
@@ -107,7 +77,7 @@ public class AuthorizationController(Context context, Config config, UserSession
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await _userService.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(userDto.Email) != null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
@@ -126,7 +96,7 @@ public class AuthorizationController(Context context, Config config, UserSession
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await _userService.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(userDto.Email) != null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
@@ -145,7 +115,7 @@ public class AuthorizationController(Context context, Config config, UserSession
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await _userService.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(userDto.Email) != null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
@@ -162,35 +132,17 @@ public class AuthorizationController(Context context, Config config, UserSession
             Surname = userDto.Surname,
             Email = userDto.Email.ToLower(),
             Role = userRole.ToString(),
+            GroupId = userDto.GroupId,
             Password = Password.GetHash(userDto.Password),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
         };
 
-        Group? group = null;
+        await userRepository.CreateAsync(newUser);
 
-        if (userRole == Models.User.UserRoles.Student)
-        {
-            group = await _groupService.GetByIDAsync(newUser.GroupId ?? -1);
-            newUser.GroupId = userDto.GroupId;
-        }
+        Email email = Email.GetUserCreation(newUser);
+        await emailService.SendAsync(email);
 
-        await _userService.CreateAsync(newUser);
-        _emailService.SendUserCreation(newUser);
         return newUser.MakeGetDto();
-    }
-
-    private bool CheckAdConnection(string email, string password)
-    {
-        string login = email.Split("@").First();
-
-        LdapConnection? connection = _ldapService.ConnectAsync(login, password);
-
-        if (connection != null && connection.Connected == true)
-        {
-            return true;
-        }
-
-        return false;
     }
 }

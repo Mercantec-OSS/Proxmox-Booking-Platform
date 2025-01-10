@@ -22,4 +22,9 @@ public class TemplateGetDto
             Keywords = keywords
         };
     }
+
+    static public List<TemplateGetDto> MakeGetDtoFromList(List<string> templates)
+    {
+        return templates.ConvertAll(MakeGetDTO);
+    }
 }

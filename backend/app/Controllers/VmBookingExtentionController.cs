@@ -1,11 +1,11 @@
 ﻿[ApiController]
 [Route("extention-request")]
-public class VmBookingExtentionController(Context context, UserSession session) : ControllerBase
+public class VmBookingExtentionController(
+    UserSession session,
+    VmBookingExtentionRepository vmBookingExtentionRepository,
+    VmBookingRepository vmBookingRepository
+    ) : ControllerBase
 {
-    private readonly VmBookingExtentionService _vmBookingExtentionService = new(context);
-    private readonly UserService _userService = new(context);
-    private readonly VmBookingService _vmBookingService = new(context);
-
     [HttpPost("create")]
     [ProducesResponseType(201)]
     public async Task<ActionResult> CreateBookingExtention(VmBookingExtentionCreateDto createDto)
@@ -16,7 +16,7 @@ public class VmBookingExtentionController(Context context, UserSession session) 
             Models.User.UserRoles.Student
         );
 
-        List<VmBookingExtention> request = await _vmBookingExtentionService.GetListByBookingId(createDto.BookingId);
+        List<VmBookingExtention> request = await vmBookingExtentionRepository.GetListByBookingId(createDto.BookingId);
         bool allAccepted = request.All(r => r.IsAccepted);
         if (request.Count == 0)
         {
@@ -28,7 +28,7 @@ public class VmBookingExtentionController(Context context, UserSession session) 
             return BadRequest(ResponseMessage.GetErrorMessage("Only one active extention request per booking."));
         }
 
-        VmBooking? booking = await _vmBookingService.GetByIdAsync(createDto.BookingId);
+        VmBooking? booking = await vmBookingRepository.GetByIdAsync(createDto.BookingId);
         
         if (booking == null) {
             return NotFound(ResponseMessage.GetBookingNotFound());
@@ -44,7 +44,7 @@ public class VmBookingExtentionController(Context context, UserSession session) 
             NewExpiredAt = createDto.NewExpiringAt,
         };
 
-        await _vmBookingExtentionService.CreateAsync(extention);
+        await vmBookingExtentionRepository.CreateAsync(extention);
 
         return Ok(true);
     }
@@ -62,21 +62,21 @@ public class VmBookingExtentionController(Context context, UserSession session) 
         
         if (session.IsAdmin())
         {
-            List<VmBookingExtention> selectedExtentions = await _vmBookingExtentionService.GetAllAsync();
+            List<VmBookingExtention> selectedExtentions = await vmBookingExtentionRepository.GetAllAsync();
             extentions.AddRange(selectedExtentions);
         }
 
         else if (session.IsTeacher())
         {
-            List<VmBookingExtention> ownExtentions = await _vmBookingExtentionService.GetByOwnerIdAsync(user.Id);
-            List<VmBookingExtention> assignedExtentions = await _vmBookingExtentionService.GetByAssignedIdAsync(user.Id);
+            List<VmBookingExtention> ownExtentions = await vmBookingExtentionRepository.GetByOwnerIdAsync(user.Id);
+            List<VmBookingExtention> assignedExtentions = await vmBookingExtentionRepository.GetByAssignedIdAsync(user.Id);
             extentions.AddRange(ownExtentions);
             extentions.AddRange(assignedExtentions);
         }
 
         else if (session.IsStudent())
         {
-            List<VmBookingExtention> ownExtentions = await _vmBookingExtentionService.GetByOwnerIdAsync(user.Id);
+            List<VmBookingExtention> ownExtentions = await vmBookingExtentionRepository.GetByOwnerIdAsync(user.Id);
             extentions.AddRange(ownExtentions);
         }
 
@@ -88,7 +88,7 @@ public class VmBookingExtentionController(Context context, UserSession session) 
     {
         User user = session.GetIfAuthenticated();
 
-        VmBookingExtention? extention = await _vmBookingExtentionService.GetByIdAsync(id);
+        VmBookingExtention? extention = await vmBookingExtentionRepository.GetByIdAsync(id);
         
         if (extention == null)
         {
@@ -113,7 +113,7 @@ public class VmBookingExtentionController(Context context, UserSession session) 
             Models.User.UserRoles.Moderator
         );
 
-        List<VmBookingExtention>? extentions = await _vmBookingExtentionService.GetByAssignedIdAsync(id);
+        List<VmBookingExtention>? extentions = await vmBookingExtentionRepository.GetByAssignedIdAsync(id);
 
         if (extentions == null)
         {
@@ -133,7 +133,7 @@ public class VmBookingExtentionController(Context context, UserSession session) 
             Models.User.UserRoles.Moderator
         );
 
-        List<VmBookingExtention>? bookings = await _vmBookingExtentionService.GetByOwnerIdAsync(id);
+        List<VmBookingExtention>? bookings = await vmBookingExtentionRepository.GetByOwnerIdAsync(id);
 
         if (bookings == null)
         {
@@ -154,14 +154,14 @@ public class VmBookingExtentionController(Context context, UserSession session) 
            Models.User.UserRoles.Moderator
        );
 
-        VmBookingExtention? bookingExt = await _vmBookingExtentionService.GetByIdAsync(id);
+        VmBookingExtention? bookingExt = await vmBookingExtentionRepository.GetByIdAsync(id);
         
         if (bookingExt == null)
         {
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
-        VmBooking? booking = await _vmBookingService.GetByIdAsync(bookingExt.BookingId);
+        VmBooking? booking = await vmBookingRepository.GetByIdAsync(bookingExt.BookingId);
         
         if (booking == null)
         {
@@ -171,8 +171,8 @@ public class VmBookingExtentionController(Context context, UserSession session) 
         bookingExt.IsAccepted = true;
         booking.ExpiredAt = bookingExt.NewExpiredAt;
 
-        await _vmBookingExtentionService.UpdateAsync(bookingExt);
-        await _vmBookingService.UpdateAsync(booking);
+        await vmBookingExtentionRepository.UpdateAsync(bookingExt);
+        await vmBookingRepository.UpdateAsync(booking);
 
         return NoContent();
     }
@@ -188,7 +188,7 @@ public class VmBookingExtentionController(Context context, UserSession session) 
            Models.User.UserRoles.Moderator
         );
 
-        VmBookingExtention? booking = await _vmBookingExtentionService.GetByIdAsync(updateDTO.Id);
+        VmBookingExtention? booking = await vmBookingExtentionRepository.GetByIdAsync(updateDTO.Id);
         
         if (booking == null)
         {
@@ -199,7 +199,7 @@ public class VmBookingExtentionController(Context context, UserSession session) 
         booking.ExpiredAt = updateDTO.NewExpiringDate;
         booking.IsAccepted = updateDTO.IsAccepted;
 
-        await _vmBookingExtentionService.UpdateAsync(booking);
+        await vmBookingExtentionRepository.UpdateAsync(booking);
 
         return NoContent();
     }
@@ -215,14 +215,14 @@ public class VmBookingExtentionController(Context context, UserSession session) 
            Models.User.UserRoles.Moderator
         );
 
-        VmBookingExtention? booking = await _vmBookingExtentionService.GetByIdAsync(id);
+        VmBookingExtention? booking = await vmBookingExtentionRepository.GetByIdAsync(id);
         
         if (booking == null)
         {
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
-        await _vmBookingExtentionService.DeleteAsync(booking);
+        await vmBookingExtentionRepository.DeleteAsync(booking);
 
         return NoContent();
     }

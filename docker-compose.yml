@@ -1,6 +1,7 @@
 services:
   nginx:
     container_name: nginx-dev
+    restart: unless-stopped
     image: nginx
     ports:
       - "80:80"
@@ -8,25 +9,6 @@ services:
     volumes:
       - ./nginx:/etc/nginx/templates
       - ./ssl:/ssl
-
-  automatization:
-    container_name: automat-dev
-    restart: unless-stopped
-    build: ./automatization
-    ports:
-      - "6004:5000" # Optional for debugging
-    environment:
-      - VERSION=8.3.0
-      - SCRIPTS_PATH=/scripts
-      - VM_VCENTER_IP=${VM_VCENTER_IP}
-      - VM_VCENTER_USER=${VM_VCENTER_USER}
-      - VM_VCENTER_PASSWORD=${VM_VCENTER_PASSWORD}
-      - VM_CLUSTER_NAME=${VM_VCENTER_CLUSTER}
-      - VM_DATASTORE_NAME=${VM_VCENTER_DATASTORE}
-    volumes:
-      - ./automatization/app:/app
-      - ./automatization/build:/build
-      - ./automatization/scripts:/scripts
 
   backend:
     container_name: backend-dev
@@ -36,21 +18,25 @@ services:
       - "6002:5000" # Optional for debugging
     environment:
       - VERSION=${VERSION}
-      - TEST_MODE=${TEST_MODE}
       - JWT_SECRET=${JWT_SECRET}
-      - DEVOPS_URL=http://automatization:5000
       - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
-      - AD_CONNECTION_STRING=${AD_ADDRESS}__${AD_DOMAIN}__${AD_USER}__${AD_PASSWORD}
       - SMTP_CONNECTION_STRING=${SMTP_ADDRESS}__${SMTP_PORT}__${SMTP_USER}__${SMTP_PASSWORD}
       - EMAIL_TEMPLATES_PATH=/app/src/emails/
       - VM_ROOT_PASSWORD=${VM_ROOT_PASSWORD}
       - VM_DEFAULT_USER=${VM_DEFAULT_USER}
+      - SCRIPTS_PATH=/scripts
+      - VM_VCENTER_IP=${VM_VCENTER_IP}
+      - VM_VCENTER_USER=${VM_VCENTER_USER}
+      - VM_VCENTER_PASSWORD=${VM_VCENTER_PASSWORD}
+      - VM_CLUSTER_NAME=${VM_VCENTER_CLUSTER}
+      - VM_DATASTORE_NAME=${VM_VCENTER_DATASTORE}
       - AUTO_MIGRATIONS=true
       - USE_SWAGGER=true
       - ALLOW_CORS=true
     volumes:
       - ./backend/app:/app
       - ./backend/build:/build
+      - ./backend/scripts:/scripts
 
   frontend:
     container_name: frontend-dev
