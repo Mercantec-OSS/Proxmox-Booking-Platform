@@ -55,7 +55,7 @@
           <CircleHelp class="h-5 w-5" />
           Help
         </a>
-        <Button variant="outline" onclick={handleLogout} class="text-muted-foreground hover:text-foreground flex items-center gap-2 px-2.5">
+        <Button variant="outline" onmousedown={handleLogout} class="text-muted-foreground hover:text-foreground flex items-center gap-2 px-2.5">
           <LogOut class="h-4 w-4" />
           Logout
         </Button>
@@ -111,17 +111,17 @@
       <DropdownMenu.Label>My Account</DropdownMenu.Label>
       <DropdownMenu.Separator />
       <DropdownMenu.Item
-        onclick={() => {
+        onmousedown={() => {
           goto(`/user/${$userStore.id}`);
         }}><User class="size-4 mr-2" />Profile</DropdownMenu.Item
       >
       <DropdownMenu.Item
-        onclick={() => {
+        onmousedown={() => {
           goto('/help');
         }}><CircleHelp class="size-4 mr-2" />Help</DropdownMenu.Item
       >
       <DropdownMenu.Separator />
-      <DropdownMenu.Item onclick={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
+      <DropdownMenu.Item onmousedown={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
     </DropdownMenu.Content>
   </DropdownMenu.Root>
 </header>

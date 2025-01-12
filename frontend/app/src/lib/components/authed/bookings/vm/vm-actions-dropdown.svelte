@@ -122,36 +122,36 @@
       <DropdownMenu.Label>Booking actions</DropdownMenu.Label>
       <DropdownMenu.Separator />
       <DropdownMenu.Item
-        onclick={() => {
+        onmousedown={() => {
           window.open(`/api/web-console/${$selectedBookingStore.uuid}`, '_blank', 'noopener,noreferrer');
         }}
       >
         <MonitorUp class="mr-2 size-4" />
         <span>Web console</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item onclick={handleResetPower}>
+      <DropdownMenu.Item onmousedown={handleResetPower}>
         <Zap class="mr-2 size-4" />
         <span>Reset power</span>
       </DropdownMenu.Item>
       <DropdownMenu.Separator />
       <DropdownMenu.Item
-        onclick={() => {
+        onmousedown={() => {
           vmExtensionDialogOpen = true;
         }}
       >
         <CalendarPlus class="mr-2 size-4" />
         <span>Extend booking</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item onclick={handleFileDownload}>
+      <DropdownMenu.Item onmousedown={handleFileDownload}>
         <Download class="mr-2 size-4" />
         <span>Download</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item onclick={refreshBooking}>
+      <DropdownMenu.Item onmousedown={refreshBooking}>
         <RefreshCcw class="mr-2 size-4" />
         <span>Refresh</span>
       </DropdownMenu.Item>
       <DropdownMenu.Separator />
-      <DropdownMenu.Item onclick={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
+      <DropdownMenu.Item onmousedown={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
         <Trash2 class="mr-2 size-4" />
         <span>Delete</span>
       </DropdownMenu.Item>

@@ -108,8 +108,8 @@
       </div>
     </div>
     <Dialog.Footer>
-      <Button variant="outline" onclick={() => (vmExtensionDialogOpen = false)}>Cancel</Button>
-      <Button disabled={loadingCreate} onclick={handleExtendBooking}>
+      <Button variant="outline" onmousedown={() => (vmExtensionDialogOpen = false)}>Cancel</Button>
+      <Button disabled={loadingCreate} onmousedown={handleExtendBooking}>
         {#if loadingCreate}
           <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
         {/if}

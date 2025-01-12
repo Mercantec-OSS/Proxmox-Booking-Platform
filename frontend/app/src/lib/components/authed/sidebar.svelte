@@ -94,7 +94,7 @@
     <Tooltip.Provider>
       <Tooltip.Root openDelay={400}>
         <Tooltip.Trigger>
-          <Button onclick={toggleMode} variant="ghost" size="icon" class="text-muted-foreground hover:text-foreground">
+          <Button onmousedown={toggleMode} variant="ghost" size="icon" class="text-muted-foreground hover:text-foreground">
             <Sun class="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon class="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span class="sr-only">Toggle theme</span>
@@ -108,7 +108,7 @@
     <Tooltip.Provider>
       <Tooltip.Root openDelay={400}>
         <Tooltip.Trigger>
-          <Button onclick={handleLogout} variant="ghost" size="icon" class="text-muted-foreground hover:text-foreground">
+          <Button onmousedown={handleLogout} variant="ghost" size="icon" class="text-muted-foreground hover:text-foreground">
             <LogOut class="size-5" />
             <span class="sr-only">Logout</span>
           </Button>

@@ -103,7 +103,7 @@
         <div class="flex items-center gap-2 md:ml-auto">
           <!-- Buttons for teacher/admin to accept or delete booking -->
           {#if !$selectedBookingStore.isAccepted}
-            <Button onclick={handleDeleteBooking} disabled={loadingDelete} variant="outline" class="border-destructive text-destructive hover:bg-destructive/90 hover:text-white" size="sm">
+            <Button onmousedown={handleDeleteBooking} disabled={loadingDelete} variant="outline" class="border-destructive text-destructive hover:bg-destructive/90 hover:text-white" size="sm">
               {#if loadingDelete}
                 <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
               {:else}
@@ -114,7 +114,7 @@
           {/if}
 
           {#if !$selectedBookingStore.isAccepted && userAuthed}
-            <Button onclick={handleAcceptBooking} disabled={loadingAccept} variant="outline" class="border-green-600 text-green-600 hover:bg-green-600/90 hover:text-white" size="sm">
+            <Button onmousedown={handleAcceptBooking} disabled={loadingAccept} variant="outline" class="border-green-600 text-green-600 hover:bg-green-600/90 hover:text-white" size="sm">
               {#if loadingAccept}
                 <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
               {:else}

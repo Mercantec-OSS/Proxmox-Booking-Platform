@@ -78,7 +78,7 @@
       <Textarea disabled id="comment" bind:value={$selectedBookingStore.message} />
     </div>
     <Dialog.Footer>
-      <Button disabled={loadingDelete} variant="outline" onclick={() => handleDeleteBooking($selectedBookingStore.id)}>
+      <Button disabled={loadingDelete} variant="outline" onmousedown={() => handleDeleteBooking($selectedBookingStore.id)}>
         {#if loadingDelete}
           <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
         {:else}
@@ -87,7 +87,7 @@
         Delete
       </Button>
       {#if new Date() < new Date($selectedBookingStore.expiredAt)}
-        <Button disabled={loadingAccept} onclick={() => handleAcceptBooking($selectedBookingStore.id)}>
+        <Button disabled={loadingAccept} onmousedown={() => handleAcceptBooking($selectedBookingStore.id)}>
           {#if loadingAccept}
             <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
           {/if}

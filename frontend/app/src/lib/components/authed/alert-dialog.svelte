@@ -21,8 +21,8 @@
       <AlertDialog.Description>{alertDescription}</AlertDialog.Description>
     </AlertDialog.Header>
     <AlertDialog.Footer>
-      <AlertDialog.Cancel onclick={handleCancel}>Cancel</AlertDialog.Cancel>
-      <AlertDialog.Action onclick={handleContinue}>Continue</AlertDialog.Action>
+      <AlertDialog.Cancel onmousedown={handleCancel}>Cancel</AlertDialog.Cancel>
+      <AlertDialog.Action onmousedown={handleContinue}>Continue</AlertDialog.Action>
     </AlertDialog.Footer>
   </AlertDialog.Content>
 </AlertDialog.Root>

@@ -87,9 +87,9 @@
         <Textarea disabled id="comment" bind:value={$selectedBookingStore.activeExtension.message} />
       </div>
       <Dialog.Footer>
-        <Button variant="outline" onclick={() => (vmExtensionRequestDialogOpen = false)}>Cancel</Button>
+        <Button variant="outline" onmousedown={() => (vmExtensionRequestDialogOpen = false)}>Cancel</Button>
         {#if new Date() < new Date($selectedBookingStore.expiredAt)}
-          <Button disabled={loadingAccept} onclick={() => handleAcceptExtension($selectedBookingStore.activeExtension.id)}>
+          <Button disabled={loadingAccept} onmousedown={() => handleAcceptExtension($selectedBookingStore.activeExtension.id)}>
             {#if loadingAccept}
               <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
             {/if}

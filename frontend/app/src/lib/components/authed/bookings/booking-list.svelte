@@ -10,16 +10,16 @@
 
   let userAuthed = $derived($userStore.role === 'Admin' || $userStore.role === 'Teacher');
 
-  // Formats date to "DD MMM HH:mm AM/PM" format
+  const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
+
   function formatDateTime(date) {
-    const options = {
-      day: '2-digit',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    };
-    return new Date(date).toLocaleString(undefined, options).replace(',', '');
+    return dateTimeFormatter.format(new Date(date)).replace(',', '');
   }
 </script>
 
@@ -46,7 +46,7 @@
               <Button variant="outline" class="w-39"><ShieldEllipsis class="h-4 w-4 mr-1" />Teacher actions</Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
-              <DropdownMenu.Item onclick={vmService.resetVMTemplates}><ListRestart class="h-4 w-4 mr-1" />Reset templates</DropdownMenu.Item>
+              <DropdownMenu.Item onmousedown={vmService.resetVMTemplates}><ListRestart class="h-4 w-4 mr-1" />Reset templates</DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu.Root>
         {/if}
@@ -69,7 +69,7 @@
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each $vmListStore as vm (`${vm.id}-vm`)}
+          {#each $vmListStore as { id, type, message, uuid, isAccepted, owner, assigned, createdAt, expiredAt } (id)}
             <Table.Row>
               <Table.Cell class="table-cell">
                 <div class="flex gap-x-3 items-center">
@@ -77,35 +77,35 @@
                 </div>
               </Table.Cell>
               <Table.Cell>
-                <Badge variant="outline">{vm.type}</Badge>
+                <Badge variant="outline">{type}</Badge>
               </Table.Cell>
               <Table.Cell class="max-w-sm lg:max-w-md">
                 <span class="block truncate">
-                  "{vm.message}"
+                  "{message}"
                 </span>
               </Table.Cell>
               <Table.Cell>
-                <span title={vm.uuid}>{vm.uuid?.slice(0, 7)}...</span>
+                <span title={uuid}>{uuid?.slice(0, 7)}...</span>
               </Table.Cell>
               <Table.Cell>
-                <Badge variant={vm.isAccepted ? 'outline' : 'destructive'}>{vm.isAccepted ? 'Confirmed' : 'Pending'}</Badge>
+                <Badge variant={isAccepted ? 'outline' : 'destructive'}>{isAccepted ? 'Confirmed' : 'Pending'}</Badge>
               </Table.Cell>
               <Table.Cell class="table-cell">
-                <a href="/user/{vm.owner.id}" class="flex items-center gap-1">
-                  <span>{vm.owner.name}</span>
+                <a href="/user/{owner.id}" class="flex items-center gap-1">
+                  <span>{owner.name}</span>
                   <ArrowUpRight class="h-4 w-4" />
                 </a>
               </Table.Cell>
               <Table.Cell class="table-cell">
-                <a href="/user/{vm.assigned.id}" class="flex items-center gap-1">
-                  <span>{vm.assigned.name}</span>
+                <a href="/user/{assigned.id}" class="flex items-center gap-1">
+                  <span>{assigned.name}</span>
                   <ArrowUpRight class="h-4 w-4" />
                 </a>
               </Table.Cell>
-              <Table.Cell class="table-cell">{formatDateTime(vm.createdAt)}</Table.Cell>
-              <Table.Cell class="table-cell">{formatDateTime(vm.expiredAt)}</Table.Cell>
+              <Table.Cell class="table-cell">{formatDateTime(createdAt)}</Table.Cell>
+              <Table.Cell class="table-cell">{formatDateTime(expiredAt)}</Table.Cell>
               <Table.Cell>
-                <Button href="/booking/vm/{vm.id}" size="sm" class="ml-auto gap-1">
+                <Button href="/booking/vm/{id}" size="sm" class="ml-auto gap-1">
                   View
                   <ArrowUpRight class="h-4 w-4" />
                 </Button>
