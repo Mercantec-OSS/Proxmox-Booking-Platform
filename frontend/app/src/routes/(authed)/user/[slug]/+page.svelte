@@ -15,7 +15,7 @@
   // Function to check for and display errors
   function checkErrors() {
     if (data.errorMessage || !data.userData) {
-      toast.error(error.message);
+      toast.error(data.errorMessage);
 
       if (data.errorMessage === 'Invalid user ID' || data.errorMessage === 'User not found') {
         goto('/');
@@ -42,9 +42,9 @@
 
   {#if $userStore.role === 'Admin' || $userStore.role === 'Teacher'}
     <!-- Button to open create booking drawer and filter bookings -->
-    <div class="flex flex-col md:w-3/4 md:mx-auto my-10">
+    <div class="flex flex-grow flex-col md:w-3/4 md:mx-auto my-10">
       <!-- List of all bookings -->
-      <div class="flex flex-wrap justify-center gap-5 w-full mt-3">
+      <div class="flex flex-grow flex-wrap justify-center gap-5 w-full mt-3">
         <BookingList />
       </div>
     </div>

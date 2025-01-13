@@ -9,13 +9,11 @@
   import { Badge } from '$lib/components/ui/badge';
   import { Button } from '$lib/components/ui/button';
   import * as Card from '$lib/components/ui/card';
-  import * as Tabs from '$lib/components/ui/tabs';
   import { Calendar } from '$lib/components/ui/calendar';
   import * as Popover from '$lib/components/ui/popover';
   import * as Select from '$lib/components/ui/select/index.js';
   import { Textarea } from '$lib/components/ui/textarea/index.js';
   import { Label } from '$lib/components/ui/label';
-  import { Input } from '$lib/components/ui/input';
   import * as Command from '$lib/components/ui/command/index.js';
 
   let { data } = $props();
@@ -33,19 +31,17 @@
     expiringAt: null
   });
 
-  let calendarDatePicked = $state(null);
   let vmCalendarDatePicked = $state(null);
   let vmCalendarDateFormated = $derived(new Date(vmCalendarDatePicked).toLocaleDateString(undefined, { dateStyle: 'long' }));
-  let calendarDateFormated = $derived(new Date(calendarDatePicked).toLocaleDateString(undefined, { dateStyle: 'long' }));
 
   let selectedStudent = $state(null);
   let selectedTeacher = $state(null);
   let selectStudentOpen = $state(false);
   let selectTeacherOpen = $state(false);
 
-  function handleStudentSelect(value) {
-    const [name, surname, id] = value.split(' ');
-    const parsedId = parseInt(id, 10);
+  function handleStudentSelect(student) {
+    const [name, surname, id] = student.split(' ');
+    const parsedId = +id;
 
     if (parsedId === vmBookingInput.ownerId) {
       selectedStudent = null;
@@ -57,9 +53,9 @@
     selectStudentOpen = false;
   }
 
-  function handleTeacherSelect(value) {
-    const [name, surname, id] = value.split(' ');
-    const parsedId = parseInt(id, 10);
+  function handleTeacherSelect(teacher) {
+    const [name, surname, id] = teacher.split(' ');
+    const parsedId = +id;
 
     if (parsedId === vmBookingInput.assignedId) {
       selectedTeacher = null;
@@ -119,11 +115,11 @@
       <h1 class="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">Create booking</h1>
     </div>
     <div class="grid gap-4 lg:gap-8">
-      <div class="grid auto-rows-max items-start gap-4 lg:gap-8">
+      <div class="grid auto-rows-max items-start gap-4 lg:gap-8 lg:max-w-md">
         <Card.Root>
           <Card.Header>
             <Card.Title>Book a virtual machine</Card.Title>
-            <Card.Description>description...</Card.Description>
+            <Card.Description>Book a virtual machine with custom configuration and duration</Card.Description>
           </Card.Header>
           <Card.Content>
             <form
@@ -134,7 +130,7 @@
               class="grid items-center py-4 gap-4"
             >
               <div class="grid gap-2">
-                <div class="flex justify-between items-center">
+                <div class="flex justify-between items-center gap-x-4">
                   <Label for="studentCount">Virtual machine templates</Label>
                   <div>
                     <Badge class="w-auto">? VMs available</Badge>
@@ -142,19 +138,14 @@
                 </div>
 
                 <!-- Select VM template component -->
-                <Select.Root
-                  type="single"
-                  onSelectedChange={(value) => {
-                    vmBookingInput.type = value.value;
-                  }}
-                >
+                <Select.Root type="single" bind:value={vmBookingInput.type}>
                   <Select.Trigger>
-                    {'Select a template'}
+                    {vmBookingInput.type ? data.vmTemplates.find((t) => t.internalName === vmBookingInput.type)?.displayName : 'Select a template'}
                   </Select.Trigger>
                   <Select.Content>
                     <Select.Group class="h-60 overflow-y-scroll">
                       {#each data.vmTemplates as vmTemplate}
-                        <Select.Item value={vmTemplate.internalName} label={vmTemplate.displayName}>{vmTemplate.displayName}</Select.Item>
+                        <Select.Item value={vmTemplate.internalName}>{vmTemplate.displayName}</Select.Item>
                       {/each}
                     </Select.Group>
                   </Select.Content>
@@ -182,7 +173,13 @@
                           <Command.Group>
                             {#each data.listOfUsers as user (user.id)}
                               {#if user.role === 'Student'}
-                                <Command.Item value={`${user.name} ${user.surname} ${user.id}`} onSelect={handleStudentSelect} class="items-start px-4 py-2">
+                                <Command.Item
+                                  value={`${user.name} ${user.surname} ${user.id}`}
+                                  onSelect={() => {
+                                    handleStudentSelect(`${user.name} ${user.surname} ${user.id}`);
+                                  }}
+                                  class="items-start px-4 py-2"
+                                >
                                   <p>{user.name} {user.surname}</p>
                                 </Command.Item>
                               {/if}
@@ -201,7 +198,7 @@
                   </div>
                   <Popover.Root bind:open={selectTeacherOpen}>
                     <Popover.Trigger>
-                      <Button variant="outline" class="justify-between px-3 {selectedTeacher ?? 'text-muted-foreground'}">
+                      <Button variant="outline" class="justify-between px-3 w-full {selectedTeacher ?? 'text-muted-foreground'}">
                         {selectedTeacher ?? 'Select a teacher'}
                         <ChevronDown class="h-4 w-4" />
                       </Button>
@@ -214,7 +211,11 @@
                           <Command.Group>
                             {#each data.listOfUsers as user (user.id)}
                               {#if user.role === 'Teacher'}
-                                <Command.Item value={`${user.name} ${user.surname} ${user.id}`} onSelect={handleTeacherSelect} class="items-start px-4 py-2">
+                                <Command.Item
+                                  value={`${user.name} ${user.surname} ${user.id}`}
+                                  onSelect={() => handleTeacherSelect(`${user.name} ${user.surname} ${user.id}`)}
+                                  class="items-start px-4 py-2"
+                                >
                                   <p>{user.name} {user.surname}</p>
                                 </Command.Item>
                               {/if}

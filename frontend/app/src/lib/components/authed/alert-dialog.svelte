@@ -1,16 +1,16 @@
 <script>
   import * as AlertDialog from '$lib/components/ui/alert-dialog';
-  import { createEventDispatcher } from 'svelte';
 
-  let { alertTitle, alertDescription, open = false } = $props();
-  const dispatch = createEventDispatcher();
+  let { alertTitle, alertDescription, open, onNotify } = $props();
 
   function handleCancel() {
-    dispatch('notify', { confirmed: false });
+    onNotify?.({ confirmed: false });
+    open = false;
   }
 
   function handleContinue() {
-    dispatch('notify', { confirmed: true });
+    onNotify?.({ confirmed: true });
+    open = false;
   }
 </script>
 

@@ -1,4 +1,6 @@
 import { vmService } from '$lib/services/vm-service';
+import { userService } from '$lib/services/user-service';
+
 
 export const load = async ({ params, cookies }) => {
   let userData;
@@ -18,7 +20,10 @@ export const load = async ({ params, cookies }) => {
     const token = cookies.get('token');
     const userId = params.slug;
 
-   vmData = vmService.getVMBookingsByUserBackend(token, userId);
+    [vmData, userData] = await Promise.all([
+      vmService.getVMBookingsByUserBackend(token, userId),
+      userService.getUserByIdBackend(token, userId)
+    ]);
   } catch (error) {
     errorMessage = error.message;
   }

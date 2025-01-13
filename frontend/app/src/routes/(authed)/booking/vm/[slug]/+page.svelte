@@ -40,6 +40,7 @@
   async function fetchVmCreds() {
     try {
       creds = await vmService.getVmInfo($selectedBookingStore.uuid);
+      Object.assign(data.vmData, creds);
     } catch (error) {
       toast.error(error.message);
     }

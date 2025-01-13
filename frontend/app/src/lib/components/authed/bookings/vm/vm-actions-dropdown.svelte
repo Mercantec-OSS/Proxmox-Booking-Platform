@@ -12,26 +12,27 @@
   let vmExtensionDialogOpen = $state(false);
   let open = $state(false);
 
-  // Alert dialog state management
-  let alertDialogOpen = $state(false);
-  let alertTitle = $state(null);
-  let alertDescription = $state(null);
+  // State for managing alert dialog visibility and content
+  let alertState = $state({
+    open: false,
+    title: '',
+    description: ''
+  });
+
+  // Stores the Promise resolver for alert dialog confirmation
   let resolveAction;
 
-  // Handles user response from alert dialog and resolves the promise
-  function handleAnswer(event) {
-    alertDialogOpen = false;
-    if (resolveAction) {
-      resolveAction(event.detail.confirmed);
-    }
+  // Handles alert dialog close event and resolves the Promise
+  function handleNotify(event) {
+    alertState.open = false;
+    resolveAction?.(event.confirmed);
+    resolveAction = null;
   }
 
-  // Returns a promise that resolves when user responds to alert dialog
+  // Shows an alert dialog and returns a Promise that resolves with user's choice
   function promptUser(title, description) {
     return new Promise((resolve) => {
-      alertTitle = title;
-      alertDescription = description;
-      alertDialogOpen = true;
+      alertState = { open: true, title, description };
       resolveAction = resolve;
     });
   }
@@ -59,6 +60,7 @@
       'Confirm Booking Deletion',
       'You are about to delete this booking. This action will erase the associated server permanently. Please confirm to proceed with deletion.'
     );
+
     if (!userConfirmed) return;
 
     try {
@@ -73,41 +75,38 @@
 
   // Generates and downloads booking details as text file
   function handleFileDownload() {
-    let output = '';
-    output += `Booking ID: ${$selectedBookingStore.id}\n\n`;
-
-    output += `Server Details:\n`;
-    output += `- Ip: ${$selectedBookingStore.ip}\n`;
-    output += `- Password: ${$selectedBookingStore.password}\n`;
-    output += `- Template: ${$selectedBookingStore.type.name}\n`;
-    output += `- UUID: ${$selectedBookingStore.uuid}\n\n`;
-
-    output += 'Owner:\n';
-    output += `- Profile: ${window.location.href}user/${$selectedBookingStore.owner.id}\n`;
-    output += `- Name: ${$selectedBookingStore.owner.name} ${$selectedBookingStore.owner.surname}\n\n`;
-
-    output += 'Teacher assigned to:\n';
-    output += `- Profile: ${window.location.href}user/${$selectedBookingStore.assigned.id}\n`;
-    output += `- Name: ${$selectedBookingStore.assigned.name} ${$selectedBookingStore.assigned.surname}\n\n`;
-
-    output += `Created At: ${new Date($selectedBookingStore.createdAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}\n`;
-    output += `Expired At: ${new Date($selectedBookingStore.expiredAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}\n`;
+    const output = [
+      `Booking ID: ${$selectedBookingStore.id}\n`,
+      '\nServer Details:',
+      `- Ip: ${$selectedBookingStore.ip}`,
+      `- Username: ${$selectedBookingStore.username}`,
+      `- Password: ${$selectedBookingStore.password}`,
+      `- Template: ${$selectedBookingStore.type}`,
+      `- UUID: ${$selectedBookingStore.uuid}\n`,
+      '\nOwner:',
+      `- Profile: ${window.location.origin}/user/${$selectedBookingStore.owner.id}`,
+      `- Name: ${$selectedBookingStore.owner.name} ${$selectedBookingStore.owner.surname}\n`,
+      '\nTeacher assigned to:',
+      `- Profile: ${window.location.origin}/user/${$selectedBookingStore.assigned.id}`,
+      `- Name: ${$selectedBookingStore.assigned.name} ${$selectedBookingStore.assigned.surname}\n`,
+      `\nCreated At: ${new Date($selectedBookingStore.createdAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}`,
+      `Expired At: ${new Date($selectedBookingStore.expiredAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}`
+    ].join('\n');
 
     const blob = new Blob([output], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `vm_${$selectedBookingStore.id}.txt`;
-    link.click();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `vm_${$selectedBookingStore.id}.txt`;
+    a.click();
     window.URL.revokeObjectURL(url);
   }
-
   function handleResetPower() {
     vmService.resetVmPower($selectedBookingStore.uuid);
   }
 </script>
 
-<AlertDialog bind:alertTitle bind:alertDescription bind:open={alertDialogOpen} onnotify={handleAnswer} />
+<AlertDialog open={alertState.open} alertTitle={alertState.title} alertDescription={alertState.description} onNotify={handleNotify} />
 
 <VMExtensionDialog bind:vmExtensionDialogOpen></VMExtensionDialog>
 

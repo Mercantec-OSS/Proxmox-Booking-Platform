@@ -12,7 +12,7 @@
   import * as Popover from '$lib/components/ui/popover';
   import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
 
-  let { vmExtensionDialogOpen } = $props();
+  let { vmExtensionDialogOpen = $bindable() } = $props();
   let loadingCreate = $state(false);
 
   /* Creates Date object from store's expiration timestamp */
@@ -27,6 +27,10 @@
     bookingId: null,
     message: null,
     newExpiringAt: null
+  });
+
+  $effect(() => {
+    if (!vmExtensionDialogOpen) bookingExtensionInput.message = '';
   });
 
   /* Synchronizes local state with backend after mutations */
@@ -82,7 +86,7 @@
     <div class="flex flex-col gap-y-4">
       <Popover.Root>
         <Popover.Trigger>
-          <Button variant="outline" class={cn('justify-start text-left font-normal', !calendarDatePicked && 'text-muted-foreground')}>
+          <Button variant="outline" class={cn('justify-start text-left font-normal w-full', !calendarDatePicked && 'text-muted-foreground w-full')}>
             <CalendarIcon class="mr-2 h-4 w-4" />
             {calendarDatePicked ? calendarDateFormated : 'Pick a date'}
           </Button>
