@@ -14,45 +14,55 @@
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { ChevronLeft, ArrowRight, Trash, Check, LoaderCircle } from 'lucide-svelte';
 
+  // Props and data initialization
   const { data } = $props();
+  const { vmData, userInfo, errorMessage } = data;
 
+  // State management
   let loadingDelete = $state(false);
   let loadingAccept = $state(false);
-  let creds = $state({ ip: '', username: '', password: '' });
 
+  // Initialize selected booking store
   $effect(() => {
-    selectedBookingStore.set(data.vmData);
+    selectedBookingStore.set(vmData);
   });
 
-  let userAuthed = $derived(data.userInfo.role === 'Admin' || data.userInfo.role === 'Teacher');
+  // Constants
+  const metrics = ['CPU', 'Memory', 'Disk'];
+  const dateFormatter = new Intl.DateTimeFormat(undefined, {
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true
+  });
 
-  function formatDateTime(date) {
-    const options = {
-      day: '2-digit',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    };
-    return new Date(date).toLocaleString(undefined, options).replace(',', '');
-  }
+  // Derived values
+  let userAuthed = $derived(userInfo.role === 'Admin' || userInfo.role === 'Teacher');
+  let users = $derived([
+    { label: 'Owner', user: $selectedBookingStore?.owner },
+    { label: 'Teacher', user: $selectedBookingStore?.assigned }
+  ]);
+
+  const formatDateTime = (date) => dateFormatter.format(new Date(date)).replace(',', '');
 
   async function fetchVmCreds() {
     try {
-      creds = await vmService.getVmInfo($selectedBookingStore.uuid);
-      Object.assign(data.vmData, creds);
+      const { ip, username, password } = await vmService.getVmInfo($selectedBookingStore.uuid);
+      selectedBookingStore.update((store) => ({ ...store, ip, username, password }));
     } catch (error) {
       toast.error(error.message);
     }
   }
 
   async function handleAcceptBooking() {
+    if (loadingAccept) return;
+
     try {
       loadingAccept = true;
       await vmService.acceptVMBooking($selectedBookingStore.id);
-
       $selectedBookingStore.isAccepted = true;
-      toast.success(`Accepted booking`);
+      toast.success('Accepted booking');
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -61,12 +71,13 @@
   }
 
   async function handleDeleteBooking() {
+    if (loadingDelete) return;
+
     try {
       loadingDelete = true;
       await vmService.deleteVMBooking($selectedBookingStore.id);
-
+      toast.success('Booking deleted');
       goto('/');
-      toast.success(`Booking deleted`);
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -74,17 +85,23 @@
     }
   }
 
-  // Function to check for and display errors
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard');
+  }
+
   function checkErrors() {
-    if (data.errorMessage) {
-      toast.error(data.errorMessage);
+    if (errorMessage) {
+      toast.error(errorMessage);
       goto('/');
     }
   }
 
   afterNavigate(() => {
     checkErrors();
-    fetchVmCreds();
+    if (!$selectedBookingStore.ip) {
+      fetchVmCreds();
+    }
   });
 </script>
 
@@ -130,6 +147,7 @@
           {/if}
         </div>
       </div>
+
       <div class="grid gap-4 md:grid-cols-[1fr_250px] lg:grid-cols-3 lg:gap-8">
         <div class="grid auto-rows-max items-start gap-4 lg:col-span-2 lg:gap-8">
           <Card.Root>
@@ -141,31 +159,21 @@
               <div class="grid gap-6">
                 <div class="grid gap-3">
                   <div class="inline-flex flex-wrap gap-x-7 gap-y-4 justify-between text-sm">
-                    <!-- Owner of the booking -->
-                    <div class="grid gap-3">
-                      <Label for="owner">Owner</Label>
-                      <a href="/user/{$selectedBookingStore.owner.id}" class="flex gap-2 items-center hover:font-medium">
-                        <Avatar.Root>
-                          <Avatar.Fallback>{$selectedBookingStore.owner.name[0]}{$selectedBookingStore.owner.surname[0]}</Avatar.Fallback>
-                        </Avatar.Root>
-                        {$selectedBookingStore.owner.name}
-                        {$selectedBookingStore.owner.surname}
-                      </a>
-                    </div>
-
-                    <!-- Teacher assigned to -->
-                    <div class="grid gap-3">
-                      <Label for="teacher">Teacher</Label>
-                      <a href="/user/{$selectedBookingStore.assigned.id}" class="flex gap-2 items-center hover:font-medium">
-                        <Avatar.Root>
-                          <Avatar.Fallback>{$selectedBookingStore.assigned.name[0]}{$selectedBookingStore.assigned.surname[0]}</Avatar.Fallback>
-                        </Avatar.Root>
-                        {$selectedBookingStore.assigned.name}
-                        {$selectedBookingStore.assigned.surname}
-                      </a>
-                    </div>
+                    {#each users as { label, user }}
+                      <div class="grid gap-3">
+                        <Label for={label.toLowerCase()}>{label}</Label>
+                        <a href="/user/{user.id}" class="flex gap-2 items-center hover:font-medium">
+                          <Avatar.Root>
+                            <Avatar.Fallback>{user.name[0]}{user.surname[0]}</Avatar.Fallback>
+                          </Avatar.Root>
+                          {user.name}
+                          {user.surname}
+                        </a>
+                      </div>
+                    {/each}
                   </div>
                 </div>
+
                 <div class="grid gap-3">
                   <Label for="description">Created and expire dates</Label>
                   <div class="flex gap-2 text-sm items-center">
@@ -174,6 +182,7 @@
                     <p>{formatDateTime($selectedBookingStore.expiredAt)}</p>
                   </div>
                 </div>
+
                 <div class="text-sm mb-4">
                   <div>Machine UUID</div>
                   <div>
@@ -187,6 +196,7 @@
               </div>
             </Card.Content>
           </Card.Root>
+
           <Card.Root>
             <Card.Header>
               <Card.Title>Virtual machine</Card.Title>
@@ -206,8 +216,11 @@
                     <!-- VM ip -->
                     <div class="grid gap-3">
                       <Label for="vmIp" class="ml-2 font-bold">IP</Label>
-                      {#if creds.ip}
-                        <div class="py-2 px-3 rounded-lg bg-secondary text-secondary-foreground text-sm">{creds.ip}</div>
+                      {#if $selectedBookingStore.ip}
+                        <button
+                          class="py-2 px-3 rounded-lg bg-secondary text-secondary-foreground text-sm cursor-pointer hover:bg-secondary/80"
+                          onmousedown={() => copyToClipboard($selectedBookingStore.ip)}>{$selectedBookingStore.ip}</button
+                        >
                       {:else}
                         <Skeleton class="w-28 h-9 rounded-lg" />
                       {/if}
@@ -216,8 +229,11 @@
                     <!-- VM username -->
                     <div class="grid gap-3">
                       <Label for="vmUsername" class="ml-2 font-bold">Username</Label>
-                      {#if creds.username}
-                        <div class="py-2 px-3 rounded-lg bg-secondary text-secondary-foreground text-sm">{creds.username}</div>
+                      {#if $selectedBookingStore.username}
+                        <button
+                          class="py-2 px-3 rounded-lg bg-secondary text-secondary-foreground text-sm cursor-pointer hover:bg-secondary/80"
+                          onmousedown={() => copyToClipboard($selectedBookingStore.username)}>{$selectedBookingStore.username}</button
+                        >
                       {:else}
                         <Skeleton class="w-20 h-9 rounded-lg" />
                       {/if}
@@ -226,8 +242,11 @@
                     <!-- VM password -->
                     <div class="grid gap-3">
                       <Label for="vmpassword" class="ml-2 font-bold">Password</Label>
-                      {#if creds.password}
-                        <div class="py-2 px-3 rounded-lg bg-secondary text-secondary-foreground text-sm">{creds.password}</div>
+                      {#if $selectedBookingStore.password}
+                        <button
+                          class="py-2 px-3 rounded-lg bg-secondary text-secondary-foreground text-sm cursor-pointer hover:bg-secondary/80"
+                          onmousedown={() => copyToClipboard($selectedBookingStore.password)}>{$selectedBookingStore.password}</button
+                        >
                       {:else}
                         <Skeleton class="w-24 h-9 rounded-lg" />
                       {/if}
@@ -239,42 +258,20 @@
           </Card.Root>
         </div>
         <div class="grid auto-rows-max items-start gap-4 lg:gap-8">
-          <Card.Root>
-            <Card.Header>
-              <Card.Title>CPU usage</Card.Title>
-            </Card.Header>
-            <Card.Content>
-              <div class="grid gap-6">
-                <div class="grid gap-3">
-                  <Label for="status">Graph</Label>
+          {#each metrics as metric}
+            <Card.Root>
+              <Card.Header>
+                <Card.Title>{metric} usage</Card.Title>
+              </Card.Header>
+              <Card.Content>
+                <div class="grid gap-6">
+                  <div class="grid gap-3">
+                    <Label for="status">Graph</Label>
+                  </div>
                 </div>
-              </div>
-            </Card.Content>
-          </Card.Root>
-          <Card.Root>
-            <Card.Header>
-              <Card.Title>Memory usage</Card.Title>
-            </Card.Header>
-            <Card.Content>
-              <div class="grid gap-6">
-                <div class="grid gap-3">
-                  <Label for="status">Graph</Label>
-                </div>
-              </div>
-            </Card.Content>
-          </Card.Root>
-          <Card.Root>
-            <Card.Header>
-              <Card.Title>Disk usage</Card.Title>
-            </Card.Header>
-            <Card.Content>
-              <div class="grid gap-6">
-                <div class="grid gap-3">
-                  <Label for="status">Graph</Label>
-                </div>
-              </div>
-            </Card.Content>
-          </Card.Root>
+              </Card.Content>
+            </Card.Root>
+          {/each}
         </div>
       </div>
     </div>

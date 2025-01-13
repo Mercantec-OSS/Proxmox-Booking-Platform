@@ -148,7 +148,17 @@ export const vmService = {
         retry: {
           limit: 3
         },
-        timeout: 60000
+        timeout: 30000
+      })
+      .json();
+  },
+
+  async getVmInfoBackend(cookie, uuid) {
+    return await backendApi
+      .get(`script/vm/get-ip/${uuid}`, {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
       })
       .json();
   },

@@ -40,14 +40,17 @@
   // Syncs booking data with backend and updates local stores
   async function refreshBooking() {
     try {
-      const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
-      toast.success(`Refreshed booking details`);
-      selectedBookingStore.set(updatedBooking);
+      const [updatedBooking, creds] = await Promise.all([vmService.getVMBookingById($selectedBookingStore.id), vmService.getVmInfo($selectedBookingStore.uuid)]);
 
-      vmListStore.update((bookings) => {
-        const updatedBookings = bookings.map((booking) => (booking.id === $selectedBookingStore.id ? { ...booking, ...updatedBooking } : booking));
-        return updatedBookings;
+      selectedBookingStore.set({
+        ...$selectedBookingStore,
+        ...updatedBooking,
+        ...creds
       });
+
+      vmListStore.update((bookings) => bookings.map((booking) => (booking.id === updatedBooking.id ? updatedBooking : booking)));
+
+      toast.success('Refreshed booking details');
     } catch (error) {
       toast.error(error.message);
       if (error.message === 'Booking not found') goto('/');

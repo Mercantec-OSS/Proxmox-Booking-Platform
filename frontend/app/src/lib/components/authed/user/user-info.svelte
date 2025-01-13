@@ -16,7 +16,6 @@
   });
 
   async function updateRole(role) {
-    console.log('updateRole', role);
     user.role = role;
     try {
       await userService.updaterole(user);
