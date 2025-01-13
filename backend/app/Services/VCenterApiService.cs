@@ -68,11 +68,23 @@ public class VCenterApiService
     {
         string uri = $"https://{Config.VM_VCENTER_IP}/api/vcenter/vm/{internName}/guest/networking/interfaces";
 
-        var machines = await _client.GetFromJsonAsync<List<ResponseVmIpDto>>(uri) ?? new List<ResponseVmIpDto>();
-        var selectedMachine = machines.FirstOrDefault(new ResponseVmIpDto());
-        var ipv4 = selectedMachine.IP.IPAddresses.Where(x => x.PrefixLength == 24).FirstOrDefault(new ResponseVmIpDto.IPInfo.IPAddressInfo());
+        var interfaces = await _client.GetFromJsonAsync<List<ResponseVmIpDto>>(uri) ?? new List<ResponseVmIpDto>();
+        string machineIp = "";
 
-        return ipv4.IPAddress;
+        // Trow all machine interfaces
+        foreach (var selectedInteface in interfaces)
+        {
+            var ipv4 = selectedInteface.IP.IPAddresses.Where(x => x.PrefixLength == 24).FirstOrDefault(new ResponseVmIpDto.IPInfo.IPAddressInfo());
+            machineIp = ipv4.IPAddress;
+
+            // If we found ipv4 with prefix 24, we can break the loop
+            if (ipv4.PrefixLength == 24)
+            {
+                break;
+            }
+        }
+
+        return machineIp;
     }
 
     public async Task<int> GetCpuCount(string internName)
