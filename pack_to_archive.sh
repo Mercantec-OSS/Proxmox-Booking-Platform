@@ -4,4 +4,4 @@ CURRENT_PATH=$(pwd)
 CURRENT_FORLDER=$(basename $CURRENT_PATH)
 
 cd ..
-tar --exclude=.env -czf $FILE_NAME $CURRENT_FORLDER
+tar --exclude=.env --exclude=db/storage -czf $FILE_NAME $CURRENT_FORLDER
