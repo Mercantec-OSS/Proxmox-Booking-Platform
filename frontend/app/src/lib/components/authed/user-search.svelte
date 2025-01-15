@@ -78,7 +78,7 @@
     <Command.Group>
       {#each listOfUsers as user (user.id)}
         <Command.Item
-          onSelect={() => {
+          onmousedown={() => {
             redirectUser(user.id);
           }}
           disabled={loadingProfile && selectedUser === user.id}

@@ -175,7 +175,7 @@
                               {#if user.role === 'Student'}
                                 <Command.Item
                                   value={`${user.name} ${user.surname} ${user.id}`}
-                                  onSelect={() => {
+                                  onmousedown={() => {
                                     handleStudentSelect(`${user.name} ${user.surname} ${user.id}`);
                                   }}
                                   class="items-start px-4 py-2"
@@ -213,7 +213,7 @@
                               {#if user.role === 'Teacher'}
                                 <Command.Item
                                   value={`${user.name} ${user.surname} ${user.id}`}
-                                  onSelect={() => handleTeacherSelect(`${user.name} ${user.surname} ${user.id}`)}
+                                  onmousedown={() => handleTeacherSelect(`${user.name} ${user.surname} ${user.id}`)}
                                   class="items-start px-4 py-2"
                                 >
                                   <p>{user.name} {user.surname}</p>
@@ -259,7 +259,15 @@
                 <Textarea class="max-h-20" placeholder="Describe the purpose of this VM booking" id="comment" bind:value={vmBookingInput.message} />
               </div>
 
-              <Button type="submit" disabled={isLoading}
+              <Button
+                type="submit"
+                disabled={isLoading}
+                onmousedown={(e) => {
+                  if (!isLoading) {
+                    e.preventDefault();
+                    e.target.form.requestSubmit();
+                  }
+                }}
                 >{#if isLoading}
                   <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
                 {/if}

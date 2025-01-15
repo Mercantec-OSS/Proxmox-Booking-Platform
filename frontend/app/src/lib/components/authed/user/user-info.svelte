@@ -37,21 +37,6 @@
   <p>{new Date(user.creationAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</p>
   <!-- Role -->
   {#if $userStore.role === 'Admin'}
-    <!-- <Select.Root onSelectedChange={(value) => {}}>
-      <Select.Trigger class="w-[180px]" aria-label="Select user role">
-        <Select.Value placeholder={user.role} />
-      </Select.Trigger>
-      <Select.Content>
-        <Select.Group>
-          <Select.Label>Roles</Select.Label>
-          <Select.Item value="Admin">Admin</Select.Item>
-          <Select.Item select value="Teacher">Teacher</Select.Item>
-          <Select.Item value="Student">Student</Select.Item>
-        </Select.Group>
-      </Select.Content>
-      <Select.Input name="roles" />
-    </Select.Root> -->
-
     <Select.Root type="single" bind:value={selectedRole}>
       <Select.Trigger class="w-[180px]" aria-label="Select user role">
         {selectedRole}

@@ -38,8 +38,8 @@
       <Card.Description>View and manage your virtual machine bookings</Card.Description>
     </Card.Header>
     <Card.Content>
-      <div class="flex space-x-2 justify-end pb-6">
-        <Button class="w-39" href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
+      <div class="flex justify-end pb-6">
+        <Button class="w-39 mr-3" href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
         {#if userAuthed}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
@@ -73,7 +73,7 @@
             <Table.Row>
               <Table.Cell class="table-cell">
                 <div class="flex gap-x-3 items-center">
-                  <div class="h-9 w-1 rounded-full bg-indigo-500"></div>
+                  <div class="h-9 w-1 rounded-full bg-primary"></div>
                 </div>
               </Table.Cell>
               <Table.Cell>

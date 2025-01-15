@@ -115,9 +115,7 @@
 
 <DropdownMenu.Root bind:open>
   <DropdownMenu.Trigger>
-    <Button variant="outline" size="sm" class="border-indigo-500 text-indigo-500 hover:text-indigo-500"
-      >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
-    >
+    <Button variant="outline" size="sm" class="border-primary text-primary hover:text-primary">Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button>
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>
     <DropdownMenu.Group>

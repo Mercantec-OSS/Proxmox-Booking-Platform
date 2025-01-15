@@ -114,8 +114,8 @@
           <span class="sr-only">Back</span>
         </Button>
         <h1 class="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">Booking details</h1>
-        <Badge variant="outline" class="text-indigo-500 border-indigo-500">Virtual machine</Badge>
-        <Badge variant={$selectedBookingStore.isAccepted ? 'outline' : 'destructive'} class={$selectedBookingStore.isAccepted ? 'text-indigo-500 border-indigo-500' : ''}
+        <Badge variant="outline" class="text-primary border-primary">Virtual machine</Badge>
+        <Badge variant={$selectedBookingStore.isAccepted ? 'outline' : 'destructive'} class={$selectedBookingStore.isAccepted ? 'text-primary border-primary' : ''}
           >{$selectedBookingStore.isAccepted ? 'Confirmed' : 'Pending'}</Badge
         >
         <div class="flex items-center gap-2 md:ml-auto">

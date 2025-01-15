@@ -86,15 +86,13 @@
     </Tooltip.Provider>
   </nav>
 
-  <!-- ------------------------------------ GAP-4 IS CAUSING SHIFTING ---------------------------------------- -->
-
   <!-- Bottom of side navigation bar -->
-  <nav class="mt-auto flex flex-col items-center gap-4 px-2 sm:py-5">
+  <nav class="mt-auto flex flex-col items-center px-2 sm:py-5">
     <!-- Change theme button -->
     <Tooltip.Provider>
       <Tooltip.Root openDelay={400}>
         <Tooltip.Trigger>
-          <Button onmousedown={toggleMode} variant="ghost" size="icon" class="text-muted-foreground hover:text-foreground">
+          <Button onmousedown={toggleMode} variant="ghost" size="icon" class="text-muted-foreground hover:text-foreground my-4">
             <Sun class="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon class="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span class="sr-only">Toggle theme</span>

@@ -39,7 +39,7 @@
     try {
       await vmService.acceptExtendVmBooking(id);
       await refreshBooking(id);
-      toast.success(`Accepted booking extension`);
+      toast.success('Accepted booking extension');
     } catch (error) {
       toast.error(error.message);
     } finally {
