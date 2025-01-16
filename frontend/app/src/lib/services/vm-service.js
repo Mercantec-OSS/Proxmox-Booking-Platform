@@ -142,13 +142,27 @@ export const vmService = {
     return await clientApi.put(`extention-request/accept-extention/${id}`).json();
   },
 
+  async deleteExtendVmBooking(id) {
+    return await clientApi.delete(`extention-request/delete/${id}`).json();
+  },
+
   async getVmInfo(uuid) {
     return await clientApi
       .get(`script/vm/get-ip/${uuid}`, {
         retry: {
           limit: 3
         },
-        timeout: 60000
+        timeout: 30000
+      })
+      .json();
+  },
+
+  async getVmInfoBackend(cookie, uuid) {
+    return await backendApi
+      .get(`script/vm/get-ip/${uuid}`, {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
       })
       .json();
   },
@@ -157,13 +171,23 @@ export const vmService = {
     await clientApi.get(`script/vm/reset-power/${name}`).json();
   },
 
-  async getVcenterInfo() {    
+  async getVcenterInfo() {
     return await clientApi
-      .get("script/vm/vcenter-info", {
-      retry: {
+      .get('script/vm/vcenter-info', {
+        retry: {
           limit: 3
-      },
-      timeout: 60000
+        },
+        timeout: 60000
+      })
+      .json();
+  },
+
+  async getVcenterInfoBackend(cookie) {
+    return await backendApi
+      .get('script/vm/vcenter-info', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
       })
       .json();
   }

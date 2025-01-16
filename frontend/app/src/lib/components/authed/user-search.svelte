@@ -5,29 +5,21 @@
   import { goto } from '$app/navigation';
   import { toast } from 'svelte-sonner';
   import { userService } from '$lib/services/user-service';
-  import { onMount } from 'svelte';
 
-  let listOfUsers = [];
-  let open = false;
-  let loading = false;
-  let loadingProfile = false;
-  let selectedUser;
+  let listOfUsers = $state([]);
+  let open = $state(false);
+  let loading = $state(false);
+  let loadingProfile = $state(false);
+  let selectedUser = $state();
 
-  // Role priority map
+  // Maps roles to priority values for sorting
   const rolePriority = {
     Admin: 1,
     Teacher: 2,
     Student: 3
   };
 
-  // Sort listOfUsers by role based on rolePriority map
-  $: listOfUsers.sort((a, b) => {
-    // Get the role priority, or assign a high number if role is unknown to ensure they sort last
-    const roleA = rolePriority[a.role] || 99;
-    const roleB = rolePriority[b.role] || 99;
-    return roleA - roleB;
-  });
-
+  // Handles user profile navigation with loading states
   async function redirectUser(id) {
     selectedUser = id;
     try {
@@ -42,11 +34,17 @@
     }
   }
 
+  // Fetches and populates user list with error handling
   async function fetchUsers() {
     loading = true;
 
     try {
       listOfUsers = await userService.getAllUsers();
+      listOfUsers.sort((a, b) => {
+        const roleA = rolePriority[a.role] || 99;
+        const roleB = rolePriority[b.role] || 99;
+        return roleA - roleB;
+      });
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -54,14 +52,15 @@
     }
   }
 
-  onMount(() => {
+  // Initialize user data on component mount
+  $effect(() => {
     fetchUsers();
   });
 </script>
 
 <Button
   variant="outline"
-  on:click={() => {
+  onmousedown={() => {
     open = true;
   }}
 >
@@ -79,7 +78,7 @@
     <Command.Group>
       {#each listOfUsers as user (user.id)}
         <Command.Item
-          onSelect={() => {
+          onmousedown={() => {
             redirectUser(user.id);
           }}
           disabled={loadingProfile && selectedUser === user.id}

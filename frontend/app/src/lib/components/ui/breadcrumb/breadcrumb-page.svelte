@@ -1,17 +1,16 @@
 <script>
-	import { cn } from "$lib/utils/utils.js";
-	export let el = undefined;
-	export let className = undefined;
-	export { className as class };
+	import { cn } from "$lib/utils.js";
+
+	let { ref = $bindable(null), class: className, children, ...restProps } = $props();
 </script>
 
 <span
-	bind:this={el}
+	bind:this={ref}
 	role="link"
 	aria-disabled="true"
 	aria-current="page"
 	class={cn("text-foreground font-normal", className)}
-	{...$$restProps}
+	{...restProps}
 >
-	<slot />
+	{@render children?.()}
 </span>

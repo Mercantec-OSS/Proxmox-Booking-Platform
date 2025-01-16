@@ -1,22 +1,21 @@
 <script>
   import UserInfo from '$lib/components/authed/user/user-info.svelte';
   import BookingList from '$lib/components/authed/bookings/booking-list.svelte';
-  import { clusterListStore, vmListStore, userStore } from '$lib/utils/store';
+  import { vmListStore, userStore } from '$lib/utils/store';
   import { toast } from 'svelte-sonner';
-  import { goto } from '$app/navigation';
-  import { afterNavigate } from '$app/navigation';
+  import { goto, afterNavigate } from '$app/navigation';
 
-  export let data;
+  const { data } = $props();
 
-  $: userStore.set(data.userInfo);
-  $: clusterListStore.set(data.clusterData);
-  $: vmListStore.set(data.vmData);
-  $: userAuthed = $userStore.role === 'Admin' || $userStore.role === 'Teacher';
+  userStore.set(data.userInfo);
+  vmListStore.set(data.vmData);
+
+  let userAuthed = $derived($userStore.role === 'Admin' || $userStore.role === 'Teacher');
 
   // Function to check for and display errors
   function checkErrors() {
     if (data.errorMessage || !data.userData) {
-      toast.error(error.message);
+      toast.error(data.errorMessage);
 
       if (data.errorMessage === 'Invalid user ID' || data.errorMessage === 'User not found') {
         goto('/');
@@ -24,7 +23,7 @@
     }
 
     // Show toast if user has no bookings
-    if (userAuthed && $clusterListStore.length === 0 && $vmListStore.length === 0) {
+    if (userAuthed && $vmListStore.length === 0) {
       toast.error(`User has no bookings`);
     }
   }
@@ -43,9 +42,9 @@
 
   {#if $userStore.role === 'Admin' || $userStore.role === 'Teacher'}
     <!-- Button to open create booking drawer and filter bookings -->
-    <div class="flex flex-col md:w-3/4 md:mx-auto my-10">
+    <div class="flex flex-grow flex-col md:w-3/4 md:mx-auto my-10">
       <!-- List of all bookings -->
-      <div class="flex flex-wrap justify-center gap-5 w-full mt-3">
+      <div class="flex flex-grow flex-wrap justify-center gap-5 w-full mt-3">
         <BookingList />
       </div>
     </div>

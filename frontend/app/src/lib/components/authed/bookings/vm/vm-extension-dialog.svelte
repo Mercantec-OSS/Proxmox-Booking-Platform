@@ -7,28 +7,33 @@
   import { Button } from '$lib/components/ui/button/index.js';
   import { LoaderCircle, CalendarIcon } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
-  import { cn } from '$lib/utils/utils.js';
+  import { cn } from '$lib/utils.js';
   import { Calendar } from '$lib/components/ui/calendar';
   import * as Popover from '$lib/components/ui/popover';
   import { CalendarDate, today, getLocalTimeZone } from '@internationalized/date';
 
-  export let vmExtensionDialogOpen = false;
-  let loadingCreate = false;
-  $: expiredAtDate = new Date($selectedBookingStore.expiredAt);
+  let { vmExtensionDialogOpen = $bindable() } = $props();
+  let loadingCreate = $state(false);
 
-  /* For booking extension date picker to select new expire date */
-  let calendarDatePicked;
-  let calendarDateFormated;
-  $: calendarDateFormated = new Date(calendarDatePicked).toLocaleDateString(undefined, { dateStyle: 'long' });
+  /* Creates Date object from store's expiration timestamp */
+  let expiredAtDate = $derived(new Date($selectedBookingStore.expiredAt));
 
-  // Details to extend booking
-  let bookingExtensionInput = {
+  /* State management for calendar date selection and formatting */
+  let calendarDatePicked = $state(null);
+  let calendarDateFormated = $derived(calendarDatePicked ? new Date(calendarDatePicked).toLocaleDateString(undefined, { dateStyle: 'long' }) : null);
+
+  /* Extension request form state */
+  let bookingExtensionInput = $state({
     bookingId: null,
     message: null,
     newExpiringAt: null
-  };
+  });
 
-  /* Refresh specific booking based on id */
+  $effect(() => {
+    if (!vmExtensionDialogOpen) bookingExtensionInput.message = '';
+  });
+
+  /* Synchronizes local state with backend after mutations */
   async function refreshBooking() {
     try {
       const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
@@ -43,6 +48,7 @@
     }
   }
 
+  /* Validates and submits booking extension request */
   async function handleExtendBooking() {
     if (!calendarDatePicked) {
       toast.error('Please select a new expire date');
@@ -61,7 +67,6 @@
     try {
       await vmService.extendVmBooking(bookingExtensionInput);
       await refreshBooking();
-
       toast.success(`Extension request created`);
     } catch (error) {
       toast.error(error.message);
@@ -73,17 +78,15 @@
   }
 </script>
 
-<!-- Main dialog component -->
 <Dialog.Root bind:open={vmExtensionDialogOpen}>
   <Dialog.Content class="bg-primary-foreground">
     <Dialog.Header>
       <Dialog.Title>Create Booking extension</Dialog.Title>
     </Dialog.Header>
     <div class="flex flex-col gap-y-4">
-      <!-- Date picker -->
       <Popover.Root>
-        <Popover.Trigger asChild let:builder>
-          <Button variant="outline" class={cn('justify-start text-left font-normal', !calendarDatePicked && 'text-muted-foreground')} builders={[builder]}>
+        <Popover.Trigger>
+          <Button variant="outline" class={cn('justify-start text-left font-normal w-full', !calendarDatePicked && 'text-muted-foreground w-full')}>
             <CalendarIcon class="mr-2 h-4 w-4" />
             {calendarDatePicked ? calendarDateFormated : 'Pick a date'}
           </Button>
@@ -103,15 +106,14 @@
         </Popover.Content>
       </Popover.Root>
 
-      <!-- Optional comment about booking extension -->
       <div class="grid gap-1.5">
         <Label for="comment">Comment about booking extension</Label>
         <Textarea id="comment" bind:value={bookingExtensionInput.message} />
       </div>
     </div>
     <Dialog.Footer>
-      <Button variant="outline" on:click={() => (vmExtensionDialogOpen = false)}>Cancel</Button>
-      <Button disabled={loadingCreate} on:click={handleExtendBooking}>
+      <Button variant="outline" onmousedown={() => (vmExtensionDialogOpen = false)}>Cancel</Button>
+      <Button disabled={loadingCreate} onmousedown={handleExtendBooking}>
         {#if loadingCreate}
           <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
         {/if}

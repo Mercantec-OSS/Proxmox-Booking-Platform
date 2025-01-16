@@ -8,9 +8,9 @@
   import { Input } from '$lib/components/ui/input/index.js';
   import { Label } from '$lib/components/ui/label/index.js';
 
-  let credentials = { email: '', password: '' };
+  let credentials = $state({ email: '', password: '' });
   /* Show spinner on submit button when awaiting create booking */
-  let isLoading = false;
+  let isLoading = $state(false);
 
   async function handleLogin(credentials) {
     try {
@@ -31,7 +31,13 @@
 </script>
 
 <main class="flex flex-col flex-grow items-center justify-center">
-  <form name="login" on:submit|preventDefault={handleLogin(credentials)}>
+  <form
+    name="login"
+    onsubmit={(e) => {
+      e.preventDefault();
+      handleLogin(credentials);
+    }}
+  >
     <Card.Root class="max-w-sm">
       <Card.Header>
         <Card.Title class="text-2xl">Login</Card.Title>
@@ -57,8 +63,8 @@
           >
         </div>
         <div class="mt-4 text-center text-sm">
-          Don&apos;t have an account?
-          <a href="/register" class="underline">Sign up</a>
+          Don't have an account?
+          <a href="/register" class="underline hover:text-primary transition-colors">Sign up</a>
         </div>
       </Card.Content>
     </Card.Root>

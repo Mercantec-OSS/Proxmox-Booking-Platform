@@ -1,5 +1,4 @@
 <script>
-//   import { LogOut, Bell, User, PanelLeft, Home, ChartLine, CircleHelp } from 'lucide-svelte';
   import { LogOut, Bell, User, PanelLeft, Home, CircleHelp } from 'lucide-svelte';
   import { authService } from '$lib/services/auth-service';
   import { getCookie, deleteCookie } from '$lib/utils/cookie';
@@ -12,6 +11,7 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as HoverCard from '$lib/components/ui/hover-card';
+
   async function handleLogout() {
     try {
       await authService.logout(getCookie('token'));
@@ -27,13 +27,11 @@
   }
 </script>
 
-<header class="sticky top-0 z-30 bg-background flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+<header class="sticky top-0 z-30 bg-background flex h-14 items-center border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
   <Sheet.Root>
-    <Sheet.Trigger asChild let:builder>
-      <Button builders={[builder]} size="icon" variant="outline" class="sm:hidden">
-        <PanelLeft class="h-5 w-5" />
-        <span class="sr-only">Toggle Menu</span>
-      </Button>
+    <Sheet.Trigger class="sm:hidden">
+      <PanelLeft class="h-5 w-5" />
+      <span class="sr-only">Toggle Menu</span>
     </Sheet.Trigger>
     <Sheet.Content side="left" class="sm:max-w-xs">
       <nav class="grid gap-6 text-lg font-medium">
@@ -57,7 +55,7 @@
           <CircleHelp class="h-5 w-5" />
           Help
         </a>
-        <Button variant="outline" on:click={handleLogout} class="text-muted-foreground hover:text-foreground flex items-center gap-2 px-2.5">
+        <Button variant="outline" onmousedown={handleLogout} class="text-muted-foreground hover:text-foreground flex items-center gap-2 px-2.5">
           <LogOut class="h-4 w-4" />
           Logout
         </Button>
@@ -89,41 +87,45 @@
       {/if}
     </Breadcrumb.List>
   </Breadcrumb.Root>
-  <div class="relative ml-auto flex-1 md:grow-0 text-center md:text-right">
+  <div class="relative ml-auto flex-1 md:grow-0 text-center md:text-right px-2">
     <UserSearch />
   </div>
-  <HoverCard.Root openDelay={200} closeDelay={150}>
-    <HoverCard.Trigger asChild let:builder>
-      <Button builders={[builder]} variant="outline" size="icon" class="hidden md:flex"><Bell /></Button>
-    </HoverCard.Trigger>
-    <HoverCard.Content>
-      <div class="flex justify-between space-x-4">
-        <p class="text-sm">Notifications not yet implemented</p>
-      </div>
-    </HoverCard.Content>
-  </HoverCard.Root>
+  <div class="px-2">
+    <HoverCard.Root openDelay={200} closeDelay={150}>
+      <HoverCard.Trigger>
+        <Button variant="outline" size="icon" class="hidden md:flex"><Bell /></Button>
+      </HoverCard.Trigger>
+      <HoverCard.Content>
+        <div class="flex justify-between space-x-4">
+          <p class="text-sm">Notifications not yet implemented</p>
+        </div>
+      </HoverCard.Content>
+    </HoverCard.Root>
+  </div>
 
-  <DropdownMenu.Root>
-    <DropdownMenu.Trigger asChild let:builder>
-      <Button variant="outline" size="icon" class="overflow-hidden rounded-full" builders={[builder]}>
-        <User />
-      </Button>
-    </DropdownMenu.Trigger>
-    <DropdownMenu.Content align="end">
-      <DropdownMenu.Label>My Account</DropdownMenu.Label>
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item
-        on:click={() => {
-          goto(`/user/${$userStore.id}`);
-        }}><User class="size-4 mr-2" />Profile</DropdownMenu.Item
-      >
-      <DropdownMenu.Item
-        on:click={() => {
-          goto('/help');
-        }}><CircleHelp class="size-4 mr-2" />Help</DropdownMenu.Item
-      >
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item on:click={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
-    </DropdownMenu.Content>
-  </DropdownMenu.Root>
+  <div class="pl-2">
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <Button variant="outline" size="icon" class="overflow-hidden rounded-full">
+          <User />
+        </Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content align="end">
+        <DropdownMenu.Label>My Account</DropdownMenu.Label>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item
+          onmousedown={() => {
+            goto(`/user/${$userStore.id}`);
+          }}><User class="size-4 mr-2" />Profile</DropdownMenu.Item
+        >
+        <DropdownMenu.Item
+          onmousedown={() => {
+            goto('/help');
+          }}><CircleHelp class="size-4 mr-2" />Help</DropdownMenu.Item
+        >
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item onmousedown={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  </div>
 </header>

@@ -9,60 +9,61 @@
   import { Button } from '$lib/components/ui/button/index.js';
   import { goto } from '$app/navigation';
 
-  let vmExtensionDialogOpen;
-  let open = false;
+  let vmExtensionDialogOpen = $state(false);
+  let open = $state(false);
 
-  /* Alert dialog */
-  let alertDialogOpen;
-  let alertTitle = null;
-  let alertDescription = null;
+  // State for managing alert dialog visibility and content
+  let alertState = $state({
+    open: false,
+    title: '',
+    description: ''
+  });
+
+  // Stores the Promise resolver for alert dialog confirmation
   let resolveAction;
 
-  /* Promt user with alert before executing an action */
-  /* Run when the user presses confirm or cancel using on:notify on the alert component */
-  function handleAnswer(event) {
-    alertDialogOpen = false;
-    // Resolve the prompUser promise when the event is handled
-    if (resolveAction) {
-      resolveAction(event.detail.confirmed);
-    }
+  // Handles alert dialog close event and resolves the Promise
+  function handleNotify(event) {
+    alertState.open = false;
+    resolveAction?.(event.confirmed);
+    resolveAction = null;
   }
 
-  /* Show the alert dialog with inputted text and return/resolve with true or false depending on what button the user clicked */
+  // Shows an alert dialog and returns a Promise that resolves with user's choice
   function promptUser(title, description) {
     return new Promise((resolve) => {
-      alertTitle = title;
-      alertDescription = description;
-      alertDialogOpen = true;
+      alertState = { open: true, title, description };
       resolveAction = resolve;
     });
   }
 
-  /* Refresh specific booking based on id */
+  // Syncs booking data with backend and updates local stores
   async function refreshBooking() {
     try {
-      const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
+      const [updatedBooking, creds] = await Promise.all([vmService.getVMBookingById($selectedBookingStore.id), vmService.getVmInfo($selectedBookingStore.uuid)]);
 
-      toast.success(`Refreshed booking details`);
-
-      selectedBookingStore.set(updatedBooking);
-
-      vmListStore.update((bookings) => {
-        const updatedBookings = bookings.map((booking) => (booking.id === $selectedBookingStore.id ? { ...booking, ...updatedBooking } : booking));
-        return updatedBookings;
+      selectedBookingStore.set({
+        ...$selectedBookingStore,
+        ...updatedBooking,
+        ...creds
       });
+
+      vmListStore.update((bookings) => bookings.map((booking) => (booking.id === updatedBooking.id ? updatedBooking : booking)));
+
+      toast.success('Refreshed booking details');
     } catch (error) {
       toast.error(error.message);
       if (error.message === 'Booking not found') goto('/');
     }
   }
 
-  /* Delete a booking */
+  // Handles booking deletion with user confirmation
   async function deleteBooking() {
     const userConfirmed = await promptUser(
       'Confirm Booking Deletion',
       'You are about to delete this booking. This action will erase the associated server permanently. Please confirm to proceed with deletion.'
     );
+
     if (!userConfirmed) return;
 
     try {
@@ -75,99 +76,82 @@
     }
   }
 
-  /* Download a txt with all relevant information about the booking */
+  // Generates and downloads booking details as text file
   function handleFileDownload() {
-    let output = '';
-
-    // Add the booking details
-    output += `Booking ID: ${$selectedBookingStore.id}\n`;
-    output += '\n';
-
-    // Add server login details
-    output += `Server Details:\n`;
-    output += `- Ip: ${$selectedBookingStore.ip}\n`;
-    output += `- Password: ${$selectedBookingStore.password}\n`;
-    output += `- Template: ${$selectedBookingStore.type.name}\n`;
-    output += `- UUID: ${$selectedBookingStore.uuid}\n`;
-    output += '\n';
-
-    // Add owner details
-    output += 'Owner:\n';
-    output += `- Profile: ${window.location.href}user/${$selectedBookingStore.owner.id}\n`;
-    output += `- Name: ${$selectedBookingStore.owner.name} ${$selectedBookingStore.owner.surname}\n`;
-    output += '\n';
-
-    // Add teacher assigned to details
-    output += 'Teacher assigned to:\n';
-    output += `- Profile: ${window.location.href}user/${$selectedBookingStore.assigned.id}\n`;
-    output += `- Name: ${$selectedBookingStore.assigned.name} ${$selectedBookingStore.assigned.surname}\n`;
-    output += '\n';
-
-    // Add booking dates
-    output += `Created At: ${new Date($selectedBookingStore.createdAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}\n`;
-    output += `Expired At: ${new Date($selectedBookingStore.expiredAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}\n`;
+    const output = [
+      `Booking ID: ${$selectedBookingStore.id}\n`,
+      '\nServer Details:',
+      `- Ip: ${$selectedBookingStore.ip}`,
+      `- Username: ${$selectedBookingStore.username}`,
+      `- Password: ${$selectedBookingStore.password}`,
+      `- Template: ${$selectedBookingStore.type}`,
+      `- UUID: ${$selectedBookingStore.uuid}\n`,
+      '\nOwner:',
+      `- Profile: ${window.location.origin}/user/${$selectedBookingStore.owner.id}`,
+      `- Name: ${$selectedBookingStore.owner.name} ${$selectedBookingStore.owner.surname}\n`,
+      '\nTeacher assigned to:',
+      `- Profile: ${window.location.origin}/user/${$selectedBookingStore.assigned.id}`,
+      `- Name: ${$selectedBookingStore.assigned.name} ${$selectedBookingStore.assigned.surname}\n`,
+      `\nCreated At: ${new Date($selectedBookingStore.createdAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}`,
+      `Expired At: ${new Date($selectedBookingStore.expiredAt).toLocaleString(undefined, { dateStyle: 'full', timeStyle: 'long' })}`
+    ].join('\n');
 
     const blob = new Blob([output], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `vm_${$selectedBookingStore.id}.txt`;
-    link.click();
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `vm_${$selectedBookingStore.id}.txt`;
+    a.click();
     window.URL.revokeObjectURL(url);
   }
-
   function handleResetPower() {
     vmService.resetVmPower($selectedBookingStore.uuid);
   }
 </script>
 
-<!-- Alert dialog to confirm or cancel an action -->
-<AlertDialog bind:alertTitle bind:alertDescription bind:open={alertDialogOpen} on:notify={handleAnswer} />
+<AlertDialog open={alertState.open} alertTitle={alertState.title} alertDescription={alertState.description} onNotify={handleNotify} />
 
-<!-- Dialog to request extension of booking -->
 <VMExtensionDialog bind:vmExtensionDialogOpen></VMExtensionDialog>
 
 <DropdownMenu.Root bind:open>
-  <DropdownMenu.Trigger asChild let:builder>
-    <Button variant="outline" size="sm" class="border-indigo-500 text-indigo-500 hover:text-indigo-500" builders={[builder]}
-      >Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button
-    >
+  <DropdownMenu.Trigger>
+    <Button variant="outline" size="sm" class="border-primary text-primary hover:text-primary">Actions <ChevronDown class="size-4 ml-1 transition duration-100 {open ? 'rotate-180' : ''}" /></Button>
   </DropdownMenu.Trigger>
   <DropdownMenu.Content>
     <DropdownMenu.Group>
       <DropdownMenu.Label>Booking actions</DropdownMenu.Label>
       <DropdownMenu.Separator />
       <DropdownMenu.Item
-        on:click={() => {
+        onmousedown={() => {
           window.open(`/api/web-console/${$selectedBookingStore.uuid}`, '_blank', 'noopener,noreferrer');
         }}
       >
         <MonitorUp class="mr-2 size-4" />
         <span>Web console</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={handleResetPower}>
+      <DropdownMenu.Item onmousedown={handleResetPower}>
         <Zap class="mr-2 size-4" />
         <span>Reset power</span>
       </DropdownMenu.Item>
       <DropdownMenu.Separator />
       <DropdownMenu.Item
-        on:click={() => {
+        onmousedown={() => {
           vmExtensionDialogOpen = true;
         }}
       >
         <CalendarPlus class="mr-2 size-4" />
         <span>Extend booking</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={handleFileDownload}>
+      <DropdownMenu.Item onmousedown={handleFileDownload}>
         <Download class="mr-2 size-4" />
         <span>Download</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item on:click={refreshBooking}>
+      <DropdownMenu.Item onmousedown={refreshBooking}>
         <RefreshCcw class="mr-2 size-4" />
         <span>Refresh</span>
       </DropdownMenu.Item>
       <DropdownMenu.Separator />
-      <DropdownMenu.Item on:click={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
+      <DropdownMenu.Item onmousedown={deleteBooking} class="hover:data-[highlighted]:bg-destructive hover:data-[highlighted]:text-white">
         <Trash2 class="mr-2 size-4" />
         <span>Delete</span>
       </DropdownMenu.Item>

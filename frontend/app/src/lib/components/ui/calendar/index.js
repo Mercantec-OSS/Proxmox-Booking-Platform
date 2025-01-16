@@ -11,6 +11,7 @@ import GridHead from "./calendar-grid-head.svelte";
 import HeadCell from "./calendar-head-cell.svelte";
 import NextButton from "./calendar-next-button.svelte";
 import PrevButton from "./calendar-prev-button.svelte";
+
 export {
 	Day,
 	Cell,

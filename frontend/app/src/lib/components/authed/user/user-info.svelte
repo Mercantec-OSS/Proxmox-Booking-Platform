@@ -1,5 +1,3 @@
-<!-- Component to show name, surname, email and role on user page -->
-
 <script>
   import * as Avatar from '$lib/components/ui/avatar/index.js';
   import { Badge } from '$lib/components/ui/badge';
@@ -8,11 +6,17 @@
   import { toast } from 'svelte-sonner';
   import { userStore } from '$lib/utils/store';
 
-  export let user;
+  let { user } = $props();
+
+  let selectedRole = $state(user.role);
+
+  $effect(() => {
+    if (selectedRole === user.role) return;
+    updateRole(selectedRole);
+  });
 
   async function updateRole(role) {
     user.role = role;
-
     try {
       await userService.updaterole(user);
       toast.success(`Changed ${user.name}'s role to ${role}`);
@@ -23,7 +27,6 @@
 </script>
 
 <div class="flex flex-wrap gap-x-5 items-center">
-  <!-- Avatar -->
   <Avatar.Root class="select-none">
     <Avatar.Fallback>{user.name[0]}{user.surname[0]}</Avatar.Fallback>
   </Avatar.Root>
@@ -34,23 +37,15 @@
   <p>{new Date(user.creationAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</p>
   <!-- Role -->
   {#if $userStore.role === 'Admin'}
-    <Select.Root
-      onSelectedChange={(value) => {
-        updateRole(value.value);
-      }}
-    >
+    <Select.Root type="single" bind:value={selectedRole}>
       <Select.Trigger class="w-[180px]" aria-label="Select user role">
-        <Select.Value placeholder={user.role} />
+        {selectedRole}
       </Select.Trigger>
       <Select.Content>
-        <Select.Group>
-          <Select.Label>Roles</Select.Label>
-          <Select.Item value="Administrator" label="Administrator">Administrator</Select.Item>
-          <Select.Item select value="Teacher" label="Teacher">Teacher</Select.Item>
-          <Select.Item value="Student" label="Student">Student</Select.Item>
-        </Select.Group>
+        <Select.Item value="Admin">Admin</Select.Item>
+        <Select.Item value="Teacher">Teacher</Select.Item>
+        <Select.Item value="Student">Student</Select.Item>
       </Select.Content>
-      <Select.Input name="roles" />
     </Select.Root>
   {:else}
     <Badge>{user.role}</Badge>

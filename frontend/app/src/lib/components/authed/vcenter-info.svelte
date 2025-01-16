@@ -2,23 +2,19 @@
   import * as Card from '$lib/components/ui/card';
   import * as Table from '$lib/components/ui/table';
   import { vmService } from '$lib/services/vm-service';
-  import { onMount, onDestroy } from 'svelte';
+  import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 
+  let { vcenterInfo } = $props();
 
-  const data = {};
-  let updateIntervalId;
-
+  // Fetches latest resource utilization data
   async function fetchVcenterInfo() {
-    data.info = await vmService.getVcenterInfo();
+    vcenterInfo = await vmService.getVcenterInfo();
   }
 
-  onMount(async () => {
-    fetchVcenterInfo();
-    updateIntervalId = setInterval(fetchVcenterInfo, 60000);
-  });
-
-  onDestroy(() => {
-    clearInterval(updateIntervalId);
+  // Set up polling with interval cleanup on leave
+  $effect(() => {
+    const updateIntervalId = setInterval(fetchVcenterInfo, 60000);
+    return () => clearInterval(updateIntervalId);
   });
 </script>
 
@@ -33,19 +29,22 @@
           <Table.Head class="table-cell">Total CPU</Table.Head>
           <Table.Head class="table-cell">Used CPU</Table.Head>
           <Table.Head class="table-cell">Total Ram</Table.Head>
-          <Table.Head class="table-cell">Used  Ram</Table.Head>
+          <Table.Head class="table-cell">Used Ram</Table.Head>
           <Table.Head class="table-cell">Total storage</Table.Head>
           <Table.Head class="table-cell">Used storage</Table.Head>
         </Table.Row>
       </Table.Header>
       <Table.Body>
         <Table.Row>
-          <Table.Cell>{data.info?.cpuTotal ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.cpuUsage ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.ramTotal ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.ramUsage ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.storageTotal ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.storageUsage ?? 'Loading...'}</Table.Cell>
+          {#each ['cpuTotal', 'cpuUsage', 'ramTotal', 'ramUsage', 'storageTotal', 'storageUsage'] as resource}
+            <Table.Cell>
+              {#if vcenterInfo?.[resource]}
+                {vcenterInfo[resource]}
+              {:else}
+                <Skeleton class="h-6 w-20 rounded-lg" />
+              {/if}
+            </Table.Cell>
+          {/each}
         </Table.Row>
       </Table.Body>
     </Table.Root>
