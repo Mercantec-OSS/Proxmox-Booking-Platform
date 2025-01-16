@@ -2,18 +2,17 @@
   import * as Card from '$lib/components/ui/card';
   import * as Table from '$lib/components/ui/table';
   import { vmService } from '$lib/services/vm-service';
+  import { Skeleton } from '$lib/components/ui/skeleton/index.js';
 
-  // Reactive state for vCenter metrics
-  let data = $state({ info: null });
+  let { vcenterInfo } = $props();
 
   // Fetches latest resource utilization data
   async function fetchVcenterInfo() {
-    data.info = await vmService.getVcenterInfo();
+    vcenterInfo = await vmService.getVcenterInfo();
   }
 
-  // Initialize data fetch and set up polling with interval cleanup on leave
+  // Set up polling with interval cleanup on leave
   $effect(() => {
-    fetchVcenterInfo();
     const updateIntervalId = setInterval(fetchVcenterInfo, 60000);
     return () => clearInterval(updateIntervalId);
   });
@@ -37,12 +36,15 @@
       </Table.Header>
       <Table.Body>
         <Table.Row>
-          <Table.Cell>{data.info?.cpuTotal ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.cpuUsage ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.ramTotal ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.ramUsage ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.storageTotal ?? 'Loading...'}</Table.Cell>
-          <Table.Cell>{data.info?.storageUsage ?? 'Loading...'}</Table.Cell>
+          {#each ['cpuTotal', 'cpuUsage', 'ramTotal', 'ramUsage', 'storageTotal', 'storageUsage'] as resource}
+            <Table.Cell>
+              {#if vcenterInfo?.[resource]}
+                {vcenterInfo[resource]}
+              {:else}
+                <Skeleton class="h-6 w-20 rounded-lg" />
+              {/if}
+            </Table.Cell>
+          {/each}
         </Table.Row>
       </Table.Body>
     </Table.Root>

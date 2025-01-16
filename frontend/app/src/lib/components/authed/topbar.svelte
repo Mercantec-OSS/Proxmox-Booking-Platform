@@ -27,7 +27,7 @@
   }
 </script>
 
-<header class="sticky top-0 z-30 bg-background flex h-14 items-center gap-4 border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+<header class="sticky top-0 z-30 bg-background flex h-14 items-center border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
   <Sheet.Root>
     <Sheet.Trigger class="sm:hidden">
       <PanelLeft class="h-5 w-5" />
@@ -87,41 +87,45 @@
       {/if}
     </Breadcrumb.List>
   </Breadcrumb.Root>
-  <div class="relative ml-auto flex-1 md:grow-0 text-center md:text-right">
+  <div class="relative ml-auto flex-1 md:grow-0 text-center md:text-right px-2">
     <UserSearch />
   </div>
-  <HoverCard.Root openDelay={200} closeDelay={150}>
-    <HoverCard.Trigger>
-      <Button variant="outline" size="icon" class="hidden md:flex"><Bell /></Button>
-    </HoverCard.Trigger>
-    <HoverCard.Content>
-      <div class="flex justify-between space-x-4">
-        <p class="text-sm">Notifications not yet implemented</p>
-      </div>
-    </HoverCard.Content>
-  </HoverCard.Root>
+  <div class="px-2">
+    <HoverCard.Root openDelay={200} closeDelay={150}>
+      <HoverCard.Trigger>
+        <Button variant="outline" size="icon" class="hidden md:flex"><Bell /></Button>
+      </HoverCard.Trigger>
+      <HoverCard.Content>
+        <div class="flex justify-between space-x-4">
+          <p class="text-sm">Notifications not yet implemented</p>
+        </div>
+      </HoverCard.Content>
+    </HoverCard.Root>
+  </div>
 
-  <DropdownMenu.Root>
-    <DropdownMenu.Trigger>
-      <Button variant="outline" size="icon" class="overflow-hidden rounded-full">
-        <User />
-      </Button>
-    </DropdownMenu.Trigger>
-    <DropdownMenu.Content align="end">
-      <DropdownMenu.Label>My Account</DropdownMenu.Label>
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item
-        onmousedown={() => {
-          goto(`/user/${$userStore.id}`);
-        }}><User class="size-4 mr-2" />Profile</DropdownMenu.Item
-      >
-      <DropdownMenu.Item
-        onmousedown={() => {
-          goto('/help');
-        }}><CircleHelp class="size-4 mr-2" />Help</DropdownMenu.Item
-      >
-      <DropdownMenu.Separator />
-      <DropdownMenu.Item onmousedown={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
-    </DropdownMenu.Content>
-  </DropdownMenu.Root>
+  <div class="pl-2">
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger>
+        <Button variant="outline" size="icon" class="overflow-hidden rounded-full">
+          <User />
+        </Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content align="end">
+        <DropdownMenu.Label>My Account</DropdownMenu.Label>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item
+          onmousedown={() => {
+            goto(`/user/${$userStore.id}`);
+          }}><User class="size-4 mr-2" />Profile</DropdownMenu.Item
+        >
+        <DropdownMenu.Item
+          onmousedown={() => {
+            goto('/help');
+          }}><CircleHelp class="size-4 mr-2" />Help</DropdownMenu.Item
+        >
+        <DropdownMenu.Separator />
+        <DropdownMenu.Item onmousedown={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
+  </div>
 </header>

@@ -180,5 +180,15 @@ export const vmService = {
         timeout: 60000
       })
       .json();
+  },
+
+  async getVcenterInfoBackend(cookie) {
+    return await backendApi
+      .get('script/vm/vcenter-info', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
   }
 };

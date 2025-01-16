@@ -34,6 +34,6 @@
 
 <main class="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
   <h1 class="text-lg font-semibold md:text-2xl">Booking Overview</h1>
-  <VcenterInfo />
+  <VcenterInfo vcenterInfo={data.vcenterInfo} />
   <BookingList />
 </main>
