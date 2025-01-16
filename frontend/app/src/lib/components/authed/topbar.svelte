@@ -39,7 +39,7 @@
           <img
             src="/images/mercantec-logo-full.svg"
             alt="Mercantec"
-            class="h-7 w-7 transition-all group-hover:scale-110 [filter:brightness(0)_saturate(100%)_invert(39%)_sepia(93%)_saturate(1699%)_hue-rotate(2deg)_brightness(103%)_contrast(106%)]"
+            class="size-full transition-all group-hover:scale-110 [filter:brightness(0)_saturate(100%)_invert(39%)_sepia(93%)_saturate(1699%)_hue-rotate(2deg)_brightness(103%)_contrast(106%)]"
           />
           <span class="sr-only">Mercantec</span>
         </a>
