@@ -33,7 +33,7 @@
   });
 </script>
 
-<main class="flex flex-col flex-grow rounded-3xl bg-background">
+<main class="flex flex-col flex-grow rounded-3xl bg-background p-4 lg:p-6 gap-y-6">
   <div class="mx-auto mt-10">
     {#if data.userData}
       <UserInfo user={data.userData} />
@@ -41,12 +41,9 @@
   </div>
 
   {#if $userStore.role === 'Admin' || $userStore.role === 'Teacher'}
-    <!-- Button to open create booking drawer and filter bookings -->
-    <div class="flex flex-grow flex-col md:w-3/4 md:mx-auto my-10">
+    <div class="flex flex-grow flex-col">
       <!-- List of all bookings -->
-      <div class="flex flex-grow flex-wrap justify-center gap-5 w-full mt-3">
-        <BookingList />
-      </div>
+      <BookingList />
     </div>
   {:else}
     <div class="flex-grow flex justify-center items-center">
