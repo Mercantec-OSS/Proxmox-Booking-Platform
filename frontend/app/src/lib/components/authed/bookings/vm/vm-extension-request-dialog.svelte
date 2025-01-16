@@ -1,5 +1,5 @@
 <script>
-  import * as Dialog from '$lib/components/ui/dialog';
+  import * as Dialog from '$lib/components/ui/dialog/index.js';
   import { Textarea } from '$lib/components/ui/textarea/index.js';
   import { Label } from '$lib/components/ui/label';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -7,14 +7,13 @@
   import { toast } from 'svelte-sonner';
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import { vmService } from '$lib/services/vm-service';
+  import { goto } from '$app/navigation';
+  let { vmExtensionRequestDialogOpen = $bindable() } = $props();
 
-  let { vmExtensionRequestDialogOpen } = $props();
   let loadingAccept = $state(false);
+  let loadingDelete = $state(false);
+  let extension = $derived($selectedBookingStore?.extentions?.[$selectedBookingStore?.extentions?.length - 1]);
 
-  /**
-   * Refreshes booking data from API and updates stores
-   * Shows error toast if refresh fails
-   */
   async function refreshBooking() {
     try {
       const updatedBooking = await vmService.getVMBookingById($selectedBookingStore.id);
@@ -34,17 +33,36 @@
    * @param {number} id - Extension request ID
    */
   async function handleAcceptExtension(id) {
-    vmExtensionRequestDialogOpen = false;
     loadingAccept = true;
     try {
       await vmService.acceptExtendVmBooking(id);
       await refreshBooking(id);
       toast.success('Accepted booking extension');
+      goto(`/booking/vm/${$selectedBookingStore.id}`);
     } catch (error) {
       toast.error(error.message);
     } finally {
       vmExtensionRequestDialogOpen = false;
       loadingAccept = false;
+    }
+  }
+
+  /**
+   * Deletes booking extension and refreshes data
+   * @param {number} id - Extension request ID
+   */
+  async function handleDeleteExtension(id) {
+    loadingDelete = true;
+    try {
+      await vmService.deleteExtendVmBooking(id);
+      await refreshBooking(id);
+      toast.success('Deleted booking extension');
+      goto(`/booking/vm/${$selectedBookingStore.id}`);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      vmExtensionRequestDialogOpen = false;
+      loadingDelete = false;
     }
   }
 
@@ -78,18 +96,23 @@
         <SquareChevronRight class="text-muted-foreground"></SquareChevronRight>
         <div>
           <div class="text-sm text-muted-foreground">New expire date</div>
-          <div class="text-sm">{formatDateTime($selectedBookingStore.activeExtension.newExpiringAt)}</div>
+          <div class="text-sm">{formatDateTime(extension.newExpiringAt)}</div>
         </div>
       </div>
 
       <div class="grid gap-1.5">
         <Label for="comment">Comment about booking extension</Label>
-        <Textarea disabled id="comment" bind:value={$selectedBookingStore.activeExtension.message} />
+        <Textarea disabled id="comment" bind:value={extension.message} />
       </div>
       <Dialog.Footer>
-        <Button variant="outline" onmousedown={() => (vmExtensionRequestDialogOpen = false)}>Cancel</Button>
+        <Button variant="outline" disabled={loadingDelete} onclick={() => handleDeleteExtension(extension.id)}>
+          {#if loadingDelete}
+            <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+          {/if}
+          Delete
+        </Button>
         {#if new Date() < new Date($selectedBookingStore.expiredAt)}
-          <Button disabled={loadingAccept} onmousedown={() => handleAcceptExtension($selectedBookingStore.activeExtension.id)}>
+          <Button disabled={loadingAccept} onmousedown={() => handleAcceptExtension(extension.id)}>
             {#if loadingAccept}
               <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
             {/if}

@@ -142,6 +142,10 @@ export const vmService = {
     return await clientApi.put(`extention-request/accept-extention/${id}`).json();
   },
 
+  async deleteExtendVmBooking(id) {
+    return await clientApi.delete(`extention-request/delete/${id}`).json();
+  },
+
   async getVmInfo(uuid) {
     return await clientApi
       .get(`script/vm/get-ip/${uuid}`, {
@@ -167,13 +171,13 @@ export const vmService = {
     await clientApi.get(`script/vm/reset-power/${name}`).json();
   },
 
-  async getVcenterInfo() {    
+  async getVcenterInfo() {
     return await clientApi
-      .get("script/vm/vcenter-info", {
-      retry: {
+      .get('script/vm/vcenter-info', {
+        retry: {
           limit: 3
-      },
-      timeout: 60000
+        },
+        timeout: 60000
       })
       .json();
   }

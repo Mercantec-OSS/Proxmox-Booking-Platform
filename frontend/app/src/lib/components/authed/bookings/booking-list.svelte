@@ -7,8 +7,11 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { ArrowUpRight, CirclePlus, ListRestart, ShieldEllipsis } from 'lucide-svelte';
   import { vmService } from '$lib/services/vm-service';
-
+  import VMExtensionRequestDialog from '$lib/components/authed/bookings/vm/vm-extension-request-dialog.svelte';
+  import { selectedBookingStore } from '$lib/utils/store';
   let userAuthed = $derived($userStore.role === 'Admin' || $userStore.role === 'Teacher');
+
+  let vmExtensionRequestDialogOpen = $state(false);
 
   const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     day: '2-digit',
@@ -22,6 +25,8 @@
     return dateTimeFormatter.format(new Date(date)).replace(',', '');
   }
 </script>
+
+<VMExtensionRequestDialog bind:vmExtensionRequestDialogOpen />
 
 {#if $vmListStore.length === 0}
   <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
@@ -69,7 +74,7 @@
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each $vmListStore as { id, type, message, uuid, isAccepted, owner, assigned, createdAt, expiredAt } (id)}
+          {#each $vmListStore as booking (booking.id)}
             <Table.Row>
               <Table.Cell class="table-cell">
                 <div class="flex gap-x-3 items-center">
@@ -77,38 +82,54 @@
                 </div>
               </Table.Cell>
               <Table.Cell>
-                <Badge variant="outline">{type}</Badge>
+                <Badge variant="outline">{booking.type}</Badge>
               </Table.Cell>
               <Table.Cell class="max-w-sm lg:max-w-md">
                 <span class="block truncate">
-                  "{message}"
+                  "{booking.message}"
                 </span>
               </Table.Cell>
               <Table.Cell>
-                <span title={uuid}>{uuid?.slice(0, 7)}...</span>
+                <span title={booking.uuid}>{booking.uuid?.slice(0, 7)}...</span>
               </Table.Cell>
               <Table.Cell>
-                <Badge variant={isAccepted ? 'outline' : 'destructive'}>{isAccepted ? 'Confirmed' : 'Pending'}</Badge>
+                <Badge class="text-primary border-primary" variant={booking.isAccepted ? 'outline' : 'destructive'}>
+                  {booking.extentions?.some((ext) => !ext.isAccepted) ? 'Pending Extension' : booking.isAccepted ? 'Confirmed' : 'Pending'}
+                </Badge>
               </Table.Cell>
               <Table.Cell class="table-cell">
-                <a href="/user/{owner.id}" class="flex items-center gap-1">
-                  <span>{owner.name}</span>
+                <a href="/user/{booking.owner.id}" class="flex items-center gap-1">
+                  <span>{booking.owner.name}</span>
                   <ArrowUpRight class="h-4 w-4" />
                 </a>
               </Table.Cell>
               <Table.Cell class="table-cell">
-                <a href="/user/{assigned.id}" class="flex items-center gap-1">
-                  <span>{assigned.name}</span>
+                <a href="/user/{booking.assigned.id}" class="flex items-center gap-1">
+                  <span>{booking.assigned.name}</span>
                   <ArrowUpRight class="h-4 w-4" />
                 </a>
               </Table.Cell>
-              <Table.Cell class="table-cell">{formatDateTime(createdAt)}</Table.Cell>
-              <Table.Cell class="table-cell">{formatDateTime(expiredAt)}</Table.Cell>
+              <Table.Cell class="table-cell">{formatDateTime(booking.createdAt)}</Table.Cell>
+              <Table.Cell class="table-cell">{formatDateTime(booking.expiredAt)}</Table.Cell>
               <Table.Cell>
-                <Button href="/booking/vm/{id}" size="sm" class="ml-auto gap-1">
-                  View
-                  <ArrowUpRight class="h-4 w-4" />
-                </Button>
+                {#if booking.extentions?.length && !booking.extentions[booking.extentions.length - 1].isAccepted}
+                  <Button
+                    onmousedown={() => {
+                      selectedBookingStore.set(booking);
+                      vmExtensionRequestDialogOpen = true;
+                    }}
+                    size="sm"
+                    class="ml-auto gap-1"
+                  >
+                    View
+                    <ArrowUpRight class="h-4 w-4" />
+                  </Button>
+                {:else}
+                  <Button href="/booking/vm/{booking.id}" size="sm" class="ml-auto gap-1">
+                    View
+                    <ArrowUpRight class="h-4 w-4" />
+                  </Button>
+                {/if}
               </Table.Cell>
             </Table.Row>
           {/each}
