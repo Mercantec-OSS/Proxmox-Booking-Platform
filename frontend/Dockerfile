@@ -1,5 +1,5 @@
 # maintainer info
-FROM node:21
+FROM node:23
 LABEL maintainer="carrergt@gmail.com"
 
 COPY app start.sh /
