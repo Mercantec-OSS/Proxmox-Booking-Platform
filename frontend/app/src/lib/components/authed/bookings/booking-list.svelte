@@ -44,11 +44,11 @@
     </Card.Header>
     <Card.Content>
       <div class="flex justify-end pb-6">
-        <Button class="w-39 mr-3" href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
+        <Button class="w-39 mr-3" href="/create"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
         {#if userAuthed}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
-              <Button variant="outline" class="w-39"><ShieldEllipsis class="h-4 w-4 mr-1" />Teacher actions</Button>
+              <Button variant="outline" class="w-39 text-primary hover:text-primary/90 border border-primary hover:border-primary/90"><ShieldEllipsis class="h-4 w-4 mr-1" />Teacher actions</Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
               <DropdownMenu.Item onmousedown={vmService.resetVMTemplates}><ListRestart class="h-4 w-4 mr-1" />Reset templates</DropdownMenu.Item>
@@ -112,7 +112,7 @@
               <Table.Cell class="table-cell">{formatDateTime(booking.createdAt)}</Table.Cell>
               <Table.Cell class="table-cell">{formatDateTime(booking.expiredAt)}</Table.Cell>
               <Table.Cell>
-                {#if booking.extentions?.length && !booking.extentions[booking.extentions.length - 1].isAccepted}
+                {#if booking.extentions?.length && !booking.extentions[booking.extentions.length - 1].isAccepted && userAuthed}
                   <Button
                     onmousedown={() => {
                       selectedBookingStore.set(booking);
