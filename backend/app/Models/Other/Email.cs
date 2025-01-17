@@ -166,6 +166,21 @@ public class Email
         return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
+    public static Email GetInviteLink(string recipientEmail, string inviteKey, string userRole) {
+        string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "InviteLink.html"));
+
+        htmlContent = ReplaceFromString(htmlContent, new()
+        {
+            { "##INVITE_KEY##", inviteKey },
+            { "##USER_ROLE##", userRole },
+            { "##CREATED_AT##", DateTime.UtcNow.ToString("ddd, dd MMM yyy HH:mm:ss") },
+        });
+
+        string subject = "Invite link";
+
+        return new Email(){Recipient=recipientEmail, Subject=subject, Body=htmlContent};
+    }
+
     private static string ReplaceFromString(string stringToReplaceFrom, Dictionary<string, string> replacements)
     {
         return replacements.Aggregate(stringToReplaceFrom, (current, replacment) =>

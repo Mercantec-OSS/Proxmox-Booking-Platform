@@ -15,6 +15,7 @@ builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddHostedService<SchedulerBackgroundService>();
+builder.Services.AddHostedService<InviteKeysService>();
 builder.Services.AddHostedService<VCenterInfoBackgroundService>();
 builder.Services.AddHostedService<TemplatesBackgroundService>();
 builder.Services.AddHttpContextAccessor();
