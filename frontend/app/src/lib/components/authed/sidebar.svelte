@@ -74,7 +74,8 @@
       <Tooltip.Root openDelay={400}>
         <Tooltip.Trigger>
           <a
-            href="/help"
+            href="https://mars.merhot.dk/w/index.php/Booking-guide"
+            target="_blank"
             class="{isActive('/help') ? 'text-foreground' : 'text-muted-foreground'} hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
           >
             <CircleHelp class="h-5 w-5" />

@@ -121,7 +121,7 @@
             <Card.Title>Book a virtual machine</Card.Title>
             <Card.Description
               >Book a virtual machine with custom configuration and duration. Make sure to read the
-              <a href="https://mars.merhot.dk/w/index.php/Booking-guide" target="_blank" rel="noopener noreferrer" class="text-primary underline">Booking Guide</a></Card.Description
+              <a href="https://mars.merhot.dk/w/index.php/Booking-guide" target="_blank" class="text-primary underline">Booking Guide</a></Card.Description
             >
           </Card.Header>
           <Card.Content>
