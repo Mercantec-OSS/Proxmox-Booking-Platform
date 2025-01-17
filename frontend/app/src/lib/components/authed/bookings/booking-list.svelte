@@ -44,7 +44,7 @@
     </Card.Header>
     <Card.Content>
       <div class="flex flex-wrap justify-end pb-6">
-        <Button class="w-39 mr-3" href="/create" variant="outline"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
+        <Button class="w-39 mr-3" href="/create"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
         {#if userAuthed}
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
