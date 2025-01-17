@@ -15,7 +15,7 @@ public class ScriptController(
 
         if (booking == null)
         {
-            return Ok(ResponseMessage.GetBookingNotFound());
+            return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
         // Deny access to the booking if the user is a student and the booking is not his
