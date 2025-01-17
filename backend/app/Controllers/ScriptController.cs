@@ -25,9 +25,9 @@ public class ScriptController(
         }
 
         // Deny access to the booking if the user is a teacher and the booking is not his
-        if (session.IsTeacher() && booking.OwnerId != user.Id)
+        if (session.IsTeacher() && booking.AssignedId != user.Id)
         {
-            return NotFound(ResponseMessage.GetBookingNotFound());
+            return NotFound(ResponseMessage.GetUserUnauthorized());
         }
 
         VmInfoGetDto? vmInfo = await vCenterApiService.GetInfo(name);
