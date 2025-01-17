@@ -99,7 +99,7 @@
 
   afterNavigate(() => {
     checkErrors();
-    if (!$selectedBookingStore.ip) {
+    if (!$selectedBookingStore.ip && $selectedBookingStore.isAccepted) {
       fetchVmCreds();
     }
   });
