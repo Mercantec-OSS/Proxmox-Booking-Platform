@@ -15,13 +15,13 @@ public class ScriptController(
 
         if (booking == null)
         {
-            return NotFound(ResponseMessage.GetBookingNotFound());
+            return Ok(new VmInfoGetDto());
         }
 
         // Deny access to the booking if the user is a student and the booking is not his
         if (session.IsStudent() && booking.OwnerId != user.Id)
         {
-            return NotFound(ResponseMessage.GetBookingNotFound());
+            return NotFound(ResponseMessage.GetUserUnauthorized());
         }
 
         // Deny access to the booking if the user is a teacher and the booking is not his

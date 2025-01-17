@@ -11,7 +11,7 @@ public class VmInfoGetDto
     [JsonPropertyName("name")]
     public string Name { get; set; } = "";
     [JsonPropertyName("cpu")]
-    public int Cpu { get; set; }
+    public int Cpu { get; set; } = 0;
     [JsonPropertyName("ram")]
-    public int Ram { get; set; }
+    public int Ram { get; set; } = 0;
 }
