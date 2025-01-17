@@ -79,7 +79,7 @@
 </script>
 
 <Dialog.Root bind:open={vmExtensionDialogOpen}>
-  <Dialog.Content class="bg-primary-foreground">
+  <Dialog.Content>
     <Dialog.Header>
       <Dialog.Title>Create Booking extension</Dialog.Title>
     </Dialog.Header>
