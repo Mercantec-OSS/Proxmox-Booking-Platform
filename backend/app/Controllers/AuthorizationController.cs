@@ -47,31 +47,54 @@ public class AuthorizationController(
         HttpContext.Response.Cookies.Delete("token");
         return NoContent();
     }
-
-    [HttpPost("create/student")]
-    [ProducesResponseType(201)]
-    public async Task<ActionResult<UserGetDto>> PostCreateStudent(UserCreateDto userDto)
-    {
-        if (userDto == null)
+    [HttpPost("invite")]
+    [ProducesResponseType(200)]
+    public async Task<ActionResult<UserGetDto>> CreateInvitation(InviteDto dto){
+        User user = session.GetIfRoles(Models.User.UserRoles.Admin, Models.User.UserRoles.Teacher);
+        if (dto == null)
         {
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
         }
 
-        if (await userRepository.GetAsync(userDto.Email) != null)
+        if (await userRepository.GetAsync(dto.Email) != null)
         {
-            return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
+            return UnprocessableEntity(ResponseMessage.GetErrorMessage("User exist."));
         }
 
-        userDto.GroupId = null; //NEED TO REMOWE
-        return Ok(await CreateUser(userDto, Models.User.UserRoles.Student));
+        // preevent to invite admin from teacher
+        if (user.IsTeacher() && dto.Role.ToLower() == Models.User.UserRoles.Admin.ToString().ToLower())
+        {
+            return Unauthorized(ResponseMessage.GetUserUnauthorized());
+        }
+
+        // check for valid role
+        List<string> availableRoles = new() { Models.User.UserRoles.Admin.ToString().ToLower(), Models.User.UserRoles.Teacher.ToString().ToLower() };
+        if (!availableRoles.Contains(dto.Role.ToLower()))
+        {
+            return BadRequest(ResponseMessage.GetErrorMessage("Role not valid."));
+        }
+
+        User.UserRoles role = Models.User.UserRoles.Teacher;
+        string inviteKey = InviteKeysService.GetTeacherInviteKey();
+
+        // define admin user role
+        if (dto.Role.ToLower() == Models.User.UserRoles.Admin.ToString().ToLower())
+        {
+            role = Models.User.UserRoles.Admin;
+            inviteKey = InviteKeysService.GetAdminInviteKey();
+        }
+
+        Email email = Email.GetInviteLink(dto.Email, inviteKey, role.ToString());
+        await emailService.SendAsync(email);
+
+        return Ok($"Invitation sent to {dto.Email}");
     }
 
-    [HttpPost("create/teacher")]
+    [HttpPost("create")]
     [ProducesResponseType(201)]
-    public async Task<ActionResult<UserGetDto>> PostCreateTeacher(UserCreateDto userDto)
+    public async Task<ActionResult<UserGetDto>> PostCreate(UserCreateDto userDto)
     {
-        session.GetIfRoles(Models.User.UserRoles.Admin);
-
+        Console.WriteLine("accessKey: " + userDto.InviteKey);
         if (userDto == null)
         {
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
@@ -82,45 +105,21 @@ public class AuthorizationController(
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
         }
 
-        return Ok(await CreateUser(userDto, Models.User.UserRoles.Teacher));
-    }
-
-    [HttpPost("create/administrator")]
-    [ProducesResponseType(201)]
-    public async Task<ActionResult<UserGetDto>> PostCreateAdmin(UserCreateDto userDto)
-    {
-        session.GetIfRoles(Models.User.UserRoles.Admin);
-
-        if (userDto == null)
+        // define user role
+        User.UserRoles userRole = Models.User.UserRoles.Student;
+        if (userDto.InviteKey == InviteKeysService.GetAdminInviteKey())
         {
-            return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
+            userRole = Models.User.UserRoles.Admin;
+        }
+        else if (userDto.InviteKey == InviteKeysService.GetTeacherInviteKey())
+        {
+            userRole = Models.User.UserRoles.Teacher;
         }
 
-        if (await userRepository.GetAsync(userDto.Email) != null)
-        {
-            return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
-        }
+        userDto.GroupId = null; //NEED TO REMOVE
 
-        return Ok(await CreateUser(userDto, Models.User.UserRoles.Admin));
-    }
-
-    [HttpPost("create/moderator")]
-    [ProducesResponseType(201)]
-    public async Task<ActionResult<UserGetDto>> PostCreateModerator(UserCreateDto userDto)
-    {
-        session.GetIfRoles(Models.User.UserRoles.Admin);
-
-        if (userDto == null)
-        {
-            return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
-        }
-
-        if (await userRepository.GetAsync(userDto.Email) != null)
-        {
-            return UnprocessableEntity(ResponseMessage.GetErrorMessage("User need Unique Email."));
-        }
-
-        return Ok(await CreateUser(userDto, Models.User.UserRoles.Moderator));
+        System.Console.WriteLine("userRole: " + userRole);
+        return Ok(await CreateUser(userDto, userRole));
     }
 
     private async Task<UserGetDto> CreateUser(UserCreateDto userDto, User.UserRoles userRole)
