@@ -8,13 +8,6 @@
 
   let { user } = $props();
 
-  let selectedRole = $state(user.role);
-
-  $effect(() => {
-    if (selectedRole === user.role) return;
-    updateRole(selectedRole);
-  });
-
   async function updateRole(role) {
     user.role = role;
     try {
@@ -37,9 +30,9 @@
   <p>{new Date(user.creationAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</p>
   <!-- Role -->
   {#if $userStore.role === 'Admin'}
-    <Select.Root type="single" bind:value={selectedRole}>
+    <Select.Root type="single" onValueChange={(value) => updateRole(value)}>
       <Select.Trigger class="w-[180px]" aria-label="Select user role">
-        {selectedRole}
+        {user.role}
       </Select.Trigger>
       <Select.Content>
         <Select.Item value="Admin">Admin</Select.Item>
