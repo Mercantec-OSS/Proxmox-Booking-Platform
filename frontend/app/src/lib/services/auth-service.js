@@ -49,7 +49,7 @@ const backendApi = ky.create({
 
 export const authService = {
   async register(credentials) {
-    return clientApi.post('authorization/create/student', { json: credentials }).json();
+    return clientApi.post('authorization/create', { json: credentials }).json();
   },
 
   async login(credentials) {

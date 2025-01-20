@@ -74,5 +74,9 @@ export const userService = {
 
   async updaterole(user) {
     return await clientApi.put('update/role', { json: user }).json();
+  },
+
+  async inviteUser(user) {
+    return await clientApi.post('authorization/invite', { json: user }).json();
   }
 };
