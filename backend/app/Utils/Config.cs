@@ -20,6 +20,7 @@ public static class Config
     public static string VM_VCENTER_PASSWORD => ParseVariable("VM_VCENTER_PASSWORD");
     public static string VM_CLUSTER_NAME => ParseVariable("VM_CLUSTER_NAME");
     public static string VM_DATASTORE_NAME => ParseVariable("VM_DATASTORE_NAME");
+    public static string VM_ISO_LIBRARY_NAME => ParseVariable("VM_ISO_LIBRARY_NAME");
 
     private static string ParseVariable(string variableName) {
         string variable = Environment.GetEnvironmentVariable(variableName) ?? "";

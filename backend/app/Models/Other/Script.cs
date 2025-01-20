@@ -104,7 +104,7 @@ public class Script
         string scriptName = "get_iso_list.ps1";
 
         string script = Path.Combine(Config.SCRIPTS_PATH, scriptName);
-        string args = $"'{Config.VM_VCENTER_USER}__{Config.VM_VCENTER_PASSWORD}__{Config.VM_VCENTER_IP}__{Config.VM_DATACENTER}'";
+        string args = $"'{Config.VM_VCENTER_USER}__{Config.VM_VCENTER_PASSWORD}__{Config.VM_VCENTER_IP}' '{Config.VM_DATACENTER}' '{Config.VM_ISO_LIBRARY_NAME}'";
 
         return GetPowerShellScript($"{script} {args}");
     }
