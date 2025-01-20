@@ -18,6 +18,7 @@ builder.Services.AddHostedService<SchedulerBackgroundService>();
 builder.Services.AddHostedService<InviteKeysService>();
 builder.Services.AddHostedService<VCenterInfoBackgroundService>();
 builder.Services.AddHostedService<TemplatesBackgroundService>();
+builder.Services.AddHostedService<IsoBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 
 // CORS

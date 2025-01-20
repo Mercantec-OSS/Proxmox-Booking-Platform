@@ -15,11 +15,13 @@
         "VM_ROOT_PASSWORD": "Password",
         "VM_DEFAULT_USER":"User"
         "SCRIPTS_PATH": "/scripts",
+        "VM_DATACENTER": "Datacenter",
         "VM_VCENTER_IP": "ip",
         "VM_VCENTER_USER": "administrator@vsphere.local",
         "VM_VCENTER_PASSWORD": "passsword",
         "VM_CLUSTER_NAME": "Cluster",
         "VM_DATASTORE_NAME": "DatastoreCluster"
+        "VM_ISO_LIBRARY_NAME": "ISO-Library"
       }
     }
   }

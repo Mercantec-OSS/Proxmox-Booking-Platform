@@ -43,4 +43,28 @@ public class VmBookingScriptService(
         Script script = Script.GetVcenterInfoScript();
         return scriptService.Execute(script, true);
     }
+
+    public List<Iso> GetIsoList()
+    {
+        List<Iso> isoList = new List<Iso>();
+
+        Script script = Script.GetIsoListScript();
+        string output = scriptService.Execute(script, true);
+
+        string[] lines = output.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
+        return lines.ToList().ConvertAll(Iso.GetFromScriptLine);
+    }
+
+    public void AttachIso(string vmName, string isoName)
+    {
+        Script script = Script.GetAttachIsoScript(vmName, isoName);
+        scriptService.Execute(script, false);
+    }
+
+    public void DetachIso(string vmName)
+    {
+        Script script = Script.GetDetachIsoScript(vmName);
+        scriptService.Execute(script, false);
+    }
 }
