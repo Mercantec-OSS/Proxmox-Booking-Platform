@@ -21,6 +21,7 @@
         "VM_VCENTER_PASSWORD": "passsword",
         "VM_CLUSTER_NAME": "Cluster",
         "VM_DATASTORE_NAME": "DatastoreCluster"
+        "VM_ISO_LIBRARY_NAME": "ISO-Library"
       }
     }
   }
