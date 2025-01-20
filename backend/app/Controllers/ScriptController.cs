@@ -90,6 +90,83 @@ public class ScriptController(
         return Ok(TemplateGetDto.MakeGetDtoFromList(TemplatesBackgroundService.GetTemplates()));
     }
 
+    [HttpGet("vm/iso-list")]
+    public ActionResult GetIsoList()
+    {
+        session.IsAuthenticated();
+        return Ok(IsoBackgroundService.GetAllNames());
+    }
+
+    [HttpPost("vm/attach-iso")]
+    public async Task<ActionResult> AttachIso([FromBody] IsoAttachDto dto)
+    {
+        User user = session.GetIfRoles
+        (
+            Models.User.UserRoles.Admin,
+            Models.User.UserRoles.Teacher,
+            Models.User.UserRoles.Student
+        );
+
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(dto.VmName);
+        if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
+
+        Iso? iso = IsoBackgroundService.GetByName(dto.IsoName);
+        if (iso == null)
+        {
+            return NotFound(ResponseMessage.GetErrorMessage("Iso not found"));
+        }
+
+        // Deny access to the booking if the user is a student and the booking is not his
+        if (user.IsStudent() && booking.OwnerId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetUserUnauthorized());
+        }
+
+        // Deny access to the booking if the user is a teacher and the booking not assigned to him
+        if (user.IsTeacher() && booking.AssignedId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetUserUnauthorized());
+        }
+
+        vmBookingScriptService.AttachIso(booking.Name, iso.Path);
+        return NoContent();
+    }
+
+    [HttpPost("vm/detach-iso")]
+    public async Task<ActionResult> DetachIso([FromBody] IsoDetachDto dto)
+    {
+        User user = session.GetIfRoles
+        (
+            Models.User.UserRoles.Admin,
+            Models.User.UserRoles.Teacher,
+            Models.User.UserRoles.Student
+        );
+
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(dto.VmName);
+        if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
+
+        // Deny access to the booking if the user is a student and the booking is not his
+        if (user.IsStudent() && booking.OwnerId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetUserUnauthorized());
+        }
+
+        // Deny access to the booking if the user is a teacher and the booking not assigned to him
+        if (user.IsTeacher() && booking.AssignedId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetUserUnauthorized());
+        }
+
+        vmBookingScriptService.DetachIso(booking.Name);
+        return NoContent();
+    }
+
     [HttpDelete("vm/reset-templates")]
     public ActionResult ResetTemplates()
     {

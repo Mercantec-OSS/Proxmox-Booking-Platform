@@ -89,13 +89,42 @@ public class Script
         return GetPowerShellScript($"{script} {args}");
     }
 
-    // Other scripts
     public static Script GetVcenterInfoScript()
     {
         string scriptName = "get_vcenter_info.ps1";
 
         string script = Path.Combine(Config.SCRIPTS_PATH, scriptName);
         string args = $"'{Config.VM_VCENTER_USER}__{Config.VM_VCENTER_PASSWORD}__{Config.VM_VCENTER_IP}'";
+
+        return GetPowerShellScript($"{script} {args}");
+    }
+
+    public static Script GetIsoListScript()
+    {
+        string scriptName = "get_iso_list.ps1";
+
+        string script = Path.Combine(Config.SCRIPTS_PATH, scriptName);
+        string args = $"'{Config.VM_VCENTER_USER}__{Config.VM_VCENTER_PASSWORD}__{Config.VM_VCENTER_IP}__{Config.VM_DATACENTER}'";
+
+        return GetPowerShellScript($"{script} {args}");
+    }
+
+    public static Script GetAttachIsoScript(string vmName, string isoName)
+    {
+        string scriptName = "attach_iso.ps1";
+
+        string script = Path.Combine(Config.SCRIPTS_PATH, scriptName);
+        string args = $"'{Config.VM_VCENTER_USER}__{Config.VM_VCENTER_PASSWORD}__{Config.VM_VCENTER_IP}' '{vmName}' '{isoName}'";
+
+        return GetPowerShellScript($"{script} {args}");
+    }
+
+    public static Script GetDetachIsoScript(string vmName)
+    {
+        string scriptName = "detach_iso.ps1";
+
+        string script = Path.Combine(Config.SCRIPTS_PATH, scriptName);
+        string args = $"'{Config.VM_VCENTER_USER}__{Config.VM_VCENTER_PASSWORD}__{Config.VM_VCENTER_IP}' '{vmName}'";
 
         return GetPowerShellScript($"{script} {args}");
     }
