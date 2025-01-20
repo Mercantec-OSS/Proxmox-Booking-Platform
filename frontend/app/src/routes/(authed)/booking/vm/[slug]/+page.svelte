@@ -109,7 +109,7 @@
   {#if $selectedBookingStore && !data.errorMessage}
     <div class="mx-auto grid flex-1 auto-rows-max gap-4">
       <div class="flex flex-wrap items-center gap-4">
-        <Button href="/" variant="outline" size="icon" class="size-7">
+        <Button onmousedown={() => history.back()} variant="outline" size="icon" class="size-7">
           <ChevronLeft class="size-4" />
           <span class="sr-only">Back</span>
         </Button>

@@ -1,16 +1,20 @@
 <script>
-  import { LogOut, Bell, User, PanelLeft, Home, CircleHelp } from 'lucide-svelte';
+  import { LogOut, Bell, User, PanelLeft, Home, CircleHelp, CirclePlus } from 'lucide-svelte';
   import { authService } from '$lib/services/auth-service';
   import { getCookie, deleteCookie } from '$lib/utils/cookie';
   import { goto } from '$app/navigation';
   import UserSearch from '$lib/components/authed/user-search.svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { userStore } from '$lib/utils/store';
   import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
   import { Button } from '$lib/components/ui/button/index.js';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index.js';
   import * as Sheet from '$lib/components/ui/sheet/index.js';
   import * as HoverCard from '$lib/components/ui/hover-card';
+  import InviteUserDialog from '$lib/components/authed/user/invite-user-dialog.svelte';
+
+  let userAuthed = $derived($userStore?.role === 'Admin' || $userStore?.role === 'Teacher' || false);
+  let inviteUserDialogOpen = $state(false);
 
   async function handleLogout() {
     try {
@@ -23,11 +27,14 @@
   }
 
   function isActive(href) {
-    return $page.url.pathname === href;
+    return page.url.pathname === href;
   }
 </script>
 
+<InviteUserDialog bind:inviteUserDialogOpen />
+
 <header class="sticky top-0 z-30 bg-background flex h-14 items-center border-b px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+  <!-- Mobile menu -->
   <Sheet.Root>
     <Sheet.Trigger class="sm:hidden">
       <PanelLeft class="h-5 w-5" />
@@ -47,10 +54,6 @@
           <Home class="h-5 w-5" />
           Dashboard
         </a>
-        <!-- <a href="/analytics" class="{isActive('/analytics') ? 'text-foreground' : 'text-muted-foreground'} flex items-center gap-4 px-2.5">
-          <ChartLine class="h-5 w-5" />
-          Analytics
-        </a> -->
         <a href="/help" class="{isActive('/help') ? 'text-foreground' : 'text-muted-foreground'} hover:text-foreground flex items-center gap-4 px-2.5">
           <CircleHelp class="h-5 w-5" />
           Help
@@ -62,34 +65,40 @@
       </nav>
     </Sheet.Content>
   </Sheet.Root>
+
+  <!-- Breadcrumb -->
   <Breadcrumb.Root class="hidden md:flex">
     <Breadcrumb.List>
       <Breadcrumb.Item>
         <Breadcrumb.Link href="/">Dashboard</Breadcrumb.Link>
       </Breadcrumb.Item>
       <Breadcrumb.Separator />
-      {#if $page.url.pathname === '/'}
+      {#if page.url.pathname === '/'}
         <Breadcrumb.Item>
           <Breadcrumb.Page href="/">Overview</Breadcrumb.Page>
         </Breadcrumb.Item>
-      {:else if $page.url.pathname.includes('user')}
+      {:else if page.url.pathname.includes('user')}
         <Breadcrumb.Item>
           <Breadcrumb.Page>User Profile</Breadcrumb.Page>
         </Breadcrumb.Item>
-      {:else if $page.url.pathname.includes('booking')}
+      {:else if page.url.pathname.includes('booking')}
         <Breadcrumb.Item>
           <Breadcrumb.Page>Booking Details</Breadcrumb.Page>
         </Breadcrumb.Item>
-      {:else if $page.url.pathname.includes('create')}
+      {:else if page.url.pathname.includes('create')}
         <Breadcrumb.Item>
           <Breadcrumb.Page>Create Booking</Breadcrumb.Page>
         </Breadcrumb.Item>
       {/if}
     </Breadcrumb.List>
   </Breadcrumb.Root>
+
+  <!-- User search -->
   <div class="relative ml-auto flex-1 md:grow-0 text-center md:text-right px-2">
     <UserSearch />
   </div>
+
+  <!-- Notifications -->
   <div class="px-2">
     <HoverCard.Root openDelay={200} closeDelay={150}>
       <HoverCard.Trigger>
@@ -103,6 +112,7 @@
     </HoverCard.Root>
   </div>
 
+  <!-- User menu -->
   <div class="pl-2">
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
@@ -120,9 +130,13 @@
         >
         <DropdownMenu.Item
           onmousedown={() => {
-            goto('/help');
+            window.open('https://mars.merhot.dk/w/index.php/Booking-guide', '_blank');
           }}><CircleHelp class="size-4 mr-2" />Help</DropdownMenu.Item
         >
+        <DropdownMenu.Separator />
+        {#if userAuthed}
+          <DropdownMenu.Item onmousedown={() => (inviteUserDialogOpen = true)}><CirclePlus class="size-4 mr-2" />Invite User</DropdownMenu.Item>
+        {/if}
         <DropdownMenu.Separator />
         <DropdownMenu.Item onmousedown={handleLogout}><LogOut class="size-4 mr-2" />Logout</DropdownMenu.Item>
       </DropdownMenu.Content>
