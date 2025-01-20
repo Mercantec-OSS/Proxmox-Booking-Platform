@@ -194,13 +194,13 @@
 
           <div class="flex flex-wrap">
             <!-- Create booking -->
-            <Button class="w-39 mr-3" href="/create"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
+            <Button class="w-39 mr-4" href="/create"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
 
             <!-- Teacher actions -->
             {#if userAuthed}
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                  <Button variant="outline" class="w-39 mr-3 text-primary hover:text-primary/90 border border-primary hover:border-primary/90"
+                  <Button variant="outline" class="w-39 mr-4 text-primary hover:text-primary/90 border border-primary hover:border-primary/90"
                     ><ShieldEllipsis class="h-4 w-4 mr-1" />Teacher actions</Button
                   >
                 </DropdownMenu.Trigger>
