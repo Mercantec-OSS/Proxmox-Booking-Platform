@@ -14,6 +14,7 @@ public static class Config
     public static string VM_ROOT_PASSWORD => ParseVariable("VM_ROOT_PASSWORD");
 
     public static string SCRIPTS_PATH => ParseVariable("SCRIPTS_PATH");
+    public static string VM_DATACENTER => ParseVariable("VM_DATACENTER");
     public static string VM_VCENTER_IP => ParseVariable("VM_VCENTER_IP");
     public static string VM_VCENTER_USER => ParseVariable("VM_VCENTER_USER");
     public static string VM_VCENTER_PASSWORD => ParseVariable("VM_VCENTER_PASSWORD");
