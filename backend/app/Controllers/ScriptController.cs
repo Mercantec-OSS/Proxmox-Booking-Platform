@@ -73,8 +73,8 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
-        // Deny access to the booking if the user is a teacher and the booking is not his
-        if (user.IsTeacher() && booking.OwnerId != user.Id)
+        // Deny access to the booking if the user is a teacher and it not assigned to booking
+        if (user.IsTeacher() && booking.AssignedId != user.Id)
         {
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
