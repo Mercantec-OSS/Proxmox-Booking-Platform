@@ -37,6 +37,7 @@
   "type": "module",
   "dependencies": {
     "@fontsource/inter": "^5.1.1",
+    "@tanstack/table-core": "^8.20.5",
     "dotenv": "^16.4.7",
     "ky": "^1.7.4"
   }
