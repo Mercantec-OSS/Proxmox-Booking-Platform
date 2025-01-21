@@ -128,4 +128,14 @@ public class Script
 
         return GetPowerShellScript($"{script} {args}");
     }
+
+    public static Script GetAttachStorageScript(string vmName, int sizeGb)
+    {
+        string scriptName = "attach_storage.ps1";
+
+        string script = Path.Combine(Config.SCRIPTS_PATH, scriptName);
+        string args = $"'{Config.VM_VCENTER_USER}__{Config.VM_VCENTER_PASSWORD}__{Config.VM_VCENTER_IP}' '{vmName}' '{sizeGb}'";
+
+        return GetPowerShellScript($"{script} {args}");
+    }
 }
