@@ -79,6 +79,17 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
+        // Make limits for resources
+        if (dto.Cpu < 1 || dto.Cpu > 6)
+        {
+            return BadRequest(ResponseMessage.GetErrorMessage("Cpu must be between 1 and 6"));
+        }
+
+        if (dto.Ram < 2 || dto.Ram > 16)
+        {
+            return BadRequest(ResponseMessage.GetErrorMessage("Ram must be between 2 and 16"));
+        }
+
         vmBookingScriptService.Update(booking.Name, dto.Cpu, dto.Ram);
         return NoContent();
     }
