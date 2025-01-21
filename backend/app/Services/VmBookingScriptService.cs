@@ -67,4 +67,10 @@ public class VmBookingScriptService(
         Script script = Script.GetDetachIsoScript(vmName);
         scriptService.Execute(script, false);
     }
+
+    public void AttachStorage(string vmName, int amountGb)
+    {
+        Script script = Script.GetAttachStorageScript(vmName, amountGb);
+        scriptService.Execute(script, false);
+    }
 }
