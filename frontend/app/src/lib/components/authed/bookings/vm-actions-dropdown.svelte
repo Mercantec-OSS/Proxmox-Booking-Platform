@@ -1,17 +1,19 @@
 <script>
   import { vmService } from '$lib/services/vm-service';
-  import VMExtensionDialog from '$lib/components/authed/bookings/vm/vm-extension-dialog.svelte';
-  import VMConfigDialog from '$lib/components/authed/bookings/vm/vm-config-dialog.svelte';
+  import VMExtensionDialog from '$lib/components/authed/bookings/dialogs/vm-extension-dialog.svelte';
+  import VMConfigureSpecsDialog from '$lib/components/authed/bookings/dialogs/vm-configure-specs-dialog.svelte';
+  import VMAttachStorageDialog from '$lib/components/authed/bookings/dialogs/vm-attach-storage-dialog.svelte';
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
-  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, ChevronDown, MonitorUp, MonitorCog } from 'lucide-svelte';
+  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, ChevronDown, MonitorUp, MonitorCog, HardDrive } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button/index.js';
   import { goto } from '$app/navigation';
 
   let vmExtensionDialogOpen = $state(false);
-  let vmConfigDialogOpen = $state(false);
+  let configureSpecsDialogOpen = $state(false);
+  let attachStorageDialogOpen = $state(false);
   let open = $state(false);
 
   // State for managing alert dialog visibility and content
@@ -113,7 +115,8 @@
 
 <AlertDialog open={alertState.open} alertTitle={alertState.title} alertDescription={alertState.description} onNotify={handleNotify} />
 <VMExtensionDialog bind:vmExtensionDialogOpen></VMExtensionDialog>
-<VMConfigDialog bind:vmConfigDialogOpen></VMConfigDialog>
+<VMConfigureSpecsDialog bind:configureSpecsDialogOpen></VMConfigureSpecsDialog>
+<VMAttachStorageDialog bind:attachStorageDialogOpen></VMAttachStorageDialog>
 
 <DropdownMenu.Root bind:open>
   <DropdownMenu.Trigger>
@@ -131,9 +134,13 @@
         <MonitorUp class="mr-2 size-4" />
         <span>Web console</span>
       </DropdownMenu.Item>
-      <DropdownMenu.Item onmousedown={() => (vmConfigDialogOpen = true)}>
+      <DropdownMenu.Item onmousedown={() => (configureSpecsDialogOpen = true)}>
         <MonitorCog class="mr-2 size-4" />
-        <span>VM configuration</span>
+        <span>Configure Specs</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item onmousedown={() => (attachStorageDialogOpen = true)}>
+        <HardDrive class="mr-2 size-4" />
+        <span>Attach Storage</span>
       </DropdownMenu.Item>
       <DropdownMenu.Item onmousedown={handleResetPower}>
         <Zap class="mr-2 size-4" />

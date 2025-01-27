@@ -190,5 +190,13 @@ export const vmService = {
         }
       })
       .json();
+  },
+
+  async updateResources(resources) {
+    return await clientApi.put('script/vm/update-resources', { json: resources }).json();
+  },
+
+  async attachStorage(storageOption) {
+    return await clientApi.post('script/vm/attach-storage', { json: storageOption }).json();
   }
 };
