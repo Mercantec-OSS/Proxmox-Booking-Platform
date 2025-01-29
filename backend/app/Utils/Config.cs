@@ -13,14 +13,9 @@ public static class Config
     public static string VM_DEFAULT_USER => ParseVariable("VM_DEFAULT_USER");
     public static string VM_ROOT_PASSWORD => ParseVariable("VM_ROOT_PASSWORD");
 
-    public static string SCRIPTS_PATH => ParseVariable("SCRIPTS_PATH");
-    public static string VM_DATACENTER => ParseVariable("VM_DATACENTER");
-    public static string VM_VCENTER_IP => ParseVariable("VM_VCENTER_IP");
-    public static string VM_VCENTER_USER => ParseVariable("VM_VCENTER_USER");
-    public static string VM_VCENTER_PASSWORD => ParseVariable("VM_VCENTER_PASSWORD");
-    public static string VM_CLUSTER_NAME => ParseVariable("VM_CLUSTER_NAME");
-    public static string VM_DATASTORE_NAME => ParseVariable("VM_DATASTORE_NAME");
-    public static string VM_ISO_LIBRARY_NAME => ParseVariable("VM_ISO_LIBRARY_NAME");
+    public static string PROXMOX_ADDR => ParseVariable("PROXMOX_ADDR");
+    public static string PROXMOX_TOKEN_ID => ParseVariable("PROXMOX_TOKEN_ID");
+    public static string PROXMOX_TOKEN_SECRET => ParseVariable("PROXMOX_TOKEN_SECRET");
 
     private static string ParseVariable(string variableName) {
         string variable = Environment.GetEnvironmentVariable(variableName) ?? "";

@@ -36,11 +36,6 @@ public class UserRepository(Context context)
         );
     }
 
-    public async Task<List<User>> GetByClassAsync(int classId)
-    {
-        return await _dbService.Users.Where(u => u.GroupId == classId).ToListAsync();
-    }
-
     public async Task UpdateAsync(User user)
     {
         _ = _dbService.Users.Update(user);

@@ -131,7 +131,6 @@ public class AuthorizationController(
             Surname = userDto.Surname,
             Email = userDto.Email.ToLower(),
             Role = userRole.ToString(),
-            GroupId = userDto.GroupId,
             Password = Password.GetHash(userDto.Password),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,

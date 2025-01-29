@@ -3,7 +3,6 @@
 public class Context(DbContextOptions<Context> options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
-    public DbSet<Group> studentGroups => Set<Group>();
     public DbSet<VmBooking> VmBookings => Set<VmBooking>();
     public DbSet<VmBookingExtention> VmBookingExtention => Set<VmBookingExtention>();
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,17 +25,6 @@ public class Context(DbContextOptions<Context> options) : DbContext(options)
             .Property(x => x.Password)
             .IsRequired()
             .HasDefaultValue("");
-
-        modelBuilder.Entity<User>()
-            .HasOne(u => u.group)
-            .WithMany(g => g.Members)
-            .HasForeignKey("GroupId")
-            .IsRequired(false);
-
-        // Student group
-        modelBuilder.Entity<Group>()
-            .Property(x => x.Name)
-            .IsRequired();
 
         // Vm booking
         modelBuilder.Entity<VmBooking>()

@@ -5,20 +5,19 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<VmBookingRepository>();
 builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<GroupRepository>();
 builder.Services.AddScoped<VmBookingExtentionRepository>();
-builder.Services.AddScoped<ScriptService>();
-builder.Services.AddScoped<VmBookingScriptService>();
-builder.Services.AddScoped<VCenterApiService>();
+// builder.Services.AddScoped<ScriptService>();
+// builder.Services.AddScoped<VmBookingScriptService>();
+builder.Services.AddScoped<ProxmoxApiService>();
 builder.Services.AddScoped<UserSession>();
 builder.Services.AddScoped<JwtTokenService>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<VmService>();
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddHostedService<SchedulerBackgroundService>();
 builder.Services.AddHostedService<InviteKeysService>();
-builder.Services.AddHostedService<VCenterInfoBackgroundService>();
-builder.Services.AddHostedService<TemplatesBackgroundService>();
-builder.Services.AddHostedService<IsoBackgroundService>();
+// builder.Services.AddHostedService<VCenterInfoBackgroundService>();
+// builder.Services.AddHostedService<IsoBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 
 // CORS

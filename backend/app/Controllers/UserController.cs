@@ -3,8 +3,7 @@
 public class UserController(
     UserSession session,
     EmailService emailService,
-    UserRepository userRepository,
-    GroupRepository groupRepository
+    UserRepository userRepository
     ) : ControllerBase
 {
     [HttpGet("{id}")]
@@ -46,37 +45,37 @@ public class UserController(
         return Ok(user.Role);
     }
 
-    [HttpGet("class/{id}")]
-    public async Task<ActionResult> GetUsersByClassId(int id)
-    {
-        session.GetIfAuthenticated();
+    // [HttpGet("class/{id}")]
+    // public async Task<ActionResult> GetUsersByClassId(int id)
+    // {
+    //     session.GetIfAuthenticated();
 
-        Group? group = await groupRepository.GetByIDAsync(id);
+    //     Group? group = await groupRepository.GetByIDAsync(id);
         
-        if (group == null)
-        {
-            return NotFound(ResponseMessage.GetClassNotFound());
-        }
+    //     if (group == null)
+    //     {
+    //         return NotFound(ResponseMessage.GetClassNotFound());
+    //     }
 
-        var classUsers = await userRepository.GetByClassAsync(id);
-        return Ok(group.Members.ConvertAll(u => u.MakeGetDto()));
-    }
+    //     var classUsers = await userRepository.GetByClassAsync(id);
+    //     return Ok(group.Members.ConvertAll(u => u.MakeGetDto()));
+    // }
 
-    [HttpGet("class/name/{className}")]
-    public async Task<ActionResult> GetUsersByClassName(string className)
-    {
-        session.GetIfAuthenticated();
+    // [HttpGet("class/name/{className}")]
+    // public async Task<ActionResult> GetUsersByClassName(string className)
+    // {
+    //     session.GetIfAuthenticated();
 
-        Group? group = await groupRepository.GetByClassAsync(className);
+    //     Group? group = await groupRepository.GetByClassAsync(className);
         
-        if (group == null)
-        {
-            return NotFound(ResponseMessage.GetClassNotFound());
-        }
+    //     if (group == null)
+    //     {
+    //         return NotFound(ResponseMessage.GetClassNotFound());
+    //     }
 
-        var classUsers = await userRepository.GetByClassAsync(group.Id);
-        return Ok(group.Members.ConvertAll(u => u.MakeGetDto()));
-    }
+    //     var classUsers = await userRepository.GetByClassAsync(group.Id);
+    //     return Ok(group.Members.ConvertAll(u => u.MakeGetDto()));
+    // }
 
     [HttpPut]
     [ProducesResponseType(204)]
@@ -175,7 +174,6 @@ public class UserController(
             return BadRequest(ResponseMessage.GetErrorMessage("Only students can get assigned to a class."));
         }
 
-        user.GroupId = classId;
         await userRepository.UpdateAsync(user);
 
         return NoContent();

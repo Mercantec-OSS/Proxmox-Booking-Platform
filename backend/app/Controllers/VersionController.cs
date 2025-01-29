@@ -1,10 +1,10 @@
 ﻿[ApiController]
 [Route("version")]
-public class VersionController : ControllerBase
+public class VersionController(ProxmoxApiService proxmoxApiService) : ControllerBase
 {
     [HttpGet("/version")]
-    public IActionResult GetVersion()
+    public async Task<IActionResult> GetVersion()
     {
-        return Ok(Config.VERSION);
+        return Ok(await proxmoxApiService.GetTemplates());
     }
 }

@@ -2,7 +2,7 @@
 [Route("vm-booking")]
 public class VmBookingController(
     UserSession session, 
-    VmBookingScriptService vmBookingScriptService, 
+    VmService vmService, 
     VmBookingRepository vmBookingRepository,
     UserRepository userRepository,
     EmailService emailService
@@ -48,7 +48,7 @@ public class VmBookingController(
             OwnerId = ownerUser.Id,
             Type = bookingDTO.Type,
             Message = bookingDTO.Message,
-            Name = $"{ownerUser.Id}_{Guid.NewGuid()}",
+            Name = $"{ownerUser.Id}---{Guid.NewGuid()}",
             Login = VmCredentials.GetLoginByTemplate(template),
             Password = VmCredentials.GetPasswordByTemplate(template),
             CreatedAt = DateTime.UtcNow,
@@ -65,7 +65,8 @@ public class VmBookingController(
         // if booking is accepted create vm
         if (isAccepted)
         {
-            vmBookingScriptService.Create(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+            // vmService.Book(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+            _ = vmService.Book(booking.Name, booking.Type);
         }
 
         else
@@ -182,7 +183,7 @@ public class VmBookingController(
 
         Email email = Email.GetVmBookingAccepted(booking);
         await emailService.SendAsync(email);
-        vmBookingScriptService.Create(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+        // vmBookingScriptService.Create(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
 
         return NoContent();
     }
@@ -244,7 +245,8 @@ public class VmBookingController(
         }
 
         await vmBookingRepository.DeleteAsync(booking);
-        vmBookingScriptService.Remove(booking.Name);
+        // vmBookingScriptService.Remove(booking.Name);
+        await vmService.Remove(booking.Name);
 
         return NoContent();
     }

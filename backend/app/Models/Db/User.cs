@@ -18,12 +18,6 @@ public class User
     [Column("pass")]
     public string Password { get; set; } = "";
 
-    [Column("group_id")]
-    public int? GroupId { get; set; }
-
-    [ForeignKey("GroupId")]
-    public Group? group {get; set;} 
-
     [Column("role")]
     public string Role { get; set; } = UserRoles.Student.ToString();
 
@@ -49,7 +43,6 @@ public class User
             Surname = Surname,
             Email = Email,
             Role = Role,
-            GroupId = GroupId,
             CreatedAt = DateTime.SpecifyKind(CreatedAt, DateTimeKind.Utc)
         };
     }

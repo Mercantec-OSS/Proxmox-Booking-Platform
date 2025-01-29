@@ -12,8 +12,8 @@ public class TemplateGetDto
     static public TemplateGetDto MakeGetDTO(string template)
     {
         string internalName = template;
-        string displayName = template.Split("--").First().Replace("_", " ");
-        List<string> keywords = template.ToLower().Split("--").Last().Split("_").ToList();
+        string displayName = template.Split("---").First().Replace("-", " ");
+        List<string> keywords = template.ToLower().Split("---").Last().Split("-").ToList();
 
         return new TemplateGetDto
         {

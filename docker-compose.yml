@@ -1,5 +1,8 @@
 services:
   nginx:
+    require:
+      - backend
+      - frontend
     container_name: nginx-dev
     restart: unless-stopped
     image: nginx

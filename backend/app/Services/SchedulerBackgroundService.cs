@@ -34,7 +34,7 @@ public class SchedulerBackgroundService(IServiceScopeFactory scopeFactory) : Bac
     {
         using var scope = scopeFactory.CreateScope();
         var vmRepository = scope.ServiceProvider.GetRequiredService<VmBookingRepository>();
-        var scriptService = scope.ServiceProvider.GetRequiredService<VmBookingScriptService>();
+        var vmService = scope.ServiceProvider.GetRequiredService<VmService>();
         var emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
         var expiredBookings = await vmRepository.GetExpiredAsync();
 
@@ -44,7 +44,7 @@ public class SchedulerBackgroundService(IServiceScopeFactory scopeFactory) : Bac
             await emailService.SendAsync(email);
 
             await vmRepository.DeleteAsync(booking);
-            scriptService.Remove(booking.Name);
+            _ = vmService.Remove(booking.Name);
         }
     }
 }
