@@ -7,7 +7,7 @@
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { ArrowUpRight, CirclePlus, ListRestart, ShieldEllipsis, ChevronDown, ArrowUpDown } from 'lucide-svelte';
   import { vmService } from '$lib/services/vm-service';
-  import VMExtensionRequestDialog from '$lib/components/authed/bookings/vm/vm-extension-request-dialog.svelte';
+  import VMExtensionRequestDialog from '$lib/components/authed/bookings/dialogs/vm-extension-request-dialog.svelte';
   import { getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/table-core';
   import { Input } from '$lib/components/ui/input';
   import { FlexRender, createSvelteTable } from '$lib/components/ui/data-table';

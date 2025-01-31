@@ -17,7 +17,8 @@ export const load = async ({ parent, params, cookies }) => {
 
     if (vmData.uuid && vmData.isAccepted) {
       const creds = await vmService.getVmInfoBackend(token, vmData.uuid);
-      return { vmData: { ...vmData, ...creds }, userInfo };
+      const isoList = await vmService.getIsoListBackend(token);
+      return { vmData: { ...vmData, ...creds, isoList }, userInfo };
     }
 
     return { vmData, userInfo };
