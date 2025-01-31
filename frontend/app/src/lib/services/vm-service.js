@@ -198,5 +198,23 @@ export const vmService = {
 
   async attachStorage(storageOption) {
     return await clientApi.post('script/vm/attach-storage', { json: storageOption }).json();
+  },
+
+  async getIsoListBackend(cookie) {
+    return await backendApi
+      .get('script/vm/iso-list', {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
+  },
+
+  async attachIso(info) {
+    return await clientApi.post('script/vm/attach-iso', { json: info }).json();
+  },
+
+  async detachIso(vmName) {
+    return await clientApi.post('script/vm/detach-iso', { json: { vmName } }).json();
   }
 };

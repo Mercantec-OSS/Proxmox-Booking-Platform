@@ -3,9 +3,10 @@
   import VMExtensionDialog from '$lib/components/authed/bookings/dialogs/vm-extension-dialog.svelte';
   import VMConfigureSpecsDialog from '$lib/components/authed/bookings/dialogs/vm-configure-specs-dialog.svelte';
   import VMAttachStorageDialog from '$lib/components/authed/bookings/dialogs/vm-attach-storage-dialog.svelte';
+  import VMAttachIsoDialog from '$lib/components/authed/bookings/dialogs/vm-attach-iso-dialog.svelte';
   import { vmListStore, selectedBookingStore } from '$lib/utils/store';
   import AlertDialog from '$lib/components/authed/alert-dialog.svelte';
-  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, ChevronDown, MonitorUp, MonitorCog, HardDrive } from 'lucide-svelte';
+  import { Download, Trash2, RefreshCcw, CalendarPlus, Zap, ChevronDown, MonitorUp, MonitorCog, HardDrive, FileCog } from 'lucide-svelte';
   import { toast } from 'svelte-sonner';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
   import { Button } from '$lib/components/ui/button/index.js';
@@ -14,6 +15,7 @@
   let vmExtensionDialogOpen = $state(false);
   let configureSpecsDialogOpen = $state(false);
   let attachStorageDialogOpen = $state(false);
+  let attachIsoDialogOpen = $state(false);
   let open = $state(false);
 
   // State for managing alert dialog visibility and content
@@ -117,6 +119,7 @@
 <VMExtensionDialog bind:vmExtensionDialogOpen></VMExtensionDialog>
 <VMConfigureSpecsDialog bind:configureSpecsDialogOpen></VMConfigureSpecsDialog>
 <VMAttachStorageDialog bind:attachStorageDialogOpen></VMAttachStorageDialog>
+<VMAttachIsoDialog bind:attachIsoDialogOpen></VMAttachIsoDialog>
 
 <DropdownMenu.Root bind:open>
   <DropdownMenu.Trigger>
@@ -141,6 +144,10 @@
       <DropdownMenu.Item onmousedown={() => (attachStorageDialogOpen = true)}>
         <HardDrive class="mr-2 size-4" />
         <span>Attach Storage</span>
+      </DropdownMenu.Item>
+      <DropdownMenu.Item onmousedown={() => (attachIsoDialogOpen = true)}>
+        <FileCog class="mr-2 size-4" />
+        <span>Manage ISO</span>
       </DropdownMenu.Item>
       <DropdownMenu.Item onmousedown={handleResetPower}>
         <Zap class="mr-2 size-4" />
