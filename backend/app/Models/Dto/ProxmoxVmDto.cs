@@ -27,6 +27,12 @@ public class ProxmoxVmDto
     
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
+
+    [JsonPropertyName("tags")]
+    public string TagsRaw { get; set; } = string.Empty;
+
+    [JsonIgnore]
+    public List<string> Tags => TagsRaw.Split(';').ToList();
     
     [JsonPropertyName("id")]
     public string Id { get; set; } = string.Empty;

@@ -23,16 +23,10 @@ public class WebsockifyService {
         int port;
         do
         {
-            port = GetRandomPort();
+            port = Helpers.GetRandomNumber(10000, 20000);
         } while (!IsPortAvailable(port));
 
         return port;
-    }
-
-    private int GetRandomPort()
-    {
-        Random random = new Random();
-        return random.Next(10000, 20000);
     }
 
     private bool IsPortAvailable(int port)

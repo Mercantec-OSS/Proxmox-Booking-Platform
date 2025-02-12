@@ -39,8 +39,7 @@ public class VmBookingController(
             isAccepted = true;
         }
 
-        TemplateGetDto? template = TemplateGetDto.MakeGetDTO(bookingDTO.Type);
-
+        ProxmoxVmDto templateProxmox = await vmService.GetTemplateByNameAsync(bookingDTO.Type);
         VmBooking booking = new()
         {
             Id = 0,
@@ -48,9 +47,9 @@ public class VmBookingController(
             OwnerId = ownerUser.Id,
             Type = bookingDTO.Type,
             Message = bookingDTO.Message,
-            Name = $"{ownerUser.Id}---{Guid.NewGuid()}",
-            Login = VmCredentials.GetLoginByTemplate(template),
-            Password = VmCredentials.GetPasswordByTemplate(template),
+            Name = $"{ownerUser.Id}--{ownerUser.Name.ToLower().Trim()}-{ownerUser.Surname.ToLower().Trim()}--{templateProxmox.Name}--{Helpers.GetRandomNumber()}",
+            Login = VmCredentials.GetLoginByTemplate(templateProxmox.Tags),
+            Password = VmCredentials.GetPasswordByTemplate(templateProxmox.Tags),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             ExpiredAt = bookingDTO.ExpiringAt,
@@ -65,8 +64,7 @@ public class VmBookingController(
         // if booking is accepted create vm
         if (isAccepted)
         {
-            // vmService.Book(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
-            _ = vmService.Book(booking.Name, booking.Type);
+            _ = vmService.Book(booking.Name, booking.Type, booking.Login, booking.Password);
         }
 
         else
@@ -183,7 +181,7 @@ public class VmBookingController(
 
         Email email = Email.GetVmBookingAccepted(booking);
         await emailService.SendAsync(email);
-        // vmBookingScriptService.Create(booking.Name, booking.Type, Config.VM_ROOT_PASSWORD, booking.Login, booking.Password);
+        _ = vmService.Book(booking.Name, booking.Type, booking.Login, booking.Password);
 
         return NoContent();
     }
@@ -245,8 +243,7 @@ public class VmBookingController(
         }
 
         await vmBookingRepository.DeleteAsync(booking);
-        // vmBookingScriptService.Remove(booking.Name);
-        await vmService.Remove(booking.Name);
+        _ = vmService.Remove(booking.Name);
 
         return NoContent();
     }

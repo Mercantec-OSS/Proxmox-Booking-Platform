@@ -159,7 +159,7 @@ public class ProxmoxApiService
         await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/agent/set-user-password", content);
     }
 
-    public async Task<bool> AgentIsRunning(ProxmoxVmDto vm)
+    public async Task<bool> GetAgentStatus(ProxmoxVmDto vm)
     {
         var response = await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/agent/ping", new StringContent(""));
         var data = await response.Content.ReadFromJsonAsync<ProxmoxAgentPingDto>();

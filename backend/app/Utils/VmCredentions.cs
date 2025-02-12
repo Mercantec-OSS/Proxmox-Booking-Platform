@@ -1,18 +1,18 @@
 public static class VmCredentials
 {
-    public static string GetLoginByTemplate(TemplateGetDto template)
+    public static string GetLoginByTemplate(List<string> tags)
     {
-        if (!template.Keywords.Contains("psw"))
+        if (!tags.Contains("psw"))
         {
             return "";
         }
 
-        if (template.Keywords.Contains("lin") && template.Keywords.Contains("srv"))
+        if (tags.Contains("lin") && tags.Contains("srv"))
         {
             return "root";
         }
 
-        if (template.Keywords.Contains("win") && template.Keywords.Contains("srv"))
+        if (tags.Contains("win") && tags.Contains("srv"))
         {
             return "Administrator";
         }
@@ -20,9 +20,9 @@ public static class VmCredentials
         return Config.VM_DEFAULT_USER;
     }
 
-    public static string GetPasswordByTemplate(TemplateGetDto template)
+    public static string GetPasswordByTemplate(List<string> tags)
     {
-        if (!template.Keywords.Contains("psw"))
+        if (!tags.Contains("psw"))
         {
             return "";
         }

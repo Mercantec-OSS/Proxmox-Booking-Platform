@@ -1,6 +1,6 @@
 public class VmService(ProxmoxApiService proxmoxApiService)
 {
-    public async Task Book(string vmName, string templateName) {
+    public async Task Book(string vmName, string templateName, string username = "", string password = "") {
         int vmId = await GetFreeVmId();
 
         ProxmoxVmDto? template = await proxmoxApiService.GetTemplateByNameAsync(templateName);
@@ -22,6 +22,27 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         }
 
         await proxmoxApiService.AddToHA(vmId);
+        await WaitForAgent(vmName);
+
+        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
+        if (vm == null)
+        {
+            throw new Exception("Vm not found");
+        }
+
+        if (username != "") {
+            await proxmoxApiService.SetVmPassword(vm, username, password);
+        }
+    }
+
+    public async Task<ProxmoxVmDto> GetTemplateByNameAsync(string name) {
+        ProxmoxVmDto? template = await proxmoxApiService.GetTemplateByNameAsync(name);
+        if (template == null)
+        {
+            throw new Exception("Template not found");
+        }
+
+        return template;
     }
 
     public async Task Remove(string vmName) {
@@ -36,9 +57,32 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         await proxmoxApiService.DeleteVm(vm);
     }
 
+    public async Task<bool> WaitForAgent(string vmName) {
+        bool result = false;
+        
+        for (int i = 0; i < 300; i++)
+        {
+            ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
+            if (vm == null)
+            {
+                break;
+            }
+
+            bool vmStatus = await proxmoxApiService.GetAgentStatus(vm);
+            await Task.Delay(1000);
+
+            if (vmStatus)
+            {
+                result = true;
+                break;
+            }
+        }
+
+        return result;
+    }
+
     private async Task<int> GetFreeVmId() {
-        Random random = new Random();
-        int vmId = random.Next(10000, 99999);
+        int vmId = Helpers.GetRandomNumber(10000, 99999);
 
         ProxmoxVmDto? vm = await proxmoxApiService.GetVmByIdAsync(vmId);
         if (vm == null)
