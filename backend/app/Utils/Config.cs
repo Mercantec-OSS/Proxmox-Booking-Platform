@@ -10,9 +10,6 @@ public static class Config
     public static string SMTP_PASSWORD => ParseSMTPConnectionString()[3];
     public static string EMAIL_TEMPLATES_PATH => ParseVariable("EMAIL_TEMPLATES_PATH");
 
-    public static string VM_DEFAULT_USER => ParseVariable("VM_DEFAULT_USER");
-    public static string VM_ROOT_PASSWORD => ParseVariable("VM_ROOT_PASSWORD");
-
     public static string PROXMOX_ADDR => ParseVariable("PROXMOX_ADDR");
     public static string PROXMOX_TOKEN_ID => ParseVariable("PROXMOX_TOKEN_ID");
     public static string PROXMOX_TOKEN_SECRET => ParseVariable("PROXMOX_TOKEN_SECRET");

@@ -2,6 +2,8 @@ public static class VmCredentials
 {
     public static string GetLoginByTemplate(List<string> tags)
     {
+        string DEFAULT_USER = "user";
+        
         if (!tags.Contains("psw"))
         {
             return "";
@@ -17,7 +19,7 @@ public static class VmCredentials
             return "Administrator";
         }
 
-        return Config.VM_DEFAULT_USER;
+        return DEFAULT_USER;
     }
 
     public static string GetPasswordByTemplate(List<string> tags)
