@@ -12,8 +12,9 @@
         "JWT_SECRET": "some lang secret",
         "SMTP_CONNECTION_STRING": "addr__port__username__password",
         "EMAIL_TEMPLATES_PATH": "src/emails/",
-        "VM_ROOT_PASSWORD": "password",
-        "VM_DEFAULT_USER":"user"
+        "PROXMOX_ADDR": "addr:port",
+        "PROXMOX_TOKEN_ID": "root@pam!tokenname",
+        "PROXMOX_TOKEN_SECRET": "token-secret"
       }
     }
   }
