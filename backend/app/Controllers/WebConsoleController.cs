@@ -1,48 +1,55 @@
-// [ApiController]
-// [Route("web-console")]
-// public class WebConsoleController(
-//     VmBookingRepository vmBookingRepository,
-//     UserSession session,
-//     // VCenterApiService vCenterApiService
-//     ) : Controller
-// {
-//     [HttpGet("{vmUuid}")]
-//     public async Task<IActionResult> ShowWebConsole(string vmUuid)
-//     {
-//         var user = session.GetIfAuthenticated();
-//         var booking = await vmBookingRepository.GetByNameAsync(vmUuid);
+[ApiController]
+[Route("web-console")]
+public class WebConsoleController(
+    VmBookingRepository vmBookingRepository,
+    UserSession session,
+    ProxmoxApiService proxmoxApiService,
+    WebsockifyService websockifyService
+    ) : Controller
+{
+    [HttpGet("{vmUuid}")]
+    public async Task<IActionResult> ShowWebConsole(string vmUuid)
+    {
+        var user = session.GetIfAuthenticated();
+        var booking = await vmBookingRepository.GetByNameAsync(vmUuid);
 
-//         if (booking == null)
-//         {
-//             return NotFound(ResponseMessage.GetBookingNotFound());
-//         }
+        if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
 
-//         if (session.IsStudent() && booking.OwnerId != user.Id)
-//         {
-//             return Unauthorized(ResponseMessage.GetBookingNotFound());
-//         }
+        if (session.IsStudent() && booking.OwnerId != user.Id)
+        {
+            return Unauthorized(ResponseMessage.GetBookingNotFound());
+        }
 
-//         var connectionUri = await vCenterApiService.GetVmConnectionUriAsync(vmUuid);
-//         if (connectionUri == null)
-//         {
-//             return NotFound(ResponseMessage.GetBookingNotFound());
-//         }
+        var vm = await proxmoxApiService.GetVmByNameAsync(vmUuid);
+        if (vm == null) {
+            return NotFound(ResponseMessage.GetErrorMessage("VM not found"));
+        }
 
-//         if (connectionUri.Uri == null || connectionUri.Uri == "")
-//         {
-//             return NotFound(ResponseMessage.GetBookingNotFound());
-//         }
+        // get vnc info
+        var vncInfo = await proxmoxApiService.GetVncInfo(vm);
 
-//         // get host ip from connectionUri
-//         string hostIp = connectionUri.Uri.Split("//")[1].Split(":")[0];
+        // start websockify process
+        int websockifyPort = websockifyService.Start(vncInfo);
 
-//         var pageModel = new {
-//             booking.Name,
-//             connectionUri.Uri,
-//             HostIp = hostIp,
-//             booking.Login,
-//             booking.Password,
-//         };
-//         return View("web-console", pageModel);
-//     }
-// }
+        // await for process to start
+        await Task.Delay(1000);
+
+        var pageModel = new {
+            booking.Name,
+            VmLogin = booking.Login,
+            VmPassword = booking.Password,
+            VncPort = websockifyPort,
+            VncPassword = WebUtility.UrlEncode(vncInfo.Password),
+        };
+
+        return View("web-console", pageModel);
+    }
+
+    [HttpGet("novnc")]
+    public IActionResult ShowNoVNCConsole() {
+        return View("novnc");
+    }
+}

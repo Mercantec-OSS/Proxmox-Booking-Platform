@@ -7,7 +7,7 @@ builder.Services.AddScoped<VmBookingRepository>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<VmBookingExtentionRepository>();
 // builder.Services.AddScoped<ScriptService>();
-// builder.Services.AddScoped<VmBookingScriptService>();
+builder.Services.AddScoped<WebsockifyService>();
 builder.Services.AddScoped<ProxmoxApiService>();
 builder.Services.AddScoped<UserSession>();
 builder.Services.AddScoped<JwtTokenService>();

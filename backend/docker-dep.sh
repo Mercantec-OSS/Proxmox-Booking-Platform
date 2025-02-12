@@ -1,2 +1,2 @@
 apt update
-apt install iputils-ping htop -y
+apt install iputils-ping htop websockify -y
