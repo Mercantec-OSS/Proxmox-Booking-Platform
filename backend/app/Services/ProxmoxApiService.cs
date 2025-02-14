@@ -171,6 +171,11 @@ public class ProxmoxApiService
         return data.Message == "";
     }
 
+    public async Task ResetVmPower(ProxmoxVmDto vm)
+    {
+        await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/status/reset", new StringContent(""));
+    }
+
     // Nodes
     public async Task<List<ProxmoxNodeDto>> GetProxmoxNodes()
     {

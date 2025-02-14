@@ -44,20 +44,20 @@ public class ScriptController(
         return Ok(new VmInfoGetDto());
     }
 
-    // [HttpGet("vm/reset-power/{name}")]
-    // public async Task<ActionResult> ResetVmPower(string name)
-    // {
-    //     session.IsAuthenticated();
+    [HttpGet("vm/reset-power/{name}")]
+    public async Task<ActionResult> ResetVmPower(string name)
+    {
+        session.IsAuthenticated();
 
-    //     VmBooking? booking = await vmBookingRepository.GetByNameAsync(name);
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(name);
+        if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
 
-    //     if (booking == null)
-    //     {
-    //         return NotFound(ResponseMessage.GetBookingNotFound());
-    //     }
-    //     vmBookingScriptService.ResetPower(booking.Name);
-    //     return NoContent();
-    // }
+        _ = vmService.ResetPower(booking.Name);
+        return NoContent();
+    }
 
     // [HttpPut("vm/update-resources")]
     // public async Task<ActionResult> UpdateVmResources(VmUpdateResourcesDto dto)
@@ -357,19 +357,6 @@ public class ScriptController(
     //     vmBookingScriptService.DetachIso(booking.Name);
     //     return NoContent();
     // }
-
-    [HttpDelete("vm/reset-templates")]
-    public ActionResult ResetTemplates()
-    {
-        session.GetIfRoles
-        (
-            Models.User.UserRoles.Admin,
-            Models.User.UserRoles.Teacher
-        );
-
-        // TemplatesBackgroundService.ResetTemplates();
-        return NoContent();
-    }
 
     [HttpGet("vm/vcenter-info")]
     public ActionResult GetVcenterInfo()

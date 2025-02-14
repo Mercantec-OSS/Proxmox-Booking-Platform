@@ -57,6 +57,16 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         await proxmoxApiService.DeleteVm(vm);
     }
 
+    public async Task ResetPower(string vmName) {
+        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
+        if (vm == null)
+        {
+            throw new Exception("Vm not found");
+        }
+
+        await proxmoxApiService.ResetVmPower(vm);
+    }
+
     public async Task<bool> WaitForAgent(string vmName) {
         bool result = false;
         
