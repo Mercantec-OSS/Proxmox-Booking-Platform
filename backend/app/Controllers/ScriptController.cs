@@ -32,16 +32,37 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetUserUnauthorized());
         }
 
-        // VmInfoGetDto? vmInfo = await vCenterApiService.GetInfo(name);
-        // if (vmInfo == null)
-        // {
-        //     return NotFound(ResponseMessage.GetErrorMessage("Error under converting vm info"));
-        // }
+        ProxmoxVmDto? vm = await vmService.GetVmByNameAsync(booking.Name);
+        if (vm == null)
+        {
+            return NotFound(ResponseMessage.GetErrorMessage("Vm not found"));
+        }
 
-        // vmInfo.Username = booking.Login;
-        // vmInfo.Password = booking.Password;
-        
-        return Ok(new VmInfoGetDto());
+        // search internal ip (starts with 10.x.x.x)
+        List<ProxmoxNetworkDeviceDto> devices = await proxmoxApiService.GetVmNetworkDevices(vm);
+        string ip = "";
+        foreach (var device in devices)
+        {
+            foreach (var ipAddr in device.IpAddresses)
+            {
+                if (ipAddr.IsIpv4 && ipAddr.IpAddress.StartsWith("10."))
+                {
+                    ip = ipAddr.IpAddress;
+                    break;
+                }
+            }
+        }
+
+        VmInfoGetDto? vmInfo = new(){
+            Ip = ip,
+            Name = vm.Name,
+            Username = booking.Login,
+            Password = booking.Password,
+            Cpu = vm.MaxCPU,
+            Ram = vm.MaxRamGb
+        };
+
+        return Ok(vmInfo);
     }
 
     [HttpGet("vm/reset-power/{name}")]
@@ -100,147 +121,20 @@ public class ScriptController(
     public async Task<ActionResult> GetTemplates()
     {
         session.IsAuthenticated();
-        // return Ok(TemplateGetDto.MakeGetDtoFromList(TemplatesBackgroundService.GetTemplates()));
         return Ok(await proxmoxApiService.GetTemplates());
     }
 
     [HttpGet("proxmox/test")]
-    public async Task<ActionResult> ProxmoxTest(int Id, string Name, string TemplateName)
+    public async Task<ActionResult> ProxmoxTest(string Name)
     {
-        // await proxmoxApiService.CloneVmByName(Id, Name, TemplateName);
-        return Ok();
-    }
+        var vm = await proxmoxApiService.GetVmByNameAsync(Name);
+        if (vm == null)
+        {
+            return NotFound();
+        }
 
-    [HttpGet("proxmox/book")]
-    public async Task<ActionResult> Book(int vmId, string name, string templateName)
-    {
-        _ = vmService.Book(name, templateName);
-        return Ok();
-    }
-
-    [HttpGet("proxmox/delete")]
-    public async Task<ActionResult> Delete(string name)
-    {
-        // _ = vmService.Book(vmId, name, templateName);
-        _ = vmService.Remove(name);
-        return Ok();
-    }
-
-    [HttpGet("proxmox/add-ha")]
-    public async Task<ActionResult> AddHA(ProxmoxVmDto dto)
-    {
-        await proxmoxApiService.AddToHA((int)dto.VmId);
-        return Ok();
-    }
-
-    // [HttpGet("proxmox/delete-ha")]
-    // public async Task<ActionResult> DeleteHA(int Id)
-    // {
-    //     var vm = await proxmoxApiService.GetVmByIdAsync(Id);
-    //     if (vm == null)
-    //     {
-    //         return NotFound();
-    //     }
-
-    //     var upid = await proxmoxApiService.DeleteFromHA(vm);
-    //     System.Console.WriteLine($"VM stopped upid: {upid}");
-    //     for (int i = 0; i < 600; i++)
-    //     {
-    //         var task = await proxmoxApiService.GetProxmoxTaskByUPID(upid);
-    //         if (task == null)
-    //         {
-    //             System.Console.WriteLine("Task is null");
-    //             break;
-    //         }
-    //         if (task.IsFinished == true && task.Successful == false)
-    //         {
-    //             System.Console.WriteLine("Task is not successful");
-    //             return BadRequest();
-    //         }
-
-    //         if (task.IsFinished == true && task.Successful == true)
-    //         {
-    //             System.Console.WriteLine("Task is successful");
-    //             break;
-    //         }
-
-    //         System.Console.WriteLine($"Waiting for task to finish seconds: {i}");
-    //         await Task.Delay(1000);
-    //     }
-
-    //     upid = await proxmoxApiService.StopVm(vm);
-    //     System.Console.WriteLine($"VM stopped upid: {upid}");
-    //     for (int i = 0; i < 600; i++)
-    //     {
-    //         var task = await proxmoxApiService.GetProxmoxTaskByUPID(upid);
-    //         if (task == null)
-    //         {
-    //             System.Console.WriteLine("Task is null");
-    //             break;
-    //         }
-    //         if (task.IsFinished == true && task.Successful == false)
-    //         {
-    //             System.Console.WriteLine("Task is not successful");
-    //             return BadRequest();
-    //         }
-
-    //         if (task.IsFinished == true && task.Successful == true)
-    //         {
-    //             System.Console.WriteLine("Task is successful");
-    //             break;
-    //         }
-
-    //         System.Console.WriteLine($"Waiting for task to finish seconds: {i}");
-    //         await Task.Delay(1000);
-    //     }
-
-    //     upid = await proxmoxApiService.DeleteVm(vm);
-    //     System.Console.WriteLine($"VM deleted upid: {upid}");
-    //     for (int i = 0; i < 600; i++)
-    //     {
-    //         var task = await proxmoxApiService.GetProxmoxTaskByUPID(upid);
-    //         if (task == null)
-    //         {
-    //             break;
-    //         }
-    //         if (task.IsFinished == true && task.Successful == false)
-    //         {
-    //             return BadRequest();
-    //         }
-
-    //         if (task.IsFinished == true && task.Successful == true)
-    //         {
-    //             break;
-    //         }
-
-    //         System.Console.WriteLine($"Waiting for task to finish seconds: {i}");
-    //         await Task.Delay(1000);
-    //     }
-    //     return Ok();
-    // }
-
-    [HttpGet("proxmox/tasks")]
-    public async Task<ActionResult> GetTasks()
-    {
-        return Ok(await proxmoxApiService.GetProxmoxTasks());
-    }
-
-    [HttpGet("proxmox/task")]
-    public async Task<ActionResult> GetTask(string upid)
-    {
-        return Ok(await proxmoxApiService.GetProxmoxTaskByUPID(upid));
-    }
-
-    [HttpGet("proxmox/vms")]
-    public async Task<ActionResult> GetVms()
-    {
-        // read json from file
-        string json = System.IO.File.ReadAllText("i.json");
-
-        // deserialize json to object
-        var tasks = JsonSerializer.Deserialize<List<ProxmoxTaskDto>>(json);
-
-        return Ok(tasks);
+        var devices = await proxmoxApiService.GetVmNetworkDevices(vm);
+        return Ok(devices);
     }
 
     // [HttpGet("vm/iso-list")]

@@ -20,7 +20,7 @@ public class ProxmoxVmDto
     public string Node { get; set; } = string.Empty;
     
     [JsonPropertyName("maxcpu")]
-    public long MaxCPU { get; set; }
+    public int MaxCPU { get; set; }
     
     [JsonPropertyName("mem")]
     public long Mem { get; set; }
@@ -66,4 +66,7 @@ public class ProxmoxVmDto
 
     [JsonPropertyName("uptime-text")]
     public string UpTimeText => TimeSpan.FromSeconds(UpTime).ToString();
+
+    [JsonPropertyName("max-ram-gb")]
+    public int MaxRamGb =>(int)(MaxMem / 1024 / 1024 / 1024);
 }

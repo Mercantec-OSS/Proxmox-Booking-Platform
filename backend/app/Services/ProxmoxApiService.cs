@@ -176,6 +176,25 @@ public class ProxmoxApiService
         await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/status/reset", new StringContent(""));
     }
 
+    public async Task<List<ProxmoxNetworkDeviceDto>> GetVmNetworkDevices(ProxmoxVmDto vm)
+    {
+        Dictionary<string, Dictionary<string, List<ProxmoxNetworkDeviceDto>>>? data = null;
+        var response = await _client.GetAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/agent/network-get-interfaces");
+
+        try {
+            data = await response.Content.ReadFromJsonAsync<Dictionary<string, Dictionary<string, List<ProxmoxNetworkDeviceDto>>>>();
+        } catch {
+            Console.WriteLine($"Error while reading network devices. {vm.Name}");
+        }
+
+        if (data == null)
+        {
+            return new List<ProxmoxNetworkDeviceDto>();
+        }
+
+        return data["data"]["result"];
+    }
+
     // Nodes
     public async Task<List<ProxmoxNodeDto>> GetProxmoxNodes()
     {

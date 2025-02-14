@@ -45,6 +45,16 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         return template;
     }
 
+    public async Task<ProxmoxVmDto> GetVmByNameAsync(string name) {
+        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(name);
+        if (vm == null)
+        {
+            throw new Exception("VM not found");
+        }
+
+        return vm;
+    }
+
     public async Task Remove(string vmName) {
         ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
         if (vm == null)
