@@ -176,6 +176,11 @@ public class ProxmoxApiService
         await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/status/reset", new StringContent(""));
     }
 
+    public async Task RebootVm(ProxmoxVmDto vm)
+    {
+        await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/status/reboot", new StringContent(""));
+    }
+
     public async Task<List<ProxmoxNetworkDeviceDto>> GetVmNetworkDevices(ProxmoxVmDto vm)
     {
         Dictionary<string, Dictionary<string, List<ProxmoxNetworkDeviceDto>>>? data = null;
@@ -193,6 +198,18 @@ public class ProxmoxApiService
         }
 
         return data["data"]["result"];
+    }
+
+    public async Task UpdateVmConfig(ProxmoxVmDto vm, int cpuCores, int ramMb)
+    {
+        var requestData = new Dictionary<string, object>
+        {
+            { "cores", cpuCores },
+            { "memory", ramMb }
+        };
+
+        var content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json");
+        await _client.PutAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/config", content);
     }
 
     // Nodes

@@ -1,12 +1,10 @@
 ﻿[Route("script")]
 [ApiController]
 public class ScriptController(
-    // VCenterApiService vCenterApiService,
     UserSession session, 
     VmBookingRepository vmBookingRepository,
     ProxmoxApiService proxmoxApiService,
     VmService vmService
-    // VmBookingScriptService vmBookingScriptService
     ) : ControllerBase
 {
     [HttpGet("vm/get-ip/{name}")]
@@ -80,42 +78,42 @@ public class ScriptController(
         return NoContent();
     }
 
-    // [HttpPut("vm/update-resources")]
-    // public async Task<ActionResult> UpdateVmResources(VmUpdateResourcesDto dto)
-    // {
-    //     var user = session.GetIfRoles
-    //     (
-    //         Models.User.UserRoles.Admin,
-    //         Models.User.UserRoles.Teacher
-    //     );
+    [HttpPut("vm/update-resources")]
+    public async Task<ActionResult> UpdateVmResources(VmUpdateResourcesDto dto)
+    {
+        var user = session.GetIfRoles
+        (
+            Models.User.UserRoles.Admin,
+            Models.User.UserRoles.Teacher
+        );
 
-    //     VmBooking? booking = await vmBookingRepository.GetByNameAsync(dto.Uuid);
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(dto.Uuid);
 
-    //     if (booking == null)
-    //     {
-    //         return NotFound(ResponseMessage.GetBookingNotFound());
-    //     }
+        if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
 
-    //     // Deny access to the booking if the user is a teacher and it not assigned to booking
-    //     if (user.IsTeacher() && booking.AssignedId != user.Id)
-    //     {
-    //         return NotFound(ResponseMessage.GetBookingNotFound());
-    //     }
+        // Deny access to the booking if the user is a teacher and it not assigned to booking
+        if (user.IsTeacher() && booking.AssignedId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
 
-    //     // Make limits for resources
-    //     if (dto.Cpu < 1 || dto.Cpu > 6)
-    //     {
-    //         return BadRequest(ResponseMessage.GetErrorMessage("Cpu must be between 1 and 6"));
-    //     }
+        // Make limits for resources
+        if (dto.Cpu < 1 || dto.Cpu > 6)
+        {
+            return BadRequest(ResponseMessage.GetErrorMessage("Cpu must be between 1 and 6"));
+        }
 
-    //     if (dto.Ram < 2 || dto.Ram > 16)
-    //     {
-    //         return BadRequest(ResponseMessage.GetErrorMessage("Ram must be between 2 and 16"));
-    //     }
+        if (dto.Ram < 2 || dto.Ram > 16)
+        {
+            return BadRequest(ResponseMessage.GetErrorMessage("Ram must be between 2 and 16"));
+        }
 
-    //     vmBookingScriptService.Update(booking.Name, dto.Cpu, dto.Ram);
-    //     return NoContent();
-    // }
+        _ = vmService.UpdateVmResources(booking.Name, dto.Cpu, dto.Ram * 1024);
+        return NoContent();
+    }
 
     [HttpGet("vm/templates")]
     public async Task<ActionResult> GetTemplates()

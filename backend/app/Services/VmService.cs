@@ -77,6 +77,27 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         await proxmoxApiService.ResetVmPower(vm);
     }
 
+    public async Task RebootVm(string vmName) {
+        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
+        if (vm == null)
+        {
+            throw new Exception("Vm not found");
+        }
+
+        await proxmoxApiService.RebootVm(vm);
+    }
+
+    public async Task UpdateVmResources(string vmName, int cpu, int ramMb) {
+        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
+        if (vm == null)
+        {
+            throw new Exception("Vm not found");
+        }
+
+        await proxmoxApiService.UpdateVmConfig(vm, cpu, ramMb);
+        await proxmoxApiService.RebootVm(vm);
+    }
+
     public async Task<bool> WaitForAgent(string vmName) {
         bool result = false;
         
