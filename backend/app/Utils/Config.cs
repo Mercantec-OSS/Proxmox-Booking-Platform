@@ -13,6 +13,7 @@ public static class Config
     public static string PROXMOX_ADDR => ParseVariable("PROXMOX_ADDR");
     public static string PROXMOX_TOKEN_ID => ParseVariable("PROXMOX_TOKEN_ID");
     public static string PROXMOX_TOKEN_SECRET => ParseVariable("PROXMOX_TOKEN_SECRET");
+    public static string PROXMOX_ISO_STORAGE => ParseVariable("PROXMOX_ISO_STORAGE");
 
     private static string ParseVariable(string variableName) {
         string variable = Environment.GetEnvironmentVariable(variableName) ?? "";

@@ -14,7 +14,8 @@
         "EMAIL_TEMPLATES_PATH": "src/emails/",
         "PROXMOX_ADDR": "addr:port",
         "PROXMOX_TOKEN_ID": "root@pam!tokenname",
-        "PROXMOX_TOKEN_SECRET": "token-secret"
+        "PROXMOX_TOKEN_SECRET": "token-secret",
+        "PROXMOX_ISO_STORAGE": "Ceph-ISO"
       }
     }
   }

@@ -103,7 +103,7 @@ public class UserController(
         user.Email = userDTO.Email;
         user.UpdatedAt = DateTime.UtcNow;
 
-        Email email = Email.GetUserUpdate(UserInfo, user);
+        EmailDto email = EmailDto.GetUserUpdate(UserInfo, user);
         await emailService.SendAsync(email);
 
         await userRepository.UpdateAsync(user);
@@ -144,7 +144,7 @@ public class UserController(
 
         user.Role = userDTO.Role;
 
-        Email email = Email.GetUserRoleUpdate(user, previousRole.Role);
+        EmailDto email = EmailDto.GetUserRoleUpdate(user, previousRole.Role);
         await emailService.SendAsync(email);
 
         await userRepository.UpdateAsync(user);

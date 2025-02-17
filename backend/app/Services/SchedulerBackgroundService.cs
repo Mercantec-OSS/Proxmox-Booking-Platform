@@ -40,7 +40,7 @@ public class SchedulerBackgroundService(IServiceScopeFactory scopeFactory) : Bac
 
         foreach (var booking in expiredBookings)
         {
-            Email email = Email.GetVmBookingExpired(booking);
+            EmailDto email = EmailDto.GetVmBookingExpired(booking);
             await emailService.SendAsync(email);
 
             await vmRepository.DeleteAsync(booking);

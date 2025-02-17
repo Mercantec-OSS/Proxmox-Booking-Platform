@@ -61,6 +61,49 @@ public class ProxmoxApiService
         List<ProxmoxVmDto> templates = await GetProxmoxTemplates();
         return templates.FirstOrDefault(x => x.Name == name);
     }
+
+    // ISOs
+    public async Task<List<ProxmoxIsoDto>> GetProxmoxIsoList(ProxmoxNodeDto node)
+    {
+        var response = await _client.GetAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{node.Node}/storage/{Config.PROXMOX_ISO_STORAGE}/content");
+        var data = await response.Content.ReadFromJsonAsync<Dictionary<string, List<ProxmoxIsoDto>>>();
+
+        // get data from json response
+        if (data == null)
+        {
+            return new List<ProxmoxIsoDto>();
+        }
+
+        return data["data"].Where(x => x.Content.ToLower() == "iso").ToList();
+    }
+
+    public async Task MountIsoFile(ProxmoxVmDto vm, string filePath, bool waitTask = false)
+    {
+        var requestData = new Dictionary<string, object>
+        {
+            { "cdrom", filePath }
+        };
+
+        var content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json");
+        var response = await _client.PutAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/config", content);
+        string upid = await ReadTaskUPID(response);
+
+        if (waitTask)
+        {
+            await WaitForTaskFinish(upid);
+        }
+    }
+
+    public async Task AttachIso(ProxmoxVmDto vm, ProxmoxIsoDto iso, bool waitTask = false)
+    {
+        await MountIsoFile(vm, iso.VolId, waitTask);
+    }
+
+    public async Task DetachIso(ProxmoxVmDto vm, bool waitTask = false)
+    {
+        await MountIsoFile(vm, "none", waitTask);
+    }
+
     // VMs
     public async Task<List<ProxmoxVmDto>> GetProxmoxVms()
     {

@@ -58,7 +58,7 @@ public class VmBookingController(
 
         await vmBookingRepository.CreateAsync(booking);
 
-        Email email = Email.GetVmBookingCreate(booking);
+        EmailDto email = EmailDto.GetVmBookingCreate(booking);
         await emailService.SendAsync(email);
         
         // if booking is accepted create vm
@@ -69,7 +69,7 @@ public class VmBookingController(
 
         else
         {
-            Email emailAccept = Email.GetVmBookingToAccept(booking);
+            EmailDto emailAccept = EmailDto.GetVmBookingToAccept(booking);
             await emailService.SendAsync(emailAccept);
 
         }
@@ -179,7 +179,7 @@ public class VmBookingController(
         booking.IsAccepted = true;
         await vmBookingRepository.UpdateAsync(booking);
 
-        Email email = Email.GetVmBookingAccepted(booking);
+        EmailDto email = EmailDto.GetVmBookingAccepted(booking);
         await emailService.SendAsync(email);
         _ = vmService.Book(booking.Name, booking.Type, booking.Login, booking.Password);
 
@@ -208,7 +208,7 @@ public class VmBookingController(
 
         await vmBookingRepository.UpdateAsync(booking);
 
-        Email email = Email.GetVmBookingUpdated(booking);
+        EmailDto email = EmailDto.GetVmBookingUpdated(booking);
         await emailService.SendAsync(email);
 
         return NoContent();

@@ -1,5 +1,5 @@
 public class EmailService() {
-    public async Task SendAsync(Email email)
+    public async Task SendAsync(EmailDto email)
     {
         // create message
         MimeMessage message = new MimeMessage();

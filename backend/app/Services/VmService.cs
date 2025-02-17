@@ -87,6 +87,54 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         await proxmoxApiService.RebootVm(vm);
     }
 
+
+    public async Task<List<ProxmoxIsoDto>> GetPromoxIsoList() {
+        List<ProxmoxNodeDto> nodes = await proxmoxApiService.GetProxmoxNodes();
+        if (nodes.Count == 0)
+        {
+            throw new Exception("No nodes found. Can not get iso list");
+        }
+
+        return await proxmoxApiService.GetProxmoxIsoList(nodes.First());
+    }
+
+    public async Task<List<IsoDto>> GetIsoList() {
+        List<ProxmoxIsoDto> proxmoxIsos = await GetPromoxIsoList();
+        return proxmoxIsos.ConvertAll(IsoDto.GetFromProxmoxIso);
+    }
+
+    public async Task<ProxmoxIsoDto> GetProxmoxIsoByName(string name) {
+        List<ProxmoxIsoDto> proxmoxIsoList = await GetPromoxIsoList();
+        ProxmoxIsoDto? iso = proxmoxIsoList.FirstOrDefault(iso => iso.Name == name);
+        if (iso == null)
+        {
+            throw new Exception("Iso not found");
+        }
+        
+        return iso;
+    }
+
+    public async Task AttachIso(string vmName, string isoName) {
+        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
+        if (vm == null)
+        {
+            throw new Exception("Vm not found");
+        }
+
+        ProxmoxIsoDto iso = await GetProxmoxIsoByName(isoName);
+        await proxmoxApiService.AttachIso(vm, iso);
+    }
+
+    public async Task DetachIso(string vmName) {
+        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
+        if (vm == null)
+        {
+            throw new Exception("Vm not found");
+        }
+
+        await proxmoxApiService.DetachIso(vm);
+    }
+
     public async Task UpdateVmResources(string vmName, int cpu, int ramMb) {
         ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
         if (vm == null)

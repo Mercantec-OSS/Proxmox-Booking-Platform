@@ -1,12 +1,12 @@
-﻿namespace Models;
+﻿namespace Dto;
 
-public class Email
+public class EmailDto
 {
     public string Recipient { get; set; } = "";
     public string Subject { get; set; } = "";
     public string Body { get; set; } = "";
 
-    public static Email GetUserCreation(User recipient)
+    public static EmailDto GetUserCreation(User recipient)
     {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "UserCreation.html"));
 
@@ -22,18 +22,18 @@ public class Email
 
         string subject = $"Welcome to VM Ware {recipient.Name} {recipient.Surname}.";
 
-        return new Email(){Recipient=recipient.Email, Subject=subject, Body=htmlContent};
+        return new EmailDto(){Recipient=recipient.Email, Subject=subject, Body=htmlContent};
     }
 
-    public static Email GetUserRoleUpdate(User recipient, string earlierRole)
+    public static EmailDto GetUserRoleUpdate(User recipient, string earlierRole)
     {
         string Subject = $"{recipient.Name} {recipient.Surname} your role has been changed.";
         string Body = $"Your role has changed from {earlierRole} to {recipient.Role}.";
 
-        return new Email(){Recipient=recipient.Email, Subject=Subject, Body=Body};
+        return new EmailDto(){Recipient=recipient.Email, Subject=Subject, Body=Body};
     }
 
-    public static Email GetUserUpdate(User recipient, User modifier)
+    public static EmailDto GetUserUpdate(User recipient, User modifier)
     {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "UpdateUser.html"));
 
@@ -52,10 +52,10 @@ public class Email
 
         string subject = $"{recipient.Name} {recipient.Surname} your account has been changed.";
 
-        return new Email(){Recipient=recipient.Email, Subject=subject, Body=htmlContent};
+        return new EmailDto(){Recipient=recipient.Email, Subject=subject, Body=htmlContent};
     }
 
-    public static Email GetVmBookingCreate(VmBooking booking)
+    public static EmailDto GetVmBookingCreate(VmBooking booking)
     {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "BookingRequestCreate.html"));
 
@@ -76,10 +76,10 @@ public class Email
 
         string subject = "Booking request created";
 
-        return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
+        return new EmailDto(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
-    public static Email GetVmBookingToAccept(VmBooking booking)
+    public static EmailDto GetVmBookingToAccept(VmBooking booking)
     {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "BookingRequestToAccept.html"));
 
@@ -98,10 +98,10 @@ public class Email
 
 
         string subject = $"{booking.Owner.Name} {booking.Owner.Surname} requests a booking";
-        return new Email(){Recipient=booking.Assigned.Email, Subject=subject, Body=htmlContent};
+        return new EmailDto(){Recipient=booking.Assigned.Email, Subject=subject, Body=htmlContent};
     }
 
-    public static Email GetVmBookingAccepted(VmBooking booking)
+    public static EmailDto GetVmBookingAccepted(VmBooking booking)
     {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "BookingRequestAccepted.html"));
 
@@ -122,10 +122,10 @@ public class Email
 
         string subject = "Booking accepted";
 
-        return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
+        return new EmailDto(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
-    public static Email GetVmBookingExpired(VmBooking booking)
+    public static EmailDto GetVmBookingExpired(VmBooking booking)
     {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "BookingRequestExpired.html"));
 
@@ -141,10 +141,10 @@ public class Email
 
         string subject = "Booking expired";
 
-        return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
+        return new EmailDto(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
-    public static Email GetVmBookingUpdated(VmBooking booking)
+    public static EmailDto GetVmBookingUpdated(VmBooking booking)
     {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "BookingRequestUpdated.html"));
 
@@ -163,10 +163,10 @@ public class Email
 
         string subject = "Booking updated";
 
-        return new Email(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
+        return new EmailDto(){Recipient=booking.Owner.Email, Subject=subject, Body=htmlContent};
     }
 
-    public static Email GetInviteLink(string recipientEmail, string inviteKey, string userRole) {
+    public static EmailDto GetInviteLink(string recipientEmail, string inviteKey, string userRole) {
         string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "InviteLink.html"));
 
         htmlContent = ReplaceFromString(htmlContent, new()
@@ -178,7 +178,7 @@ public class Email
 
         string subject = "Invite link";
 
-        return new Email(){Recipient=recipientEmail, Subject=subject, Body=htmlContent};
+        return new EmailDto(){Recipient=recipientEmail, Subject=subject, Body=htmlContent};
     }
 
     private static string ReplaceFromString(string stringToReplaceFrom, Dictionary<string, string> replacements)

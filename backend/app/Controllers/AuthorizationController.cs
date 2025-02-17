@@ -84,7 +84,7 @@ public class AuthorizationController(
             inviteKey = InviteKeysService.GetAdminInviteKey();
         }
 
-        Email email = Email.GetInviteLink(dto.Email, inviteKey, role.ToString());
+        EmailDto email = EmailDto.GetInviteLink(dto.Email, inviteKey, role.ToString());
         await emailService.SendAsync(email);
 
         return Ok($"Invitation sent to {dto.Email}");
@@ -138,7 +138,7 @@ public class AuthorizationController(
 
         await userRepository.CreateAsync(newUser);
 
-        Email email = Email.GetUserCreation(newUser);
+        EmailDto email = EmailDto.GetUserCreation(newUser);
         await emailService.SendAsync(email);
 
         return newUser.MakeGetDto();
