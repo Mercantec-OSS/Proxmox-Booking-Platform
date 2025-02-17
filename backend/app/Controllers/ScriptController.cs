@@ -194,43 +194,43 @@ public class ScriptController(
         return NoContent();
     }
 
-    // [HttpPost("vm/attach-storage")]
-    // public async Task<ActionResult> AttachStorage([FromBody] StorageAttachDto dto)
-    // {
-    //     User user = session.GetIfRoles
-    //     (
-    //         Models.User.UserRoles.Admin,
-    //         Models.User.UserRoles.Teacher,
-    //         Models.User.UserRoles.Student
-    //     );
+    [HttpPost("vm/attach-storage")]
+    public async Task<ActionResult> AttachStorage([FromBody] StorageAttachDto dto)
+    {
+        User user = session.GetIfRoles
+        (
+            Models.User.UserRoles.Admin,
+            Models.User.UserRoles.Teacher,
+            Models.User.UserRoles.Student
+        );
 
-    //     VmBooking? booking = await vmBookingRepository.GetByNameAsync(dto.VmName);
-    //     if (booking == null)
-    //     {
-    //         return NotFound(ResponseMessage.GetBookingNotFound());
-    //     }
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(dto.VmName);
+        if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
 
-    //     // Deny access to the booking if the user is a student and the booking is not his
-    //     if (user.IsStudent() && booking.OwnerId != user.Id)
-    //     {
-    //         return NotFound(ResponseMessage.GetUserUnauthorized());
-    //     }
+        // Deny access to the booking if the user is a student and the booking is not his
+        if (user.IsStudent() && booking.OwnerId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetUserUnauthorized());
+        }
 
-    //     // Deny access to the booking if the user is a teacher and the booking not assigned to him
-    //     if (user.IsTeacher() && booking.AssignedId != user.Id)
-    //     {
-    //         return NotFound(ResponseMessage.GetUserUnauthorized());
-    //     }
+        // Deny access to the booking if the user is a teacher and the booking not assigned to him
+        if (user.IsTeacher() && booking.AssignedId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetUserUnauthorized());
+        }
 
-    //     // Deny access to the booking if amount of storage more than 500
-    //     if (dto.AmountGb > 500)
-    //     {
-    //         return BadRequest(ResponseMessage.GetErrorMessage("Amount of storage more than 500"));
-    //     }
+        // Deny access to the booking if amount of storage more than 500
+        if (dto.AmountGb > 500)
+        {
+            return BadRequest(ResponseMessage.GetErrorMessage("Amount of storage more than 500"));
+        }
 
-    //     vmBookingScriptService.AttachStorage(booking.Name, dto.AmountGb);
-    //     return NoContent();
-    // }
+        await vmService.AddStorage(booking.Name, dto.AmountGb);
+        return NoContent();
+    }
 
     // DEPRECATED
     // NEED TO BE REMOVED

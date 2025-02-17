@@ -123,6 +123,18 @@ public class ProxmoxApiService
         return vms.FirstOrDefault(x => x.VmId == id);
     }
 
+    public async Task<ProxmoxVmConfigDto> GetVmConfig(ProxmoxVmDto vm)
+    {
+        var response = await _client.GetAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/config");
+        var data = await response.Content.ReadFromJsonAsync<Dictionary<string, ProxmoxVmConfigDto>>();
+        if (data == null)
+        {
+            return new ();
+        }
+
+        return data["data"];
+    }
+
     public async Task<bool> CloneVm(int vmId, string vmName, ProxmoxVmDto template, ProxmoxNodeDto node, bool waitTask = false)
     {
         var data = new
@@ -266,6 +278,17 @@ public class ProxmoxApiService
 
         var content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json");
         await _client.PutAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/config", content);
+    }
+
+    public async Task AddStorage(ProxmoxVmDto vm, int sizeGb)
+    {
+        var requestData = new Dictionary<string, object>
+        {
+            { "scsi1", $"CephFS-Disks:{sizeGb},cache=writeback,discard=on" },
+        };
+
+        var content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json");
+        await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/config", content);
     }
 
     // Nodes
