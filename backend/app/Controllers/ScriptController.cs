@@ -126,7 +126,7 @@ public class ScriptController(
     public async Task<ActionResult> GetIsoList()
     {
         session.IsAuthenticated();
-        List<IsoDto> isoList = await vmService.GetIsoList();
+        List<string> isoList = await vmService.GetIsoList();
         return Ok(isoList);
     }
 
