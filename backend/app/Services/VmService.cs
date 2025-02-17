@@ -163,6 +163,25 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         await proxmoxApiService.StartVm(vm);
     }
 
+    public async Task<ClusterInfoDto> GetClusterInfo() {
+        ClusterInfoDto clusterInfo = new ClusterInfoDto();
+
+        List<ProxmoxNodeDto> nodes = await proxmoxApiService.GetProxmoxNodes();
+        List<ProxmoxVmDto> vms = await proxmoxApiService.GetProxmoxVms();
+        List<ProxmoxVmDto> templates = await proxmoxApiService.GetProxmoxTemplates();
+
+        clusterInfo.TotalHosts = nodes.Count;
+        clusterInfo.ActiveHosts = nodes.Count(node => node.ReadyForBookings);
+        clusterInfo.CpuTotal = $"{nodes.Sum(node => node.MaxCpu)} cores";
+        clusterInfo.CpuUsage = $"{Math.Round(nodes.Average(node => node.Cpu) * 100, 1)} %";
+        clusterInfo.RamTotal = $"{nodes.Sum(node => node.MaxMem) / 1024 / 1024 / 1024} GB";
+        clusterInfo.RamUsage = $"{nodes.Sum(node => node.Mem / 1024 / 1024 / 1024)} GB";
+        clusterInfo.AmountVMs = vms.Count;
+        clusterInfo.AmountTemplates = templates.Count;
+
+        return clusterInfo;
+    }
+
     public async Task<bool> WaitForAgent(string vmName) {
         bool result = false;
         

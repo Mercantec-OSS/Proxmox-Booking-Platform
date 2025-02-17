@@ -232,11 +232,17 @@ public class ScriptController(
         return NoContent();
     }
 
+    [HttpGet("cluster-info")]
+    public ActionResult GetClusterInfo()
+    {
+        return Ok(ClusterInfoBackgroundService.GetInfo());
+    }
+
     // DEPRECATED
     // NEED TO BE REMOVED
     [HttpGet("vm/vcenter-info")]
     public ActionResult GetVcenterInfo()
     {
-        return Ok(new VCenterInfoDTO());
+        return Ok(ClusterInfoBackgroundService.GetInfo());
     }
 }

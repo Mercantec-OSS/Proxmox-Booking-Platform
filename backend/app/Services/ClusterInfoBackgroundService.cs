@@ -1,8 +1,8 @@
 public class ClusterInfoBackgroundService(IServiceScopeFactory scopeFactory) : BackgroundService
 {
-    private static VCenterInfoDTO _data = new VCenterInfoDTO();
+    private static ClusterInfoDto _data = new ClusterInfoDto();
 
-    public static VCenterInfoDTO GetInfo()
+    public static ClusterInfoDto GetInfo()
     {
         return _data;
     }
@@ -19,7 +19,7 @@ public class ClusterInfoBackgroundService(IServiceScopeFactory scopeFactory) : B
 
             try
             {
-                
+                _data = await vmService.GetClusterInfo();
             }
             catch (Exception ex)
             {
