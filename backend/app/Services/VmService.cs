@@ -95,7 +95,8 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         }
 
         await proxmoxApiService.UpdateVmConfig(vm, cpu, ramMb);
-        await proxmoxApiService.RebootVm(vm);
+        await proxmoxApiService.StopVm(vm, true);
+        await proxmoxApiService.StartVm(vm);
     }
 
     public async Task<bool> WaitForAgent(string vmName) {

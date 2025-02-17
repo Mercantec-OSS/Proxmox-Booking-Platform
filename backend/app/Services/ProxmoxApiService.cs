@@ -115,6 +115,19 @@ public class ProxmoxApiService
         return true;
     }
 
+    public async Task<bool> StartVm(ProxmoxVmDto vm, bool waitTask = false)
+    {
+        var response = await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/status/start", new StringContent(""));
+        string upid = await ReadTaskUPID(response);
+
+        if (waitTask)
+        {
+            return await WaitForTaskFinish(upid);
+        }
+
+        return true;
+    }
+
     public async Task<bool> DeleteVm(ProxmoxVmDto vm, bool waitTask = false)
     {
         var response = await _client.DeleteAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}?destroy-unreferenced-disks=1&purge=1");
