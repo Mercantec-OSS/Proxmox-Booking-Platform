@@ -1,7 +1,7 @@
 <script>
   import { vmService } from '$lib/services/vm-service';
   import { selectedBookingStore } from '$lib/utils/store';
-  import VMActionsDropdown from '$lib/components/authed/bookings/vm/vm-actions-dropdown.svelte';
+  import VMActionsDropdown from '$lib/components/authed/bookings/vm-actions-dropdown.svelte';
   import { toast } from 'svelte-sonner';
   import { goto } from '$app/navigation';
   import { afterNavigate } from '$app/navigation';
