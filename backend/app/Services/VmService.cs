@@ -98,9 +98,9 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         return await proxmoxApiService.GetProxmoxIsoList(nodes.First());
     }
 
-    public async Task<List<IsoDto>> GetIsoList() {
+    public async Task<List<string>> GetIsoList() {
         List<ProxmoxIsoDto> proxmoxIsos = await GetPromoxIsoList();
-        return proxmoxIsos.ConvertAll(IsoDto.GetFromProxmoxIso);
+        return proxmoxIsos.Select(iso => iso.Name).ToList();
     }
 
     public async Task<ProxmoxIsoDto> GetProxmoxIsoByName(string name) {
@@ -159,7 +159,9 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         }
 
         await proxmoxApiService.UpdateVmConfig(vm, cpu, ramMb);
+        
         await proxmoxApiService.StopVm(vm, true);
+        Thread.Sleep(5000);
         await proxmoxApiService.StartVm(vm);
     }
 
