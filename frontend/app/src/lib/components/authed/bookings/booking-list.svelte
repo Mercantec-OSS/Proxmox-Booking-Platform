@@ -196,20 +196,6 @@
             <!-- Create booking -->
             <Button class="w-39 mr-4" href="/create"><CirclePlus class="h-4 w-4 mr-1" /> Create Booking</Button>
 
-            <!-- Teacher actions -->
-            {#if userAuthed}
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Button variant="outline" class="w-39 mr-4 text-primary hover:text-primary/90 border border-primary hover:border-primary/90"
-                    ><ShieldEllipsis class="h-4 w-4 mr-1" />Teacher actions</Button
-                  >
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  <DropdownMenu.Item onmousedown={vmService.resetVMTemplates}><ListRestart class="h-4 w-4 mr-1" />Reset templates</DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            {/if}
-
             <!-- Filter columns -->
             <DropdownMenu.Root>
               <DropdownMenu.Trigger>

@@ -20,7 +20,7 @@
 
 <Card.Root>
   <Card.Header>
-    <h2 class="text-lg font-semibold md:text-xl">vCenter cluster info</h2>
+    <h2 class="text-lg font-semibold md:text-xl">Cluster info</h2>
   </Card.Header>
   <Card.Content>
     <Table.Root>

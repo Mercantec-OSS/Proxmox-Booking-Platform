@@ -11,7 +11,7 @@ export async function load({ cookies }) {
         console.error(error);
         return [];
       }),
-      vmService.getVcenterInfoBackend(token).catch((error) => {
+      vmService.getClusterInfoBackend(token).catch((error) => {
         console.error(error);
         return null;
       })

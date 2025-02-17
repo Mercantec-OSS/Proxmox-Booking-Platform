@@ -237,12 +237,4 @@ public class ScriptController(
     {
         return Ok(ClusterInfoBackgroundService.GetInfo());
     }
-
-    // DEPRECATED
-    // NEED TO BE REMOVED
-    [HttpGet("vm/vcenter-info")]
-    public ActionResult GetVcenterInfo()
-    {
-        return Ok(ClusterInfoBackgroundService.GetInfo());
-    }
 }

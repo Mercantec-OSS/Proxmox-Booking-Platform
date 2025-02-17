@@ -171,9 +171,9 @@ export const vmService = {
     await clientApi.get(`script/vm/reset-power/${name}`).json();
   },
 
-  async getVcenterInfo() {
+  async getClusterInfo() {
     return await clientApi
-      .get('script/vm/vcenter-info', {
+      .get('script/cluster-info', {
         retry: {
           limit: 3
         },
@@ -182,9 +182,9 @@ export const vmService = {
       .json();
   },
 
-  async getVcenterInfoBackend(cookie) {
+  async getClusterInfoBackend(cookie) {
     return await backendApi
-      .get('script/vm/vcenter-info', {
+      .get('script/cluster-info', {
         headers: {
           Cookie: `token=${cookie}`
         }
