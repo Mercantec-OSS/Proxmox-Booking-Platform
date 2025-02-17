@@ -232,10 +232,11 @@ public class ScriptController(
     //     return NoContent();
     // }
 
+    // DEPRECATED
+    // NEED TO BE REMOVED
     [HttpGet("vm/vcenter-info")]
     public ActionResult GetVcenterInfo()
     {
-        // return Ok(VCenterInfoBackgroundService.GetInfo());
         return Ok(new VCenterInfoDTO());
     }
 }

@@ -6,7 +6,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<VmBookingRepository>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<VmBookingExtentionRepository>();
-// builder.Services.AddScoped<ScriptService>();
 builder.Services.AddScoped<WebsockifyService>();
 builder.Services.AddScoped<ProxmoxApiService>();
 builder.Services.AddScoped<UserSession>();
@@ -16,8 +15,7 @@ builder.Services.AddScoped<VmService>();
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddHostedService<SchedulerBackgroundService>();
 builder.Services.AddHostedService<InviteKeysService>();
-// builder.Services.AddHostedService<VCenterInfoBackgroundService>();
-// builder.Services.AddHostedService<IsoBackgroundService>();
+builder.Services.AddHostedService<ClusterInfoBackgroundService>();
 builder.Services.AddHttpContextAccessor();
 
 // CORS
