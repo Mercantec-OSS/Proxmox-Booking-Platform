@@ -167,15 +167,16 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         ClusterInfoDto clusterInfo = new ClusterInfoDto();
 
         List<ProxmoxNodeDto> nodes = await proxmoxApiService.GetProxmoxNodes();
+        List<ProxmoxNodeDto> readyNodes = nodes.Where(node => node.ReadyForBookings).ToList();
         List<ProxmoxVmDto> vms = await proxmoxApiService.GetProxmoxVms();
         List<ProxmoxVmDto> templates = await proxmoxApiService.GetProxmoxTemplates();
 
         clusterInfo.TotalHosts = nodes.Count;
-        clusterInfo.ActiveHosts = nodes.Count(node => node.ReadyForBookings);
-        clusterInfo.CpuTotal = $"{nodes.Sum(node => node.MaxCpu)} cores";
-        clusterInfo.CpuUsage = $"{Math.Round(nodes.Average(node => node.Cpu) * 100, 1)} %";
-        clusterInfo.RamTotal = $"{nodes.Sum(node => node.MaxMem) / 1024 / 1024 / 1024} GB";
-        clusterInfo.RamUsage = $"{nodes.Sum(node => node.Mem / 1024 / 1024 / 1024)} GB";
+        clusterInfo.ActiveHosts = readyNodes.Count(node => node.ReadyForBookings);
+        clusterInfo.CpuTotal = $"{readyNodes.Sum(node => node.MaxCpu)} cores";
+        clusterInfo.CpuUsage = $"{Math.Round(readyNodes.Average(node => node.Cpu) * 100, 1)} %";
+        clusterInfo.RamTotal = $"{readyNodes.Sum(node => node.MaxMem) / 1024 / 1024 / 1024} GB";
+        clusterInfo.RamUsage = $"{readyNodes.Sum(node => node.Mem / 1024 / 1024 / 1024)} GB";
         clusterInfo.AmountVMs = vms.Count;
         clusterInfo.AmountTemplates = templates.Count;
 
