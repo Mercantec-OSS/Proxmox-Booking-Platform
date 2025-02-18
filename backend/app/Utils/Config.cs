@@ -1,6 +1,5 @@
 public static class Config
 {
-    public static string VERSION => ParseVariable("VERSION");
     public static string DB_CONNECTION_STRING => ParseVariable("DB_CONNECTION_STRING");
     public static string JWT_SECRET => ParseVariable("JWT_SECRET");
 
