@@ -197,7 +197,11 @@ export const vmService = {
   },
 
   async attachStorage(storageOption) {
-    return await clientApi.post('script/vm/attach-storage', { json: storageOption }).json();
+    const jsonData = {
+      vmName: storageOption.vmName,
+      amountGb: Number(storageOption.selectedStorage)
+    }
+    return await clientApi.post('script/vm/attach-storage', { json: jsonData }).json();
   },
 
   async getIsoListBackend(cookie) {
