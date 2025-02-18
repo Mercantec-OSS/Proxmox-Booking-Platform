@@ -33,7 +33,7 @@
 
         document.querySelector('a[target]').addEventListener('click', refreshPage);
     </script>
-    <iframe src="./novnc?host=0.0.0.0&password=@Model.VncPassword&autoconnect=1&show_dot=true&path=websockify/@Model.VncPort"></iframe>
+    <iframe src="./novnc?password=@Model.VncPassword&autoconnect=1&show_dot=true&path=/websockify/@Model.VncPort"></iframe>
 </body>
 
 </html>
