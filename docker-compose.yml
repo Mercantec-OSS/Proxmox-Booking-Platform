@@ -1,6 +1,6 @@
 services:
   nginx:
-    require:
+    depends_on:
       - backend
       - frontend
     container_name: nginx-dev
@@ -17,8 +17,8 @@ services:
     container_name: backend-dev
     restart: unless-stopped
     build: ./backend
-    ports:
-      - "6002:5000" # Optional for debugging
+    # ports:
+    #   - "6002:5000" # Optional for debugging
     environment:
       - AUTO_MIGRATIONS=true
       - USE_SWAGGER=true
