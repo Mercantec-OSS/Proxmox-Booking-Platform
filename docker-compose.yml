@@ -20,28 +20,20 @@ services:
     ports:
       - "6002:5000" # Optional for debugging
     environment:
-      - VERSION=${VERSION}
+      - AUTO_MIGRATIONS=true
+      - USE_SWAGGER=true
+      - ALLOW_CORS=true
       - JWT_SECRET=${JWT_SECRET}
       - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
       - SMTP_CONNECTION_STRING=${SMTP_ADDRESS}__${SMTP_PORT}__${SMTP_USER}__${SMTP_PASSWORD}
       - EMAIL_TEMPLATES_PATH=/app/src/emails/
-      - VM_ROOT_PASSWORD=${VM_ROOT_PASSWORD}
-      - VM_DEFAULT_USER=${VM_DEFAULT_USER}
-      - SCRIPTS_PATH=/scripts
-      - VM_DATACENTER=${VM_DATACENTER}
-      - VM_VCENTER_IP=${VM_VCENTER_IP}
-      - VM_VCENTER_USER=${VM_VCENTER_USER}
-      - VM_VCENTER_PASSWORD=${VM_VCENTER_PASSWORD}
-      - VM_CLUSTER_NAME=${VM_VCENTER_CLUSTER}
-      - VM_DATASTORE_NAME=${VM_VCENTER_DATASTORE}
-      - VM_ISO_LIBRARY_NAME=${VM_ISO_LIBRARY_NAME}
-      - AUTO_MIGRATIONS=true
-      - USE_SWAGGER=true
-      - ALLOW_CORS=true
+      - PROXMOX_ADDR=${PROXMOX_ADDR}
+      - PROXMOX_TOKEN_ID=${PROXMOX_TOKEN_ID}
+      - PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
+      - PROXMOX_ISO_STORAGE=${PROXMOX_ISO_STORAGE}
     volumes:
       - ./backend/app:/app
       - ./backend/build:/build
-      - ./backend/scripts:/scripts
 
   frontend:
     container_name: frontend-dev
