@@ -3,28 +3,26 @@ services:
     depends_on:
       - backend
       - frontend
-    container_name: nginx-dev
+    container_name: booking-nginx
     restart: unless-stopped
     image: nginx
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx:/etc/nginx/templates
-      - ./ssl:/ssl
 
   backend:
-    container_name: backend-dev
+    container_name: booking-backend
     restart: unless-stopped
     build: ./backend
     # ports:
     #   - "6002:5000" # Optional for debugging
     environment:
       - AUTO_MIGRATIONS=true
-      - USE_SWAGGER=true
+      - USE_SWAGGER=false
       - ALLOW_CORS=true
       - JWT_SECRET=${JWT_SECRET}
-      - DB_CONNECTION_STRING=server=${DB_ADDRESS};database=${DB_NAME};port=${DB_PORT};user=${DB_USER};password=${DB_PASSWORD};
+      - DB_CONNECTION_STRING=server=db;database=${DB_NAME};port=3306;user=root;password=${DB_PASSWORD};
       - SMTP_CONNECTION_STRING=${SMTP_ADDRESS}__${SMTP_PORT}__${SMTP_USER}__${SMTP_PASSWORD}
       - EMAIL_TEMPLATES_PATH=/app/src/emails/
       - PROXMOX_ADDR=${PROXMOX_ADDR}
@@ -33,7 +31,8 @@ services:
       - PROXMOX_ISO_STORAGE=${PROXMOX_ISO_STORAGE}
 
   frontend:
-    container_name: frontend-dev
+    container_name: booking-frontend
+    restart: unless-stopped
     build: ./frontend
     # ports:
     #   - 6003:6003 # Optional for debugging
@@ -45,27 +44,35 @@ services:
 
   db:
     image: mysql
-    container_name: db-dev
-    restart: always
-    ports:
-      - ${DB_PORT}:3306
+    container_name: booking-db
+    restart: unless-stopped
+
+    # ports:
+    #   - 3306:3306 # Optional for debugging
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - ./db/storage:/var/lib/mysql
 
+  adminer:
+    image: adminer
+    container_name: booking-adminer
+    restart: unless-stopped
+    ports:
+      - 7000:8080
+
   db-backup:
     build: ./backup
-    container_name: backup-dev
+    container_name: booking-backup
     restart: unless-stopped
     volumes:
       - ./backup/backup-files:/backup
       - ./backup/restore-backup:/restore
       - ./backup/backup_script.sh:/etc/periodic/daily/backup_script.sh
     environment:
-      - HOST=${DB_ADDRESS}
+      - HOST=db
       - DATABASE=${DB_NAME}
-      - PORT=${DB_PORT}
-      - USER=${DB_USER}
+      - PORT=3306
+      - USER=root
       - PASSWORD=${DB_PASSWORD}
