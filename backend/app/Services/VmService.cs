@@ -35,6 +35,11 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         }
     }
 
+    public async Task<List<TemplateGetDto>> GetTemplates() {
+        List<ProxmoxVmDto> proxmoxTemplates = await proxmoxApiService.GetProxmoxTemplates();
+        return proxmoxTemplates.ConvertAll(x => TemplateGetDto.MakeGetDTO(x.Name));
+    }
+
     public async Task<ProxmoxVmDto> GetTemplateByNameAsync(string name) {
         ProxmoxVmDto? template = await proxmoxApiService.GetTemplateByNameAsync(name);
         if (template == null)
@@ -119,7 +124,6 @@ public class VmService(ProxmoxApiService proxmoxApiService)
 
         await proxmoxApiService.RebootVm(vm);
     }
-
 
     public async Task<List<ProxmoxIsoDto>> GetPromoxIsoList() {
         List<ProxmoxNodeDto> nodes = await proxmoxApiService.GetProxmoxNodes();
@@ -216,11 +220,6 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         clusterInfo.AmountTemplates = templates.Count;
 
         return clusterInfo;
-    }
-
-    public async Task<List<TemplateGetDto>> GetTemplates() {
-        List<ProxmoxVmDto> proxmoxTemplates = await proxmoxApiService.GetProxmoxTemplates();
-        return proxmoxTemplates.ConvertAll(x => TemplateGetDto.MakeGetDTO(x.Name));
     }
 
     public async Task<bool> WaitForAgent(string vmName) {
