@@ -44,12 +44,6 @@ public class ProxmoxApiService
     }
 
     // templates
-    public async Task<List<TemplateGetDto>> GetTemplates()
-    {
-        List<ProxmoxVmDto> proxmoxTemplates = await GetProxmoxTemplates();
-        return proxmoxTemplates.ConvertAll(x => TemplateGetDto.MakeGetDTO(x.Name));
-    }
-
     public async Task<List<ProxmoxVmDto>> GetProxmoxTemplates()
     {
         List<ProxmoxVmDto> vmsAndTemplates = await GetProxmoxResources<ProxmoxVmDto>("vm");

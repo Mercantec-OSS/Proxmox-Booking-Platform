@@ -3,7 +3,6 @@
 public class ScriptController(
     UserSession session, 
     VmBookingRepository vmBookingRepository,
-    ProxmoxApiService proxmoxApiService,
     VmService vmService
     ) : ControllerBase
 {
@@ -30,36 +29,7 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetUserUnauthorized());
         }
 
-        ProxmoxVmDto? vm = await vmService.GetVmByNameAsync(booking.Name);
-        if (vm == null)
-        {
-            return NotFound(ResponseMessage.GetErrorMessage("Vm not found"));
-        }
-
-        // search internal ip (starts with 10.x.x.x)
-        List<ProxmoxNetworkDeviceDto> devices = await proxmoxApiService.GetVmNetworkDevices(vm);
-        string ip = "";
-        foreach (var device in devices)
-        {
-            foreach (var ipAddr in device.IpAddresses)
-            {
-                if (ipAddr.IsIpv4 && ipAddr.IpAddress.StartsWith("10."))
-                {
-                    ip = ipAddr.IpAddress;
-                    break;
-                }
-            }
-        }
-
-        VmInfoGetDto? vmInfo = new(){
-            Ip = ip,
-            Name = vm.Name,
-            Username = booking.Login,
-            Password = booking.Password,
-            Cpu = vm.MaxCPU,
-            Ram = vm.MaxRamGb
-        };
-
+        VmInfoGetDto vmInfo = await vmService.GetVmInfo(booking);
         return Ok(vmInfo);
     }
 
@@ -119,7 +89,7 @@ public class ScriptController(
     public async Task<ActionResult> GetTemplates()
     {
         session.IsAuthenticated();
-        return Ok(await proxmoxApiService.GetTemplates());
+        return Ok(await vmService.GetTemplates());
     }
 
     [HttpGet("vm/iso-list")]

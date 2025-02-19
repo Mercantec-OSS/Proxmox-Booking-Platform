@@ -55,6 +55,39 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         return vm;
     }
 
+    public async Task<VmInfoGetDto> GetVmInfo(VmBooking booking) {
+        ProxmoxVmDto? vm = await GetVmByNameAsync(booking.Name);
+        if (vm == null)
+        {
+            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
+        }
+
+        // search internal ip (starts with 10.x.x.x)
+        List<ProxmoxNetworkDeviceDto> devices = await proxmoxApiService.GetVmNetworkDevices(vm);
+        string ip = "";
+        foreach (var device in devices)
+        {
+            foreach (var ipAddr in device.IpAddresses)
+            {
+                if (ipAddr.IsIpv4 && ipAddr.IpAddress.StartsWith("10."))
+                {
+                    ip = ipAddr.IpAddress;
+                    break;
+                }
+            }
+        }
+
+        return new(){
+            Ip = ip,
+            Name = vm.Name,
+            Username = booking.Login,
+            Password = booking.Password,
+            Cpu = vm.MaxCPU,
+            Ram = vm.MaxRamGb
+        };
+
+    }
+
     public async Task Remove(string vmName) {
         ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
         if (vm == null)
@@ -183,6 +216,11 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         clusterInfo.AmountTemplates = templates.Count;
 
         return clusterInfo;
+    }
+
+    public async Task<List<TemplateGetDto>> GetTemplates() {
+        List<ProxmoxVmDto> proxmoxTemplates = await proxmoxApiService.GetProxmoxTemplates();
+        return proxmoxTemplates.ConvertAll(x => TemplateGetDto.MakeGetDTO(x.Name));
     }
 
     public async Task<bool> WaitForAgent(string vmName) {
