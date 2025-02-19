@@ -1,2 +1,2 @@
 apt update
-apt install iputils-ping htop websockify -y
+apt install iputils-ping htop websockify nano tmux -y
