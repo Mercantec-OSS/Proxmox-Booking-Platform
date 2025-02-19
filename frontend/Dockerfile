@@ -1,11 +1,11 @@
 # maintainer info
-FROM node:23
+FROM node:23 AS dependencies
 LABEL maintainer="carrergt@gmail.com"
 
-COPY app start.sh /
+COPY ./app /app
 
 WORKDIR /app
-RUN npm i
+RUN npm i && npm run build
 
 # start command
-CMD ["sh","/start.sh"]
+CMD ["node","/app/build/index.js"]

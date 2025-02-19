@@ -31,9 +31,6 @@ services:
       - PROXMOX_TOKEN_ID=${PROXMOX_TOKEN_ID}
       - PROXMOX_TOKEN_SECRET=${PROXMOX_TOKEN_SECRET}
       - PROXMOX_ISO_STORAGE=${PROXMOX_ISO_STORAGE}
-    volumes:
-      - ./backend/app:/app
-      - ./backend/build:/build
 
   frontend:
     container_name: frontend-dev
@@ -45,9 +42,6 @@ services:
       - PUBLIC_VERSION=8.2.0
       - PUBLIC_CLIENT_API=/api
       - PUBLIC_BACKEND_API=http://backend:5000
-    volumes:
-      - ./frontend/app:/app
-      - ./frontend/build:/build
 
   db:
     image: mysql
