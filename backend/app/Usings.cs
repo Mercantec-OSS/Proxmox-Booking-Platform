@@ -19,4 +19,5 @@ global using System;
 global using System.Diagnostics;
 global using System.Net.Http.Headers;
 global using System.Net.NetworkInformation;
+global using System.Text.RegularExpressions;
 

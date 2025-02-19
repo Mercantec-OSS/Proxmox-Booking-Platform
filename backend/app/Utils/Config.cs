@@ -1,6 +1,7 @@
 public static class Config
 {
     public static string DB_CONNECTION_STRING => ParseVariable("DB_CONNECTION_STRING");
+    public static string DB_CONNECTION_STRING_WITH_IP => GetDbConnectionStrignWithIp();
     public static string JWT_SECRET => ParseVariable("JWT_SECRET");
 
     public static string SMTP_ADDRESS => ParseSMTPConnectionString()[0];
@@ -33,5 +34,71 @@ public static class Config
         }
 
         return stringArgs;
+    }
+
+    // Special case for the connection string (Replace domain with ip for property work with the ServerVersion.Parse(connString))
+
+    private static string GetAddressFromConnectionString(string connectionString)
+    {
+        var args = connectionString.Split(";");
+        string address = "";
+        foreach (var arg in args)
+        {
+            if (arg.ToLower().Contains("server"))
+            {
+                address = arg.Split("=").Last();
+            }
+        }
+
+        // db address is not found
+        if (string.IsNullOrEmpty(address))
+        {
+            throw new Exception("Server address not found in connection string");
+        }
+
+        return address;
+    }
+    private static bool IsIpv4(string address)
+    {
+        // check for 4 number grups 0.0.0.0 - 999.999.999.999
+        string pattern = @"^(\d{1,3}\.){3}\d{1,3}$";
+        Regex regex = new Regex(pattern);
+        return regex.IsMatch(address);
+    }
+
+    private static string GetIpByDomain(string domainAddress)
+    {
+        // get ip by domain
+        string ipAddress = "";
+        IPAddress[] addresses = Dns.GetHostAddresses(domainAddress);
+        foreach (IPAddress address in addresses)
+        {
+            string addressString = address.ToString();
+            // check for ipv4 address
+            if (IsIpv4(addressString)){
+                ipAddress = addressString;
+                break;
+            }
+        }
+
+        // ip is not found
+        if (string.IsNullOrEmpty(ipAddress))
+        {
+            throw new Exception("Ip address not found for the server address");
+        }
+
+        return ipAddress;
+    }
+
+    private static string GetDbConnectionStrignWithIp()
+    {
+        // get db address
+        string domainAddress = GetAddressFromConnectionString(DB_CONNECTION_STRING);
+        if (IsIpv4(domainAddress))
+        {
+            return DB_CONNECTION_STRING;
+        }
+
+        return DB_CONNECTION_STRING.Replace(domainAddress, GetIpByDomain(domainAddress));
     }
 }

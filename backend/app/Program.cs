@@ -40,7 +40,7 @@ builder.Services.AddDbContext<Context>(options =>
 
     if (string.IsNullOrEmpty(connString))
     {
-        connString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+        connString = Config.DB_CONNECTION_STRING_WITH_IP;
     }
 
     if (string.IsNullOrEmpty(connString))
