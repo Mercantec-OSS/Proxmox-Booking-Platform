@@ -5,7 +5,7 @@ public class WebsockifyService {
         var startInfo = new ProcessStartInfo
         {
             FileName = "timeout",
-            Arguments = $"3600 websockify 0.0.0.0:{websockifyPort} 10.134.11.11:{vncInfo.Port} --run-once",
+            Arguments = $"3600 websockify 0.0.0.0:{websockifyPort} {Config.PROXMOX_ADDR_IP}:{vncInfo.Port} --run-once",
             UseShellExecute = false,
         };
 

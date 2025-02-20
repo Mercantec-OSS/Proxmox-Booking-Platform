@@ -14,6 +14,7 @@ public static class Config
     public static string PROXMOX_TOKEN_ID => ParseVariable("PROXMOX_TOKEN_ID");
     public static string PROXMOX_TOKEN_SECRET => ParseVariable("PROXMOX_TOKEN_SECRET");
     public static string PROXMOX_ISO_STORAGE => ParseVariable("PROXMOX_ISO_STORAGE");
+    public static string PROXMOX_ADDR_IP => GetProxmoxAddressIp();
 
     private static string ParseVariable(string variableName) {
         string variable = Environment.GetEnvironmentVariable(variableName) ?? "";
@@ -34,6 +35,15 @@ public static class Config
         }
 
         return stringArgs;
+    }
+
+    private static string GetProxmoxAddressIp() {
+        string proxmoxAddress = PROXMOX_ADDR.Split(':').First();
+        if (!IsIpv4(proxmoxAddress)) {
+            throw new Exception("Proxmox address is not an ip address");
+        }
+
+        return proxmoxAddress;
     }
 
     // Special case for the connection string (Replace domain with ip for property work with the ServerVersion.Parse(connString))
