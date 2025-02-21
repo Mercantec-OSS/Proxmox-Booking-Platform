@@ -5,11 +5,9 @@ services:
       - frontend
     container_name: booking-nginx
     restart: unless-stopped
-    image: nginx
+    build: ./nginx
     ports:
-      - "80:80"
-    volumes:
-      - ./nginx:/etc/nginx/templates
+      - "8080:80"
 
   backend:
     container_name: booking-backend
@@ -68,8 +66,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./backup/backup-files:/backup
-      - ./backup/restore-backup:/restore
-      - ./backup/backup_script.sh:/etc/periodic/daily/backup_script.sh
+      - ./backup/restore-backup:/restore 
     environment:
       - HOST=db
       - DATABASE=${DB_NAME}
