@@ -1,0 +1,20 @@
+﻿{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5189",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "BACKUP_DIRECTORY": "./backup",
+        "ACCESS_PASS": "1234",
+        "DB_HOST": "127.0.0.1",
+        "DB_PORT": "3306",
+        "DB_USER": "root",
+        "DB_PASS": "sU6AKy55n2veKvZa",
+        "DB_NAME": "proxmox_vm"
+      }
+    }
+  }
+}

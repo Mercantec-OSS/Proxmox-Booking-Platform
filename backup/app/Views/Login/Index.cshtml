@@ -1,0 +1,16 @@
+﻿<div class="text-center">
+    <h2>Access to backup console</h2>
+    <form action="/login" method="post" class="mt-5 col-md-6 offset-md-3">
+        <div class="form-group">
+            <input required type="password" class="form-control mt-3" id="password" name="password" placeholder="Password">
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Login</button>
+        @if (Model != null)
+        {
+            <div class="alert alert-danger mt-3 col-md-6 offset-md-3" role="alert">
+                @Model.Message
+            </div>
+        }
+    </form>
+
+</div>

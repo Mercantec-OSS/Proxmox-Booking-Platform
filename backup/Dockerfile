@@ -1,8 +1,18 @@
-FROM alpine:3.19
+# maintainer info
+FROM debian:11 AS dependencies
 LABEL maintainer="carrergt@gmail.com"
 
-COPY start.sh restore_backup.sh /
-COPY ./backup_script.sh /etc/periodic/daily/backup_script.sh
-RUN apk update; apk add mariadb-client mariadb-connector-c-dev bash
+# install copy and install project dependences
+COPY dotnet-install.sh docker-dep.sh /
+RUN sh /docker-dep.sh && sh /dotnet-install.sh
 
-CMD ["bash","/start.sh"]
+# build project
+FROM dependencies AS build
+WORKDIR /app
+COPY ./app /app
+RUN mkdir /build
+RUN dotnet publish --sc -o /build
+
+# Run project
+WORKDIR /build
+CMD ["/build/app"]

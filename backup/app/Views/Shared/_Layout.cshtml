@@ -1,0 +1,83 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Backup Managment</title>
+  <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+      <div class="container-fluid">
+        <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index" title="Backup Managment">BM</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+          <ul class="navbar-nav flex-grow-1 justify-content-end">
+            <li class="nav-item">
+              <a class="nav-link text-danger" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+  <div class="container">
+    <main role="main" class="pb-3">
+      @RenderBody()
+    </main>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="Modal" tabindex="-1" role="dialog" aria-labelledby="ModalTitle" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalTitle"></h5>
+        </div>
+        <div class="modal-body">
+          <ul>
+            <li>Selecting <b>Restore</b> will erase all current database data and replace it with the backup.</li>
+            <br />
+            <li>Selecting <b>Delete</b> will only remove the backup file without affecting the database.</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button id="applyBtn" type="button" class="btn btn-warning" data-dismiss="modal"
+            onclick="applyBackup()">Restore</button>
+          <button id="deleteBtn" type="button" class="btn btn-danger" data-dismiss="modal"
+            onclick="deleteBackup()">Delete</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal alert -->
+  <div class="modal fade" id="ModalAlert" tabindex="-1" role="dialog" aria-labelledby="ModalAlertTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ModalAlertTitle">Modal title</h5>
+        </div>
+        <div id="ModalAlertContent" class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="~/lib/jquery/dist/jquery.min.js"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

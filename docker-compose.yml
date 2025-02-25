@@ -64,12 +64,15 @@ services:
     build: ./backup
     container_name: booking-backup
     restart: unless-stopped
+    ports:
+      - "7001:5000" # Optional for debugging
     volumes:
       - ./backup/backup-files:/backup
-      - ./backup/restore-backup:/restore 
     environment:
-      - HOST=db
-      - DATABASE=${DB_NAME}
-      - PORT=3306
-      - USER=root
-      - PASSWORD=${DB_PASSWORD}
+      - ACCESS_PASS=${ACCESS_PASS}
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=root
+      - DB_PASS=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - BACKUP_DIRECTORY=/backup

@@ -1,0 +1,269 @@
+﻿<h1 class="display-6">Available backups</h1>
+
+
+<div class="form-group row d-flex">
+    <div class="col p-3">
+        <label for="">Year</label>
+        <input id="yearInput" type="number" class="form-control" placeholder="Year">
+    </div>
+    <div class="col p-3 f-grow">
+        <label for="" class="">Month</label>
+        <input id="monthInput" type="number" class="form-control" placeholder="Month">
+    </div>
+    <div class="col align-self-end text-end p-3">
+        <label for="fileInput" id="fileInputLabel" class="btn btn-primary">Upload backup</label>
+        <input type="file" class="d-none" id="fileInput" placeholder="Upload backup"/>
+        <button id="createButton" class="btn btn-success">Create backup</button>
+    </div>
+</div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Date</th>
+      <th scope="col">Name</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>Mark</td>
+      <td>Otto</td>
+    </tr>
+    <tr>
+      <th scope="row">2</th>
+      <td>Jacob</td>
+      <td>Thornton</td>
+    </tr>
+    <tr>
+      <th scope="row">3</th>
+      <td>Larry</td>
+      <td>the Bird</td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+    const yearInput = document.getElementById('yearInput');
+    const monthInput = document.getElementById('monthInput');
+    const createButton = document.getElementById('createButton');
+    const fileInput = document.getElementById('fileInput');
+    const fileInputLabel = document.getElementById('fileInputLabel');
+
+    function setCurrentDate() {
+        const date = new Date();
+        yearInput.value = date.getFullYear();
+        monthInput.value = date.getMonth() + 1;
+    }
+
+    async function loadBackups() {
+        const year = yearInput.value;
+        const month = monthInput.value;
+        const response = await fetch(`/backups?year=${year}&month=${month}`);
+        const backups = await response.json();
+        
+        createTableItems(backups);
+    }
+
+    function createTableItems(items) {
+        const tbody = document.querySelector('tbody');
+        tbody.innerHTML = '';
+        items.forEach(item => {
+            const tr = document.createElement('tr');
+            
+            // date
+            const dateTd = document.createElement('td');
+            dateTd.textContent = item.createdAt.replace('T', ' ').replace('Z', '');
+            tr.appendChild(dateTd);
+
+            // name
+            const nameTd = document.createElement('td');
+            nameTd.textContent = item.fileName;
+            tr.appendChild(nameTd);
+
+            // actions
+            const actionTd = document.createElement('td');
+            actionTd.classList.add('text-end');
+
+            // restore button
+            const actionButton = document.createElement('button');
+            actionButton.textContent = 'Manage';
+            actionButton.classList.add('btn', 'btn-warning');
+            actionButton.setAttribute('restore-backup', item.fileName);
+            actionButton.onclick = () => restoreBackup(item.fileName);
+            actionTd.appendChild(actionButton);
+
+            // download button
+            const downloadButton = document.createElement('button');
+            downloadButton.textContent = 'Download';
+            downloadButton.classList.add('btn', 'btn-primary', "ms-2");
+            downloadButton.onclick = () => {
+                window.open(`/download-backup?file=${item.fileName}`, "_blank")
+            };
+            actionTd.appendChild(downloadButton);
+
+            // mount to table
+            tr.appendChild(actionTd);
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function CreateBackup() {
+
+        const buttonContent = createButton.textContent;
+
+        createButton.textContent = 'Creating...';
+        createButton.classList.add('disabled');
+        createButton.classList.replace('btn-success', 'btn-warning');
+
+        const response = await fetch('/create-backup', { method: 'POST' });
+        const result = await response.text();
+
+        let allertTitle = 'Backup created';
+        let allertContent = `Backup ${result} created successfully`;
+        if (response.status !== 200) {
+            allertTitle = 'Error';
+            allertContent = 'An error occurred while creating the backup. Please try again later.';
+        }
+
+        await loadBackups();
+        createButton.textContent = buttonContent;
+        createButton.classList.remove('disabled');
+        createButton.classList.replace('btn-warning', 'btn-success');
+
+        // allert modal
+        const modalAlert = new bootstrap.Modal(document.getElementById('ModalAlert'));
+        const modalAlertTitle = document.getElementById('ModalAlertTitle');
+        const modalAlertContent = document.getElementById('ModalAlertContent');
+
+        modalAlertTitle.textContent = allertTitle;
+        modalAlertContent.textContent = allertContent;
+        modalAlert.show();
+    }
+
+    function restoreBackup(name) {
+        const modalTag = document.getElementById('Modal');
+        const modelLabel = document.getElementById('ModalTitle');
+        const modal = new bootstrap.Modal(modalTag);
+
+        const modelApplyButton = document.getElementById('applyBtn');
+        const modelDeleteButton = document.getElementById('deleteBtn');
+
+        modelApplyButton.setAttribute('restore-backup', name);
+        modelDeleteButton.setAttribute('restore-backup', name);
+
+        // set modal message
+        modelLabel.textContent = `${name}`;
+        modal.show();
+    }
+
+    async function applyBackup() {
+        const modelApplyButton = document.getElementById('applyBtn');
+        const fileName = modelApplyButton.getAttribute('restore-backup');
+
+        let allertTitle = 'Backup restored';
+        let allertContent = `Backup ${fileName} restored successfully`;
+   
+        const response = await fetch(`/apply-backup?file=${fileName}`, { method: 'POST' });
+        const result = await response.text();
+
+        if (response.status !== 200) {
+            allertTitle = 'Error';
+            allertContent = `An error occurred while restoring the backup ${fileName}. Please try again later.`;
+        }
+
+        // allert modal
+        const modalAlert = new bootstrap.Modal(document.getElementById('ModalAlert'));
+        const modalAlertTitle = document.getElementById('ModalAlertTitle');
+        const modalAlertContent = document.getElementById('ModalAlertContent');
+
+        modalAlertTitle.textContent = allertTitle;
+        modalAlertContent.textContent = allertContent;
+        modalAlert.show();
+    }
+
+    async function deleteBackup() {
+        const modelDeleteButton = document.getElementById('deleteBtn');
+        const fileName = modelDeleteButton.getAttribute('restore-backup');
+
+        let allertTitle = 'Backup deleted';
+        let allertContent = `Backup ${fileName} deleted successfully`;
+        
+        const response = await fetch(`/delete-backup?file=${fileName}`, { method: 'DELETE' });
+        const result = await response.text();
+
+        if (response.status !== 200) {
+            allertTitle = 'Error';
+            allertContent = `An error occurred while deleting backup ${fileName} file. Please try again later.`;
+        }
+
+        // allert modal
+        const modalAlert = new bootstrap.Modal(document.getElementById('ModalAlert'));
+        const modalAlertTitle = document.getElementById('ModalAlertTitle');
+        const modalAlertContent = document.getElementById('ModalAlertContent');
+
+        modalAlertTitle.textContent = allertTitle;
+        modalAlertContent.textContent = allertContent;
+        modalAlert.show();
+
+        loadBackups();
+    }
+
+    async function uploadBackupFile(){
+        if (fileInput.files[0] === undefined) {
+            return;
+        }
+
+        fileInputLabel.classList.add('disabled');
+        fileInputLabel.classList.replace('btn-primary', 'btn-warning');
+        fileInputLabel.textContent = 'Uploading...';
+
+        // upload file
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        const response = await fetch('/upload-backup', {
+            method: 'POST',
+            body: formData
+        });
+
+        const fileName = await response.text();
+
+        let allertTitle = 'Backup restored';
+        let allertContent = `Backup ${fileName} restored successfully`;
+
+        if (response.status !== 200) {
+            alertTitle = 'Error';
+            allertContent = `An error occurred while uploading the backup file. Please try again later.`;
+        }
+        
+        fileInputLabel.classList.replace('btn-warning', 'btn-primary');
+        fileInputLabel.classList.remove('disabled');
+        fileInputLabel.textContent = 'Upload backup';
+        
+        // allert modal
+        const modalAlert = new bootstrap.Modal(document.getElementById('ModalAlert'));
+        const modalAlertTitle = document.getElementById('ModalAlertTitle');
+        const modalAlertContent = document.getElementById('ModalAlertContent');
+
+        modalAlertTitle.textContent = allertTitle;
+        modalAlertContent.textContent = allertContent;
+        modalAlert.show();
+
+        loadBackups();
+    }
+
+    // init block
+    yearInput.addEventListener('change', loadBackups);
+    monthInput.addEventListener('change', loadBackups);
+    createButton.addEventListener('click', CreateBackup);
+    fileInput.addEventListener('change', uploadBackupFile);
+
+    setCurrentDate();
+    loadBackups();
+</script>
+
+
+
+
