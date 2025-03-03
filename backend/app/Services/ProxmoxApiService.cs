@@ -285,6 +285,18 @@ public class ProxmoxApiService
         await _client.PostAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/config", content);
     }
 
+    public async Task<List<ProxmoxVmInfoTimeFrame>> GetVmTimeFrame(ProxmoxVmDto vm)
+    {
+        var response = await _client.GetAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/rrddata?timeframe=day");
+        var data = await response.Content.ReadFromJsonAsync<Dictionary<string, List<ProxmoxVmInfoTimeFrame>>>();
+        if (data == null)
+        {
+            return new List<ProxmoxVmInfoTimeFrame>();
+        }
+
+        return data["data"];
+    }
+
     // Nodes
     public async Task<List<ProxmoxNodeDto>> GetProxmoxNodes()
     {

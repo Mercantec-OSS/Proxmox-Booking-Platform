@@ -33,6 +33,33 @@ public class ScriptController(
         return Ok(vmInfo);
     }
 
+    [HttpGet("vm/usage-info/{name}")]
+    public async Task<ActionResult> GetVmInfo(string name)
+    {
+        User user = session.GetIfAuthenticated();
+        VmBooking? booking = await vmBookingRepository.GetByNameAsync(name);
+
+        if (booking == null)
+        {
+            return NotFound(ResponseMessage.GetBookingNotFound());
+        }
+
+        // Deny access to the booking if the user is a student and the booking is not his
+        if (session.IsStudent() && booking.OwnerId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetUserUnauthorized());
+        }
+
+        // Deny access to the booking if the user is a teacher and the booking is not his
+        if (session.IsTeacher() && booking.AssignedId != user.Id)
+        {
+            return NotFound(ResponseMessage.GetUserUnauthorized());
+        }
+
+        List<ProxmoxVmInfoTimeFrame> vmInfo = await vmService.GetVmInfoTimeFrame(booking);
+        return Ok(vmInfo);
+    }
+
     [HttpGet("vm/reset-power/{name}")]
     public async Task<ActionResult> ResetVmPower(string name)
     {
