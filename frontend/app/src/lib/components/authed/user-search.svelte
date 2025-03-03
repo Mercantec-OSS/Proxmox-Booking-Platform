@@ -60,6 +60,7 @@
 
 <Button
   variant="outline"
+  size="sm"
   onmousedown={() => {
     open = true;
   }}

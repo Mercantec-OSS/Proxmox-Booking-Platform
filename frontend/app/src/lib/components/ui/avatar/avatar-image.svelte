@@ -5,8 +5,4 @@
 	let { ref = $bindable(null), class: className, ...restProps } = $props();
 </script>
 
-<AvatarPrimitive.Image
-	bind:ref
-	class={cn("aspect-square h-full w-full", className)}
-	{...restProps}
-/>
+<AvatarPrimitive.Image bind:ref class={cn("aspect-square size-full", className)} {...restProps} />

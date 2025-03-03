@@ -1,12 +1,12 @@
 <script>
-	import { Avatar as AvatarPrimitive } from "bits-ui";
+	import { Separator } from "$lib/components/ui/separator/index.js";
 	import { cn } from "$lib/utils.js";
-
 	let { ref = $bindable(null), class: className, ...restProps } = $props();
 </script>
 
-<AvatarPrimitive.Fallback
+<Separator
 	bind:ref
-	class={cn("bg-muted flex size-full items-center justify-center", className)}
+	data-sidebar="separator"
+	class={cn("bg-sidebar-border mx-2 w-auto", className)}
 	{...restProps}
 />
