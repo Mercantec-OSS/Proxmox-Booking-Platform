@@ -88,7 +88,7 @@ public class BackupService
         var process = new Process() {
             StartInfo = new ProcessStartInfo {
                 FileName = "bash",
-                Arguments = $"-c \"mysql -h {Config.DB_HOST} -P {Config.DB_PORT} -u {Config.DB_USER} -p{Config.DB_PASS} -e 'DROP DATABASE IF EXISTS {Config.DB_NAME}'\"",
+                Arguments = $"-c \"mysql -h {Config.DB_HOST} -P {Config.DB_PORT} -u {Config.DB_USER} -p{Config.DB_PASS} -e 'DROP DATABASE IF EXISTS `{Config.DB_NAME}`'\"",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
@@ -112,7 +112,7 @@ public class BackupService
         var process = new Process() {
             StartInfo = new ProcessStartInfo {
                 FileName = "bash",
-                Arguments = $"-c \"mysql -h {Config.DB_HOST} -P {Config.DB_PORT} -u {Config.DB_USER} -p{Config.DB_PASS} -e 'CREATE DATABASE {Config.DB_NAME}'\"",
+                Arguments = $"-c \"mysql -h {Config.DB_HOST} -P {Config.DB_PORT} -u {Config.DB_USER} -p{Config.DB_PASS} -e 'CREATE DATABASE `{Config.DB_NAME}`'\"",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true

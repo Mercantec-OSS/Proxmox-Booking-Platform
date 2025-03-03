@@ -1,2 +1,2 @@
 apt update
-apt install iputils-ping htop websockify nano tmux -y
+apt install default-mysql-client iputils-ping htop nano tmux -y
