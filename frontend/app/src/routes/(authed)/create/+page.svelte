@@ -146,7 +146,7 @@
                     {vmBookingInput.type ? data.vmTemplates.find((t) => t.internalName === vmBookingInput.type)?.displayName : 'Select a template'}
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Group class="h-60 overflow-y-scroll">
+                    <Select.Group class="overflow-y-scroll">
                       {#each data.vmTemplates as vmTemplate}
                         <Select.Item value={vmTemplate.internalName}>{vmTemplate.displayName}</Select.Item>
                       {/each}

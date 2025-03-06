@@ -13,6 +13,9 @@
   import { Textarea } from '$lib/components/ui/textarea';
   import { Skeleton } from '$lib/components/ui/skeleton';
   import { ChevronLeft, ArrowRight, Trash, Check, LoaderCircle } from 'lucide-svelte';
+  import CPUUsageChart from '$lib/components/authed/bookings/cpu-usage-chart.svelte';
+  import RamUsageChart from '$lib/components/authed/bookings/ram-usage-chart.svelte';
+  import DiskWriteChart from '$lib/components/authed/bookings/disk-write-chart.svelte';
 
   // Props and data initialization
   const { data } = $props();
@@ -24,6 +27,7 @@
 
   // Initialize selected booking store
   $effect(() => {
+    console.log(vmData.usageInfo);
     selectedBookingStore.set(vmData);
   });
 
@@ -92,8 +96,8 @@
 
   function checkErrors() {
     if (errorMessage) {
+      console.error(errorMessage);
       toast.error(errorMessage);
-      goto('/');
     }
   }
 
@@ -257,18 +261,67 @@
             </Card.Content>
           </Card.Root>
         </div>
-        <div class="grid auto-rows-max items-start gap-4 lg:gap-8">
+        <div class="flex flex-col w-full items-start gap-4 lg:gap-8">
           {#each metrics as metric}
-            <Card.Root>
+            <Card.Root class="w-full">
               <Card.Header>
                 <Card.Title>{metric} usage</Card.Title>
               </Card.Header>
               <Card.Content>
-                <div class="grid gap-6">
-                  <div class="grid gap-3">
-                    <Label for="status">Graph</Label>
-                  </div>
-                </div>
+                {#if vmData?.usageInfo?.length}
+                  {@const lastEntry = vmData.usageInfo[vmData.usageInfo.length - 1] || {}}
+
+                  {#if metric === 'CPU'}
+                    <div class="flex items-center gap-4">
+                      <div>
+                        <div class="text-2xl font-bold text-primary">
+                          {((lastEntry?.cpu || 0) * 100).toFixed(2)}%
+                        </div>
+                        <div>
+                          <p class="text-xs">
+                            {lastEntry?.maxcpu || 0} Cores
+                          </p>
+                        </div>
+                      </div>
+                      <div class="flex-1">
+                        <CPUUsageChart usageInfo={vmData.usageInfo} />
+                      </div>
+                    </div>
+                  {:else if metric === 'Memory'}
+                    <div class="flex items-center gap-4">
+                      <div>
+                        <div class="text-2xl font-bold text-primary">
+                          {(((lastEntry?.mem || 0) / (lastEntry?.maxmem || 1)) * 100).toFixed(2)}%
+                        </div>
+                        <div class="flex flex-col text-xs">
+                          <p>{((lastEntry?.mem || 0) / (1024 * 1024 * 1024)).toFixed(2)} GB</p>
+                          <p>/</p>
+                          <p>{((lastEntry?.maxmem || 0) / (1024 * 1024 * 1024)).toFixed(2)} GB</p>
+                        </div>
+                      </div>
+                      <div class="flex-1">
+                        <RamUsageChart usageInfo={vmData.usageInfo} />
+                      </div>
+                    </div>
+                  {:else if metric === 'Disk'}
+                    <div class="flex items-center gap-4">
+                      <div>
+                        <div class="text-2xl font-bold text-primary">
+                          {((lastEntry?.diskwrite || 0) / 1024).toFixed(2)} KB/s
+                        </div>
+                        <div class="text-xs">
+                          <p>{((lastEntry?.maxdisk || 0) / (1024 * 1024 * 1024)).toFixed(2)} GB</p>
+                          <p>Space total</p>
+                        </div>
+                      </div>
+                      <div class="flex-1">
+                        <DiskWriteChart usageInfo={vmData.usageInfo} />
+                      </div>
+                    </div>
+                  {/if}
+                {:else}
+                  <div class="p-4 text-center text-muted-foreground">No data available</div>
+                {/if}
               </Card.Content>
             </Card.Root>
           {/each}

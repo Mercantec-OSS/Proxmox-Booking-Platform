@@ -200,7 +200,7 @@ export const vmService = {
     const jsonData = {
       vmName: storageOption.vmName,
       amountGb: Number(storageOption.selectedStorage)
-    }
+    };
     return await clientApi.post('script/vm/attach-storage', { json: jsonData }).json();
   },
 
@@ -220,5 +220,15 @@ export const vmService = {
 
   async detachIso(vmName) {
     return await clientApi.post('script/vm/detach-iso', { json: { vmName } }).json();
+  },
+
+  async getUsageInfoBackend(cookie, vmName) {
+    return await backendApi
+      .get(`script/vm/usage-info/${vmName}`, {
+        headers: {
+          Cookie: `token=${cookie}`
+        }
+      })
+      .json();
   }
 };
