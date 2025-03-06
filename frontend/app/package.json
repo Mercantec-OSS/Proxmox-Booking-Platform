@@ -38,7 +38,10 @@
   "dependencies": {
     "@fontsource/inter": "^5.1.1",
     "@tanstack/table-core": "^8.20.5",
+    "d3-array": "^3.2.4",
+    "d3-scale": "^4.0.2",
     "dotenv": "^16.4.7",
-    "ky": "^1.7.4"
+    "ky": "^1.7.4",
+    "layerchart": "^1.0.5"
   }
 }
