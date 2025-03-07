@@ -1,7 +1,7 @@
 <script>
   import { scaleTime } from 'd3-scale';
   import { Area, Chart, Highlight, LinearGradient, RectClipPath, Svg, Tooltip } from 'layerchart';
-  import { format, PeriodType } from '@layerstack/utils';
+  import { format } from '@layerstack/utils';
 
   let { usageInfo } = $props();
 

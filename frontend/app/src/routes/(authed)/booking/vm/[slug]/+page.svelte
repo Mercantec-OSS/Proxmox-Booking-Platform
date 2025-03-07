@@ -27,7 +27,6 @@
 
   // Initialize selected booking store
   $effect(() => {
-    console.log(vmData.usageInfo);
     selectedBookingStore.set(vmData);
   });
 
