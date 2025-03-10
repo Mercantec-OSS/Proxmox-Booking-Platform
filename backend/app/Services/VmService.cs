@@ -92,14 +92,14 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         };
     }
 
-    public async Task<List<ProxmoxVmInfoTimeFrame>> GetVmInfoTimeFrame(VmBooking booking) {
+    public async Task<List<ProxmoxVmInfoTimeFrameIn>> GetVmInfoTimeFrame(VmBooking booking) {
         ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(booking.Name);
         if (vm == null)
         {
             throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
         }
 
-        List<ProxmoxVmInfoTimeFrame> frameVmInfo = await proxmoxApiService.GetVmTimeFrame(vm);
+        List<ProxmoxVmInfoTimeFrameIn> frameVmInfo = await proxmoxApiService.GetVmTimeFrame(vm);
         return frameVmInfo.Where(frame => frame.MaxCpu != 0).ToList();
     }
 

@@ -1,13 +1,13 @@
-public class ProxmoxVmInfoTimeFrame
+public class ProxmoxVmInfoTimeFrameIn
 {
     [JsonPropertyName("maxcpu")]
-    public int MaxCpu { get; set; } = 0;
+    public double MaxCpu { get; set; } = 0;
 
     [JsonPropertyName("time")]
-    public int Time { get; set; }
+    public double Time { get; set; }
 
     [JsonPropertyName("diskread")]
-    public long DiskRead { get; set; }
+    public double DiskRead { get; set; }
 
     [JsonPropertyName("mem")]
     public double Mem { get; set; }
@@ -16,16 +16,16 @@ public class ProxmoxVmInfoTimeFrame
     public double NetIn { get; set; }
 
     [JsonPropertyName("disk")]
-    public long Disk { get; set; }
+    public double Disk { get; set; }
 
     [JsonPropertyName("maxdisk")]
-    public long MaxDisk { get; set; }
+    public double MaxDisk { get; set; }
 
     [JsonPropertyName("netout")]
     public double NetOut { get; set; }
 
     [JsonPropertyName("maxmem")]
-    public long MaxMem { get; set; }
+    public double MaxMem { get; set; }
 
     [JsonPropertyName("cpu")]
     public double Cpu { get; set; }
