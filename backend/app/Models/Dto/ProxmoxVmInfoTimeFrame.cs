@@ -7,7 +7,7 @@ public class ProxmoxVmInfoTimeFrame
     public int Time { get; set; }
 
     [JsonPropertyName("diskread")]
-    public long DiskRead { get; set; }
+    public double DiskRead { get; set; }
 
     [JsonPropertyName("mem")]
     public double Mem { get; set; }
