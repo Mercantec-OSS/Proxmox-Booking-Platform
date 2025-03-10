@@ -56,8 +56,9 @@ public class ScriptController(
             return NotFound(ResponseMessage.GetUserUnauthorized());
         }
 
-        List<ProxmoxVmInfoTimeFrame> vmInfo = await vmService.GetVmInfoTimeFrame(booking);
-        return Ok(vmInfo);
+        List<ProxmoxVmInfoTimeFrameIn> vmInfo = await vmService.GetVmInfoTimeFrame(booking);
+        List<ProxmoxVmInfoTimeFrameOut> vmInfoOut = vmInfo.ConvertAll(ProxmoxVmInfoTimeFrameOut.GetFromIn).ToList();
+        return Ok(vmInfoOut);
     }
 
     [HttpGet("vm/reset-power/{name}")]

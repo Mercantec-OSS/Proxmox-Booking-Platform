@@ -1,10 +1,10 @@
-public class ProxmoxVmInfoTimeFrame
+public class ProxmoxVmInfoTimeFrameIn
 {
     [JsonPropertyName("maxcpu")]
-    public int MaxCpu { get; set; } = 0;
+    public double MaxCpu { get; set; } = 0;
 
     [JsonPropertyName("time")]
-    public int Time { get; set; }
+    public double Time { get; set; }
 
     [JsonPropertyName("diskread")]
     public double DiskRead { get; set; }
