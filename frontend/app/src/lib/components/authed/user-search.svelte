@@ -82,18 +82,20 @@
             redirectUser(user.id);
           }}
           disabled={loadingProfile && selectedUser === user.id}
+          class="group"
         >
           {#if loadingProfile && selectedUser === user.id}
-            <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
+            <LoaderCircle class="mr-2 h-4 w-4 animate-spin group-hover:text-primary transition-colors" />
           {:else if user.role == 'Student'}
-            <GraduationCap class="mr-2 h-4 w-4" />
+            <GraduationCap class="mr-2 h-4 w-4 group-hover:text-primary transition-colors" />
           {:else if user.role == 'Teacher'}
-            <School class="mr-2 h-4 w-4" />
+            <School class="mr-2 h-4 w-4 group-hover:text-primary transition-colors" />
           {:else if user.role == 'Admin'}
-            <Shield class="mr-2 h-4 w-4" />
+            <Shield class="mr-2 h-4 w-4 group-hover:text-primary transition-colors" />
           {/if}
-          <span>{user.name} {user.surname} </span><span class="hidden">{user.id}</span></Command.Item
-        >
+          <span class="group-hover:text-primary transition-colors">{user.name} {user.surname} </span>
+          <span class="hidden">{user.id}</span>
+        </Command.Item>
       {/each}
     </Command.Group>
     <Command.Separator />
