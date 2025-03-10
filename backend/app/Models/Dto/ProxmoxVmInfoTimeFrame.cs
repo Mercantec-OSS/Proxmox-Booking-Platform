@@ -16,16 +16,16 @@ public class ProxmoxVmInfoTimeFrame
     public double NetIn { get; set; }
 
     [JsonPropertyName("disk")]
-    public long Disk { get; set; }
+    public double Disk { get; set; }
 
     [JsonPropertyName("maxdisk")]
-    public long MaxDisk { get; set; }
+    public double MaxDisk { get; set; }
 
     [JsonPropertyName("netout")]
     public double NetOut { get; set; }
 
     [JsonPropertyName("maxmem")]
-    public long MaxMem { get; set; }
+    public double MaxMem { get; set; }
 
     [JsonPropertyName("cpu")]
     public double Cpu { get; set; }
