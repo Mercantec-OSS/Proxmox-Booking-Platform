@@ -64,7 +64,7 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         ProxmoxVmDto? vm = await GetVmByNameAsync(booking.Name);
         if (vm == null)
         {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
+            throw new HttpException(HttpStatusCode.NotFound, "Vm not ready to use or not found. Try again later");
         }
 
         // search internal ip (starts with 10.x.x.x)
