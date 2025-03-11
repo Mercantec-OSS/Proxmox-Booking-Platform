@@ -237,14 +237,15 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         
         for (int i = 0; i < 300; i++)
         {
+            await Task.Delay(1000);
+
             ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
             if (vm == null)
             {
-                break;
+                continue;
             }
 
             bool vmStatus = await proxmoxApiService.GetAgentStatus(vm);
-            await Task.Delay(1000);
 
             if (vmStatus)
             {
