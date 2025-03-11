@@ -54,18 +54,14 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(name);
         if (vm == null)
         {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
+            throw new HttpException(HttpStatusCode.NotFound, "Vm not ready to use or not found. Try again later");
         }
 
         return vm;
     }
 
     public async Task<VmInfoGetDto> GetVmInfo(VmBooking booking) {
-        ProxmoxVmDto? vm = await GetVmByNameAsync(booking.Name);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not ready to use or not found. Try again later");
-        }
+        ProxmoxVmDto vm = await GetVmByNameAsync(booking.Name);
 
         // search internal ip (starts with 10.x.x.x)
         List<ProxmoxNetworkDeviceDto> devices = await proxmoxApiService.GetVmNetworkDevices(vm);
@@ -93,22 +89,14 @@ public class VmService(ProxmoxApiService proxmoxApiService)
     }
 
     public async Task<List<ProxmoxVmInfoTimeFrameIn>> GetVmInfoTimeFrame(VmBooking booking) {
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(booking.Name);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
+        ProxmoxVmDto vm = await GetVmByNameAsync(booking.Name);
 
         List<ProxmoxVmInfoTimeFrameIn> frameVmInfo = await proxmoxApiService.GetVmTimeFrame(vm);
         return frameVmInfo.Where(frame => frame.MaxCpu != 0).ToList();
     }
 
     public async Task Remove(string vmName) {
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
+        ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
 
         await proxmoxApiService.DeleteFromHA(vm);
         await proxmoxApiService.StopVm(vm, true);
@@ -116,22 +104,12 @@ public class VmService(ProxmoxApiService proxmoxApiService)
     }
 
     public async Task ResetPower(string vmName) {
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
-
+        ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         await proxmoxApiService.ResetVmPower(vm);
     }
 
     public async Task RebootVm(string vmName) {
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
-
+        ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         await proxmoxApiService.RebootVm(vm);
     }
 
@@ -162,33 +140,18 @@ public class VmService(ProxmoxApiService proxmoxApiService)
     }
 
     public async Task AttachIso(string vmName, string isoName) {
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
-
+        ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         ProxmoxIsoDto iso = await GetProxmoxIsoByName(isoName);
         await proxmoxApiService.AttachIso(vm, iso);
     }
 
     public async Task DetachIso(string vmName) {
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
-
+        ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         await proxmoxApiService.DetachIso(vm);
     }
 
     public async Task AddStorage(string vmName, int sizeGb) {
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
-
+        ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         ProxmoxVmConfigDto vmConfig = await proxmoxApiService.GetVmConfig(vm);
         if (vmConfig.ExtraStorageExists)
         {
@@ -199,12 +162,7 @@ public class VmService(ProxmoxApiService proxmoxApiService)
     }
 
     public async Task UpdateVmResources(string vmName, int cpu, int ramMb) {
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
-
+        ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         await proxmoxApiService.UpdateVmConfig(vm, cpu, ramMb);
         
         await proxmoxApiService.StopVm(vm, true);
