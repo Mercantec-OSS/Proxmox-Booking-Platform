@@ -2,14 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Use Inter font globally */
-body {
-  font-family: 'Inter', sans-serif;
+@font-face {
+  font-family: 'CPMono';
+  src: url('/fonts/cp-mono/CPMono_v07_Plain.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
 }
 
 html,
 body {
   @apply h-full w-full;
+}
+
+* {
+  font-family: 'CPMono', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  word-spacing: calc(-1rem * 0.16180339887498948482045868343656381177);
+  letter-spacing: calc(-1rem * 0.016180339887498948482045868343656381177);
 }
 
 @layer utilities {

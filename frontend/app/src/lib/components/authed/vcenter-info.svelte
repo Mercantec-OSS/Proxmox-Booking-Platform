@@ -8,7 +8,7 @@
 
   // Fetches latest resource utilization data
   async function fetchVcenterInfo() {
-    vcenterInfo = await vmService.getVcenterInfo();
+    vcenterInfo = await vmService.getClusterInfo();
   }
 
   // Set up polling with interval cleanup on leave

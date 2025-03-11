@@ -4,7 +4,7 @@
   import { getCookie, deleteCookie } from '$lib/utils/cookie';
   import { goto } from '$app/navigation';
   import { toggleMode } from 'mode-watcher';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import * as Tooltip from '$lib/components/ui/tooltip/index.js';
   import { Separator } from '$lib/components/ui/separator/index.js';
   import { Button } from '$lib/components/ui/button';
@@ -20,7 +20,7 @@
   }
 
   function isActive(href) {
-    return $page.url.pathname === href;
+    return page.url.pathname === href;
   }
 </script>
 
@@ -43,7 +43,7 @@
         <Tooltip.Trigger>
           <a
             href="/"
-            class="{isActive('/') || $page.url.pathname.includes('/booking/')
+            class="{isActive('/') || page.url.pathname.includes('/booking/')
               ? 'text-foreground'
               : 'text-muted-foreground'} hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
           >
@@ -61,7 +61,7 @@
           href="/analytics"
           class="{isActive('/analytics') ? 'text-foreground' : 'text-muted-foreground'} hover:text-foreground flex h-9 w-9 items-center justify-center rounded-lg transition-colors md:h-8 md:w-8"
           use:builder.action
-         
+
         >
           <ChartLine class="h-5 w-5" />
           <span class="sr-only">Analytics</span>

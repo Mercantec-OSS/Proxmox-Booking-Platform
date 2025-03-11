@@ -16,10 +16,9 @@
     try {
       isLoading = true;
       const response = await authService.login(credentials);
-      if (response.hash) {
+      if (response.token) {
         const expirationDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
-
-        document.cookie = `token=${response.hash}; expires=${expirationDate}; path=/;`;
+        document.cookie = `token=${response.token}; expires=${expirationDate}; path=/;`;
       }
       await goto('/');
     } catch (error) {
