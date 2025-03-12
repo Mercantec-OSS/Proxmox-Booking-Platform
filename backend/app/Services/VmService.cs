@@ -1,4 +1,4 @@
-public class VmService(ProxmoxApiService proxmoxApiService, VmBookingRepository vmBookingRepository)
+public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory scopeFactory)
 {
     public async Task Book(string vmName, string templateName, string username = "", string password = "") {
         int vmId = await GetFreeVmId();
@@ -243,8 +243,12 @@ public class VmService(ProxmoxApiService proxmoxApiService, VmBookingRepository 
     }
 
     private async Task<string> ChangeVmName(string vmName, int vmId) {
+        // create scope to use db
+        using var scope = scopeFactory.CreateScope();
+        var vmRepository = scope.ServiceProvider.GetRequiredService<VmBookingRepository>();
+
         // change name to vmId to use proxmox id
-        VmBooking? bookingVm = await vmBookingRepository.GetByNameAsync(vmName);
+        VmBooking? bookingVm = await vmRepository.GetByNameAsync(vmName);
         if (bookingVm == null)
         {
             return vmName;
@@ -252,7 +256,7 @@ public class VmService(ProxmoxApiService proxmoxApiService, VmBookingRepository 
 
         // change in db
         bookingVm.Name = $"{bookingVm.OwnerId}--{bookingVm.Type.ToLower()}--{vmId}";
-        await vmBookingRepository.UpdateAsync(bookingVm);
+        await vmRepository.UpdateAsync(bookingVm);
 
         return bookingVm.Name;
     }
