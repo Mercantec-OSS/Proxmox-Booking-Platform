@@ -101,9 +101,21 @@ public class VmService(ProxmoxApiService proxmoxApiService, VmBookingRepository 
     public async Task Remove(string vmName) {
         ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
 
-        await proxmoxApiService.DeleteFromHA(vm);
-        await proxmoxApiService.StopVm(vm, true);
-        await proxmoxApiService.DeleteVm(vm);
+        for (int i = 0; i < 10; i++)
+        {
+            await proxmoxApiService.DeleteFromHA(vm);
+            await proxmoxApiService.StopVm(vm, true);
+            await proxmoxApiService.DeleteVm(vm);
+
+            await Task.Delay(5000);
+
+            // check if vm is deleted
+            var booking = await proxmoxApiService.GetVmByNameAsync(vmName);
+            if (booking == null)
+            {
+                break;
+            }
+        }
     }
 
     public async Task ResetPower(string vmName) {
