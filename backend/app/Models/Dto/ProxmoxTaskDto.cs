@@ -32,5 +32,5 @@ public class ProxmoxTaskDto
     public bool IsFinished => Endtime != 0;
 
     [JsonPropertyName("successful")]
-    public bool Successful => Status == "OK" && IsFinished && Saved.ToString() == "1";
+    public bool Successful => (Status.ToLower().StartsWith("ok") || Status.ToLower().StartsWith("warning")) && IsFinished && Saved.ToString() == "1";
 }
