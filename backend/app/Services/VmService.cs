@@ -255,7 +255,7 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         }
 
         // change in db
-        bookingVm.Name = $"{bookingVm.OwnerId}--{bookingVm.Type.ToLower()}--{vmId}";
+        bookingVm.Name = $"{vmId}--{bookingVm.OwnerId}--{bookingVm.Type.ToLower()}";
         await vmRepository.UpdateAsync(bookingVm);
 
         return bookingVm.Name;
