@@ -1,7 +1,10 @@
-public class VmService(ProxmoxApiService proxmoxApiService)
+public class VmService(ProxmoxApiService proxmoxApiService, VmBookingRepository vmBookingRepository)
 {
     public async Task Book(string vmName, string templateName, string username = "", string password = "") {
         int vmId = await GetFreeVmId();
+
+        // change name to vmId to use proxmox id
+        vmName = await ChangeVmName(vmName, vmId);
 
         ProxmoxVmDto? template = await proxmoxApiService.GetTemplateByNameAsync(templateName);
         ProxmoxNodeDto? node = await proxmoxApiService.GetProxmoxNodeForBooking();
@@ -225,5 +228,20 @@ public class VmService(ProxmoxApiService proxmoxApiService)
         }
 
         return await GetFreeVmId();
+    }
+
+    private async Task<string> ChangeVmName(string vmName, int vmId) {
+        // change name to vmId to use proxmox id
+        VmBooking? bookingVm = await vmBookingRepository.GetByNameAsync(vmName);
+        if (bookingVm == null)
+        {
+            return vmName;
+        }
+
+        // change in db
+        bookingVm.Name = $"{bookingVm.OwnerId}--{bookingVm.Type.ToLower()}--{vmId}";
+        await vmBookingRepository.UpdateAsync(bookingVm);
+
+        return bookingVm.Name;
     }
 }

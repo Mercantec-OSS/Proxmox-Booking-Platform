@@ -47,7 +47,7 @@ public class VmBookingController(
             OwnerId = ownerUser.Id,
             Type = bookingDTO.Type,
             Message = bookingDTO.Message,
-            Name = $"{Helpers.GetRandomNumber()}--{ownerUser.Id}--{templateProxmox.Name.ToLower()}",
+            Name = $"NotAccepted--{Helpers.GetRandomNumber()}--{ownerUser.Id}--{templateProxmox.Name.ToLower()}",
             Login = VmCredentials.GetLoginByTemplate(templateProxmox.Tags),
             Password = VmCredentials.GetPasswordByTemplate(templateProxmox.Tags),
             CreatedAt = DateTime.UtcNow,
