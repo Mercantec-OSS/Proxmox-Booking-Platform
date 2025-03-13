@@ -6,7 +6,7 @@ export const load = async ({ parent, params, cookies }) => {
   if (!Number.isInteger(id)) {
     return {
       errorMessage: 'Invalid booking ID',
-      vmData: [],
+      vmData: {},
       userInfo
     };
   }
@@ -30,7 +30,7 @@ export const load = async ({ parent, params, cookies }) => {
   } catch (error) {
     return {
       errorMessage: error.message,
-      vmData: [],
+      vmData: {},
       userInfo
     };
   }

@@ -97,11 +97,20 @@
     if (errorMessage) {
       console.error(errorMessage);
       toast.error(errorMessage);
+
+      selectedBookingStore.set(null);
+      goto('/');
+      return true;
     }
+    return false;
   }
 
   afterNavigate(() => {
-    checkErrors();
+    const errors = checkErrors();
+    if (errors) {
+      return;
+    }
+
     if (!$selectedBookingStore.ip && $selectedBookingStore.isAccepted) {
       fetchVmCreds();
     }
