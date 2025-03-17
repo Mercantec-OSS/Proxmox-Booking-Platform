@@ -3,6 +3,7 @@ public static class Config
     public static string DB_CONNECTION_STRING => ParseVariable("DB_CONNECTION_STRING");
     public static string DB_CONNECTION_STRING_WITH_IP => GetDbConnectionStrignWithIp();
     public static string JWT_SECRET => ParseVariable("JWT_SECRET");
+    public static string DOMAIN_ADDRESS => ParseVariable("DOMAIN_ADDRESS");
 
     public static string SMTP_ADDRESS => ParseSMTPConnectionString()[0];
     public static string SMTP_PORT => ParseSMTPConnectionString()[1];

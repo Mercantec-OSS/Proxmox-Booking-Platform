@@ -15,6 +15,7 @@ public class EmailDto
             { "##FirstName##", recipient.Name },
             { "##Surname##", recipient.Surname },
             { "##Email##", recipient.Email },
+            { "##DOMAIN_ADDRESS##", Config.DOMAIN_ADDRESS },
             { "##UserRole##", recipient.Role },
             { "##CreatedAt##", recipient.CreatedAt.ToString("ddd, dd MMM yyy HH:mm:ss")
                 ?? "Your Account hasn't been created properly, if you get this message contact tech support." },
@@ -174,6 +175,7 @@ public class EmailDto
         {
             { "##INVITE_KEY##", inviteKey },
             { "##USER_ROLE##", userRole },
+            { "##DOMAIN_ADDRESS##", Config.DOMAIN_ADDRESS },
             { "##CREATED_AT##", DateTime.UtcNow.ToString("ddd, dd MMM yyy HH:mm:ss") },
         });
 

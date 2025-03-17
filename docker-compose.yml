@@ -20,6 +20,7 @@ services:
       - USE_SWAGGER=false
       - ALLOW_CORS=true
       - JWT_SECRET=${JWT_SECRET}
+      - DOMAIN_ADDRESS=${DOMAIN_ADDRESS}
       - DB_CONNECTION_STRING=server=db;database=${DB_NAME};port=3306;user=root;password=${DB_PASSWORD};
       - SMTP_CONNECTION_STRING=${SMTP_ADDRESS}__${SMTP_PORT}__${SMTP_USER}__${SMTP_PASSWORD}
       - EMAIL_TEMPLATES_PATH=/app/src/emails/
