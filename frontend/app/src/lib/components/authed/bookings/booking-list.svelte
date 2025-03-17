@@ -5,16 +5,21 @@
   import * as Card from '$lib/components/ui/card';
   import * as Table from '$lib/components/ui/table';
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu';
-  import { ArrowUpRight, CirclePlus, ListRestart, ShieldEllipsis, ChevronDown, ArrowUpDown } from 'lucide-svelte';
+  import { ArrowUpRight, CirclePlus, ListRestart, ShieldEllipsis, ChevronDown, ArrowUpDown, Trash2 } from 'lucide-svelte';
   import { vmService } from '$lib/services/vm-service';
   import VMExtensionRequestDialog from '$lib/components/authed/bookings/dialogs/vm-extension-request-dialog.svelte';
   import { getCoreRowModel, getFilteredRowModel, getSortedRowModel } from '@tanstack/table-core';
   import { Input } from '$lib/components/ui/input';
   import { FlexRender, createSvelteTable } from '$lib/components/ui/data-table';
-
+  import { Checkbox } from '$lib/components/ui/checkbox/index.js';
+  import { renderComponent } from '$lib/components/ui/data-table/index.js';
+  import DeleteBookingDialog from '$lib/components/authed/bookings/dialogs/delete-booking-dialog.svelte';
   let userAuthed = $derived($userStore.role === 'Admin' || $userStore.role === 'Teacher');
   let vmExtensionRequestDialogOpen = $state(false);
   let data = $derived($vmListStore);
+  let selectedRowIds = $state([]);
+
+  let deleteDialogOpen = $state(false);
 
   const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     day: '2-digit',
@@ -28,18 +33,46 @@
 
   const columns = [
     {
-      accessorKey: 'type',
-      header: 'Template',
-      cell: ({ row }) => row.getValue('type'),
-      enableSorting: true,
-      sortingFn: 'alphanumeric'
+      id: 'select',
+      header: ({ table }) =>
+        renderComponent(Checkbox, {
+          checked: table.getIsAllPageRowsSelected(),
+          indeterminate: table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected(),
+          onCheckedChange: (value) => {
+            table.toggleAllPageRowsSelected(!!value);
+            if (value) {
+              // When selecting all, directly set to all current rows
+              selectedRowIds = table.getRowModel().rows.map(row => row.original);
+            } else {
+              selectedRowIds = [];
+            }
+          },
+          'aria-label': 'Select all'
+        }),
+      cell: ({ row }) =>
+        renderComponent(Checkbox, {
+          checked: row.getIsSelected(),
+          onCheckedChange: (value) => {
+            row.toggleSelected(!!value);
+            if (value) {
+              // Check if booking is already selected before adding
+              if (!selectedRowIds.find(booking => booking.id === row.original.id)) {
+                selectedRowIds = [...selectedRowIds, row.original];
+              }
+            } else {
+              selectedRowIds = selectedRowIds.filter(booking => booking.id !== row.original.id);
+            }
+          },
+          'aria-label': 'Select row'
+        }),
+      enableSorting: false,
+      enableHiding: false
     },
     {
       accessorKey: 'message',
       header: 'Note',
-      cell: ({ row }) => row.getValue('message'),
-      enableSorting: true,
-      sortingFn: 'alphanumeric'
+      enableSorting: false,
+      cell: ({ row }) => row.getValue('message')
     },
     {
       accessorKey: 'uuid',
@@ -124,6 +157,7 @@
   let sorting = $state([]);
   let columnFilters = $state([]);
   let columnVisibility = $state({});
+  let rowSelection = $state({});
 
   const handleStateUpdate = (updater, state) => {
     if (typeof updater === 'function') {
@@ -137,17 +171,6 @@
       return data;
     },
     columns,
-    state: {
-      get sorting() {
-        return sorting;
-      },
-      get columnVisibility() {
-        return columnVisibility;
-      },
-      get columnFilters() {
-        return columnFilters;
-      }
-    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -159,11 +182,33 @@
     },
     onColumnVisibilityChange: (updater) => {
       columnVisibility = handleStateUpdate(updater, columnVisibility);
+    },
+    onRowSelectionChange: (updater) => {
+      if (typeof updater === 'function') {
+        rowSelection = updater(rowSelection);
+      } else {
+        rowSelection = updater;
+      }
+    },
+    state: {
+      get sorting() {
+        return sorting;
+      },
+      get columnVisibility() {
+        return columnVisibility;
+      },
+      get columnFilters() {
+        return columnFilters;
+      },
+      get rowSelection() {
+        return rowSelection;
+      }
     }
   });
 </script>
 
 <VMExtensionRequestDialog bind:vmExtensionRequestDialogOpen />
+<DeleteBookingDialog bind:deleteDialogOpen listOfBookings={selectedRowIds} />
 
 {#if $vmListStore.length === 0}
   <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
@@ -184,13 +229,19 @@
       <div class="w-full">
         <div class="flex flex-wrap justify-between items-center py-4">
           <!-- Filter by owner -->
+           <div class="flex flex-wrap gap-x-4 justify-center items-center">
           <Input
             placeholder="Filter by owner..."
             value={table.getColumn('owner')?.getFilterValue() ?? ''}
             oninput={(e) => table.getColumn('owner')?.setFilterValue(e.currentTarget.value)}
             onchange={(e) => table.getColumn('owner')?.setFilterValue(e.currentTarget.value)}
-            class="max-w-sm"
+            class="w-full md:w-96"
           />
+
+          {#if selectedRowIds.length > 0}
+          <Button variant="outline" onclick={() => deleteDialogOpen = true}><Trash2 class="h-4 w-4 mr-1" />Delete {selectedRowIds.length} {selectedRowIds.length > 1 ? 'Bookings' : 'Booking'}</Button>
+        {/if}
+      </div>
 
           <div class="flex flex-wrap">
             <!-- Create booking -->
@@ -220,7 +271,6 @@
             <Table.Header>
               {#each table.getHeaderGroups() as headerGroup (headerGroup.id)}
                 <Table.Row>
-                  <Table.Head></Table.Head>
                   {#each headerGroup.headers as header (header.id)}
                     <Table.Head>
                       {#if !header.isPlaceholder && header.id !== 'action'}
@@ -245,11 +295,6 @@
             <Table.Body>
               {#each table.getRowModel().rows as row (row.id)}
                 <Table.Row>
-                  <Table.Cell>
-                    <div class="flex gap-x-3 items-center">
-                      <div class="h-9 w-1 rounded-full bg-primary"></div>
-                    </div>
-                  </Table.Cell>
                   {#each row.getVisibleCells() as cell (cell.id)}
                     <Table.Cell>
                       {#if cell.column.id === 'type'}
