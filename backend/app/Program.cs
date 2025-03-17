@@ -14,6 +14,7 @@ builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<VmService>();
 builder.Services.AddSingleton<JwtTokenService>();
 builder.Services.AddHostedService<SchedulerBackgroundService>();
+builder.Services.AddHostedService<ResetPasswordService>();
 builder.Services.AddHostedService<InviteKeysService>();
 builder.Services.AddHostedService<ClusterInfoBackgroundService>();
 builder.Services.AddHttpContextAccessor();

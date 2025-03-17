@@ -181,6 +181,21 @@ public class EmailDto
         return new EmailDto(){Recipient=recipientEmail, Subject=subject, Body=htmlContent};
     }
 
+    public static EmailDto GetResetPassword(string recipientEmail, string token)
+    {
+        string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "ResetPassword.html"));
+
+        htmlContent = ReplaceFromString(htmlContent, new()
+        {
+            { "##TOKEN##", token },
+            { "##CREATED_AT##", DateTime.UtcNow.ToString("ddd, dd MMM yyy HH:mm:ss") },
+        });
+
+        string subject = "Reset password";
+
+        return new EmailDto(){Recipient=recipientEmail, Subject=subject, Body=htmlContent};
+    }
+
     private static string ReplaceFromString(string stringToReplaceFrom, Dictionary<string, string> replacements)
     {
         return replacements.Aggregate(stringToReplaceFrom, (current, replacment) =>
