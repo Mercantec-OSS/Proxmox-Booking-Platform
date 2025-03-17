@@ -36,6 +36,22 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         if (username != "") {
             await proxmoxApiService.SetVmPassword(vm, username, password);
         }
+
+        // send email at vm is ready to use
+        using var scope = scopeFactory.CreateScope();
+        EmailService emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
+        VmBookingRepository vmBookingRepository = scope.ServiceProvider.GetRequiredService<VmBookingRepository>();
+        VmService vmService = scope.ServiceProvider.GetRequiredService<VmService>();
+        VmBooking? vmBooking = await vmBookingRepository.GetByNameAsync(vmName);
+        ProxmoxVmDto proxmoxVmDto = await vmService.GetVmByNameAsync(vmName);
+
+        if (vmBooking == null)
+        {
+            throw new HttpException(HttpStatusCode.NotFound, $"Vm {vmName} booking not found");
+        }
+
+        EmailDto email = EmailDto.GetVmReady(vmBooking);
+        await emailService.SendAsync(email);
     }
 
     public async Task<List<TemplateGetDto>> GetTemplates() {
