@@ -1,8 +1,8 @@
 ﻿[ApiController]
 [Route("vm-booking")]
 public class VmBookingController(
-    UserSession session, 
-    VmService vmService, 
+    UserSession session,
+    VmService vmService,
     VmBookingRepository vmBookingRepository,
     UserRepository userRepository,
     EmailService emailService
@@ -28,9 +28,29 @@ public class VmBookingController(
             return UnprocessableEntity(ResponseMessage.GetErrorMessage($"Assigned user id:'{bookingDTO.AssignedId}' dont exist"));
         }
 
-        if  (bookingDTO.Type == null)
+        if (bookingDTO.Type == null)
         {
             return UnprocessableEntity(ResponseMessage.GetErrorMessage("Type is required"));
+        }
+
+        if (bookingDTO.ExpiringAt < DateTime.UtcNow)
+        {
+            return UnprocessableEntity(ResponseMessage.GetErrorMessage("Expiring date must be in future"));
+        }
+
+        if (bookingDTO.ExpiringAt > DateTime.UtcNow + TimeSpan.FromDays(200))
+        {
+            return UnprocessableEntity(ResponseMessage.GetErrorMessage("Max 200 days allowed for booking"));
+        }
+
+        // limitation for students
+        if (session.IsStudent())
+        {
+            List<VmBooking> bookings = await vmBookingRepository.GetByOnwerIdAsync(ownerUser.Id);
+            if (bookings.Count >= 5)
+            {
+                return UnprocessableEntity(ResponseMessage.GetErrorMessage("Max 5 bookings allowed. Delete some to create new or contact teacher"));
+            }
         }
 
         // for teacher and admin make accepted booking
@@ -60,7 +80,7 @@ public class VmBookingController(
 
         EmailDto email = EmailDto.GetVmBookingCreate(booking);
         await emailService.SendAsync(email);
-        
+
         // if booking is accepted create vm
         if (isAccepted)
         {
@@ -172,7 +192,8 @@ public class VmBookingController(
             return NotFound(ResponseMessage.GetBookingNotFound());
         }
 
-        if (session.IsTeacher() && booking.AssignedId != user.Id) {
+        if (session.IsTeacher() && booking.AssignedId != user.Id)
+        {
             return Unauthorized(ResponseMessage.GetErrorMessage("Teacher can accept only own assigned bookings"));
         }
 
@@ -197,7 +218,7 @@ public class VmBookingController(
         );
 
         VmBooking? booking = await vmBookingRepository.GetByIdAsync(updateDto.Id);
-        
+
         if (booking == null)
         {
             return NotFound(ResponseMessage.GetBookingNotFound());
@@ -238,7 +259,8 @@ public class VmBookingController(
         }
 
         // Teacher can delete only own and assigned to yourself bookings
-        if (session.IsTeacher() && (booking.OwnerId != user.Id || booking.AssignedId != user.Id)) {
+        if (session.IsTeacher() && (booking.OwnerId != user.Id || booking.AssignedId != user.Id))
+        {
             return Unauthorized(ResponseMessage.GetUserUnauthorized());
         }
 
