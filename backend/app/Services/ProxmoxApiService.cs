@@ -274,6 +274,17 @@ public class ProxmoxApiService
         await _client.PutAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/config", content);
     }
 
+    public async Task UpdateVmTags(ProxmoxVmDto vm, string tags)
+    {
+        var requestData = new Dictionary<string, object>
+        {
+            { "tags", tags }
+        };
+
+        var content = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json");
+        await _client.PutAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/config", content);
+    }
+
     public async Task AddStorage(ProxmoxVmDto vm, int sizeGb)
     {
         var requestData = new Dictionary<string, object>

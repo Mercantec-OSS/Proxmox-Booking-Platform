@@ -37,6 +37,9 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
             await proxmoxApiService.SetVmPassword(vm, username, password);
         }
 
+        // update vm tags
+        await proxmoxApiService.UpdateVmTags(vm, "booking");
+
         // send email at vm is ready to use
         using var scope = scopeFactory.CreateScope();
         EmailService emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
