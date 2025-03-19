@@ -252,7 +252,7 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         clusterInfo.TotalHosts = nodes.Count;
         clusterInfo.ActiveHosts = readyNodes.Count(node => node.ReadyForBookings);
         clusterInfo.CpuTotal = $"{readyNodes.Sum(node => node.MaxCpu)} cores";
-        clusterInfo.CpuUsage = $"{cpuUsagePercent * 100} %";
+        clusterInfo.CpuUsage = $"{Math.Round(cpuUsagePercent * 100, 2)} %";
         clusterInfo.CpuUsagePercent = cpuUsagePercent;
         clusterInfo.RamTotal = $"{totalRam} GB";
         clusterInfo.RamUsage = $"{usedRam} GB";
