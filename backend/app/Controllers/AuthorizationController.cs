@@ -75,16 +75,15 @@ public class AuthorizationController(
         }
 
         User.UserRoles role = Models.User.UserRoles.Teacher;
-        string inviteKey = InviteKeysService.GetTeacherInviteKey();
+        InviteToken token = InviteKeysService.CreateToken(dto.Email, dto.Role);
 
         // define admin user role
         if (dto.Role.ToLower() == Models.User.UserRoles.Admin.ToString().ToLower())
         {
             role = Models.User.UserRoles.Admin;
-            inviteKey = InviteKeysService.GetAdminInviteKey();
         }
 
-        EmailDto email = EmailDto.GetInviteLink(dto.Email, inviteKey, role.ToString());
+        EmailDto email = EmailDto.GetInviteLink(dto.Email, token.Token, role.ToString());
         await emailService.SendAsync(email);
 
         return Ok($"Invitation sent to {dto.Email}");
@@ -94,7 +93,6 @@ public class AuthorizationController(
     [ProducesResponseType(201)]
     public async Task<ActionResult<UserGetDto>> PostCreate(UserCreateDto userDto)
     {
-        Console.WriteLine("accessKey: " + userDto.InviteKey);
         if (userDto == null)
         {
             return BadRequest(ResponseMessage.GetErrorMessage("User dto not valid."));
@@ -107,18 +105,20 @@ public class AuthorizationController(
 
         // define user role
         User.UserRoles userRole = Models.User.UserRoles.Student;
-        if (userDto.InviteKey == InviteKeysService.GetAdminInviteKey())
+        InviteToken? inviteToken = InviteKeysService.UseToken(userDto.Email, userDto.InviteKey);
+        if (userDto.InviteKey != "" && inviteToken != null)
         {
-            userRole = Models.User.UserRoles.Admin;
-        }
-        else if (userDto.InviteKey == InviteKeysService.GetTeacherInviteKey())
-        {
-            userRole = Models.User.UserRoles.Teacher;
+            if (inviteToken.Role == Models.User.UserRoles.Admin.ToString())
+            {
+                userRole = Models.User.UserRoles.Admin;
+            }
+            else if (inviteToken.Role == Models.User.UserRoles.Teacher.ToString())
+            {
+                userRole = Models.User.UserRoles.Teacher;
+            }
         }
 
         userDto.GroupId = null; //NEED TO REMOVE
-
-        System.Console.WriteLine("userRole: " + userRole);
         return Ok(await CreateUser(userDto, userRole));
     }
 

@@ -1,45 +1,55 @@
 public class InviteKeysService() : BackgroundService
 {
-    private static string AdminInviteKey = "";
-    private static string TeacherInviteKey = "";
+    private static List<InviteToken> tokens = new ();
     private static DateTime? lastUpdate = null;
 
-    public static string GetAdminInviteKey()
+    public static InviteToken CreateToken(string email, string role)
     {
-        return AdminInviteKey;
+        InviteToken token = InviteToken.Create(email, role);
+
+        tokens.Add(token);
+        return token;
     }
 
-    public static string GetTeacherInviteKey()
+
+    public static InviteToken? GetToken(string email, string token)
     {
-        return TeacherInviteKey;
+        InviteToken? selectedToken = tokens.Find(t => t.Email.ToLower() == email.ToLower() && t.Token == token && t.IsValid());
+        if (selectedToken == null)
+        {
+            return null;
+        }
+
+        return selectedToken;
     }
 
-    private static void UpdateKeys()
+    public static InviteToken? UseToken(string email, string token)
+    {
+        InviteToken? selectedToken = GetToken(email, token);
+        if (selectedToken == null)
+        {
+            return null;
+        }
+
+        tokens.Remove(selectedToken);
+        return selectedToken;
+    }
+
+    private void DeleteExpiredTokens()
     {
         lastUpdate = DateTime.UtcNow;
-        AdminInviteKey = Guid.NewGuid().ToString();
-        TeacherInviteKey = Guid.NewGuid().ToString();
-
-        Console.WriteLine("AdminInviteKey: " + AdminInviteKey);
-        Console.WriteLine("TeacherInviteKey: " + TeacherInviteKey);
-        Console.WriteLine("Invite keys updated: " + lastUpdate);
+        tokens.RemoveAll(token => token.ExpireAt < lastUpdate);
     }
+
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        UpdateKeys();
         while (!stoppingToken.IsCancellationRequested)
         {
-            DateTime now = DateTime.UtcNow;
+            // Delete expired tokens
+            DeleteExpiredTokens();
 
-            // at 02:00 UTC every day
-            if (now.Hour == 2 && now.Minute == 0)
-            {
-                UpdateKeys();
-                await Task.Delay(TimeSpan.FromMinutes(1));
-            }
-
-            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(15), stoppingToken);
         }
     }
 }
