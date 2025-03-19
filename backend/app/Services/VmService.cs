@@ -1,6 +1,7 @@
 public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory scopeFactory)
 {
-    public async Task Book(string vmName, string templateName, string username = "", string password = "") {
+    public async Task Book(string vmName, string templateName, string username = "", string password = "")
+    {
         int vmId = await GetFreeVmId();
 
         // change name to vmId to use proxmox id
@@ -16,10 +17,10 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
 
         if (template == null)
         {
-            throw new HttpException(HttpStatusCode.NotFound,"Template not found");
+            throw new HttpException(HttpStatusCode.NotFound, "Template not found");
         }
 
-        if (await proxmoxApiService.CloneVm(vmId, vmName, template, node, true) == false) 
+        if (await proxmoxApiService.CloneVm(vmId, vmName, template, node, true) == false)
         {
             throw new Exception("Failed to clone vm");
         }
@@ -33,7 +34,8 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
             throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
         }
 
-        if (username != "") {
+        if (username != "")
+        {
             await proxmoxApiService.SetVmPassword(vm, username, password);
         }
 
@@ -57,22 +59,25 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         await emailService.SendAsync(email);
     }
 
-    public async Task<List<TemplateGetDto>> GetTemplates() {
+    public async Task<List<TemplateGetDto>> GetTemplates()
+    {
         List<ProxmoxVmDto> proxmoxTemplates = await proxmoxApiService.GetProxmoxTemplates();
         return proxmoxTemplates.ConvertAll(x => TemplateGetDto.MakeGetDTO(x.Name));
     }
 
-    public async Task<ProxmoxVmDto> GetTemplateByNameAsync(string name) {
+    public async Task<ProxmoxVmDto> GetTemplateByNameAsync(string name)
+    {
         ProxmoxVmDto? template = await proxmoxApiService.GetTemplateByNameAsync(name);
         if (template == null)
         {
-            throw new HttpException(HttpStatusCode.NotFound,"Template not found");
+            throw new HttpException(HttpStatusCode.NotFound, "Template not found");
         }
 
         return template;
     }
 
-    public async Task<ProxmoxVmDto> GetVmByNameAsync(string name) {
+    public async Task<ProxmoxVmDto> GetVmByNameAsync(string name)
+    {
         ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(name);
         if (vm == null)
         {
@@ -82,7 +87,8 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         return vm;
     }
 
-    public async Task<VmInfoGetDto> GetVmInfo(VmBooking booking) {
+    public async Task<VmInfoGetDto> GetVmInfo(VmBooking booking)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(booking.Name);
 
         // search internal ip (starts with 10.x.x.x)
@@ -100,7 +106,8 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
             }
         }
 
-        return new(){
+        return new()
+        {
             Ip = ip,
             Name = vm.Name,
             Username = booking.Login,
@@ -110,14 +117,16 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         };
     }
 
-    public async Task<List<ProxmoxVmInfoTimeFrameIn>> GetVmInfoTimeFrame(VmBooking booking) {
+    public async Task<List<ProxmoxVmInfoTimeFrameIn>> GetVmInfoTimeFrame(VmBooking booking)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(booking.Name);
 
         List<ProxmoxVmInfoTimeFrameIn> frameVmInfo = await proxmoxApiService.GetVmTimeFrame(vm);
         return frameVmInfo.Where(frame => frame.MaxCpu != 0).ToList();
     }
 
-    public async Task Remove(string vmName) {
+    public async Task Remove(string vmName)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
 
         for (int i = 0; i < 10; i++)
@@ -137,17 +146,20 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         }
     }
 
-    public async Task ResetPower(string vmName) {
+    public async Task ResetPower(string vmName)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         await proxmoxApiService.ResetVmPower(vm);
     }
 
-    public async Task RebootVm(string vmName) {
+    public async Task RebootVm(string vmName)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         await proxmoxApiService.RebootVm(vm);
     }
 
-    public async Task<List<ProxmoxIsoDto>> GetPromoxIsoList() {
+    public async Task<List<ProxmoxIsoDto>> GetPromoxIsoList()
+    {
         List<ProxmoxNodeDto> nodes = await proxmoxApiService.GetProxmoxNodes();
         if (nodes.Count == 0)
         {
@@ -157,34 +169,39 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         return await proxmoxApiService.GetProxmoxIsoList(nodes.First());
     }
 
-    public async Task<List<string>> GetIsoList() {
+    public async Task<List<string>> GetIsoList()
+    {
         List<ProxmoxIsoDto> proxmoxIsos = await GetPromoxIsoList();
         return proxmoxIsos.Select(iso => iso.Name).ToList();
     }
 
-    public async Task<ProxmoxIsoDto> GetProxmoxIsoByName(string name) {
+    public async Task<ProxmoxIsoDto> GetProxmoxIsoByName(string name)
+    {
         List<ProxmoxIsoDto> proxmoxIsoList = await GetPromoxIsoList();
         ProxmoxIsoDto? iso = proxmoxIsoList.FirstOrDefault(iso => iso.Name == name);
         if (iso == null)
         {
             throw new Exception("Iso not found");
         }
-        
+
         return iso;
     }
 
-    public async Task AttachIso(string vmName, string isoName) {
+    public async Task AttachIso(string vmName, string isoName)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         ProxmoxIsoDto iso = await GetProxmoxIsoByName(isoName);
         await proxmoxApiService.AttachIso(vm, iso);
     }
 
-    public async Task DetachIso(string vmName) {
+    public async Task DetachIso(string vmName)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         await proxmoxApiService.DetachIso(vm);
     }
 
-    public async Task AddStorage(string vmName, int sizeGb) {
+    public async Task AddStorage(string vmName, int sizeGb)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         ProxmoxVmConfigDto vmConfig = await proxmoxApiService.GetVmConfig(vm);
         if (vmConfig.ExtraStorageExists)
@@ -195,38 +212,64 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         _ = proxmoxApiService.AddStorage(vm, sizeGb);
     }
 
-    public async Task UpdateVmResources(string vmName, int cpu, int ramMb) {
+    public async Task UpdateVmResources(string vmName, int cpu, int ramMb)
+    {
         ProxmoxVmDto vm = await GetVmByNameAsync(vmName);
         await proxmoxApiService.UpdateVmConfig(vm, cpu, ramMb);
-        
+
         await proxmoxApiService.StopVm(vm, true);
         Thread.Sleep(5000);
         await proxmoxApiService.StartVm(vm);
     }
 
-    public async Task<ClusterInfoDto> GetClusterInfo() {
+    public async Task<ClusterInfoDto> GetClusterInfo()
+    {
         ClusterInfoDto clusterInfo = new ClusterInfoDto();
 
         List<ProxmoxNodeDto> nodes = await proxmoxApiService.GetProxmoxNodes();
         List<ProxmoxNodeDto> readyNodes = nodes.Where(node => node.ReadyForBookings).ToList();
         List<ProxmoxVmDto> vms = await proxmoxApiService.GetProxmoxVms();
         List<ProxmoxVmDto> templates = await proxmoxApiService.GetProxmoxTemplates();
+        List<ProxmoxStorageDto> storages = await proxmoxApiService.GetProxmoxStorages();
+
+        ProxmoxStorageDto? storage = storages.FirstOrDefault(storage => storage.Storage.ToLower() == "vm_data");
+        int usedStorage = 0;
+        int totalStorage = 0;
+        float storageUsagePercent = 0;
+        if (storage != null)
+        {
+            usedStorage = storage.UsageGb;
+            totalStorage = storage.TotalGb;
+            storageUsagePercent = (float)Math.Round(storage.Usage, 4);
+        }
+
+        float cpuUsagePercent = (float)Math.Round(readyNodes.Average(node => node.Cpu), 4);
+
+        float totalRam = readyNodes.Sum(node => node.MaxMem) / 1024 / 1024 / 1024;
+        float usedRam = readyNodes.Sum(node => node.Mem) / 1024 / 1024 / 1024;
+        float ramUsagePercent = (float)Math.Round(usedRam / totalRam, 4);
 
         clusterInfo.TotalHosts = nodes.Count;
         clusterInfo.ActiveHosts = readyNodes.Count(node => node.ReadyForBookings);
         clusterInfo.CpuTotal = $"{readyNodes.Sum(node => node.MaxCpu)} cores";
-        clusterInfo.CpuUsage = $"{Math.Round(readyNodes.Average(node => node.Cpu) * 100, 1)} %";
-        clusterInfo.RamTotal = $"{readyNodes.Sum(node => node.MaxMem) / 1024 / 1024 / 1024} GB";
-        clusterInfo.RamUsage = $"{readyNodes.Sum(node => node.Mem / 1024 / 1024 / 1024)} GB";
+        clusterInfo.CpuUsage = $"{cpuUsagePercent * 100} %";
+        clusterInfo.CpuUsagePercent = cpuUsagePercent;
+        clusterInfo.RamTotal = $"{totalRam} GB";
+        clusterInfo.RamUsage = $"{usedRam} GB";
+        clusterInfo.RamUsagePercent = ramUsagePercent;
+        clusterInfo.StorageTotal = $"{totalStorage} GB";
+        clusterInfo.StorageUsage = $"{usedStorage} GB";
+        clusterInfo.StorageUsagePercent = storageUsagePercent;
         clusterInfo.AmountVMs = vms.Count;
         clusterInfo.AmountTemplates = templates.Count;
 
         return clusterInfo;
     }
 
-    public async Task<bool> WaitForAgent(string vmName) {
+    public async Task<bool> WaitForAgent(string vmName)
+    {
         bool result = false;
-        
+
         for (int i = 0; i < 300; i++)
         {
             await Task.Delay(1000);
@@ -249,7 +292,8 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         return result;
     }
 
-    private async Task<int> GetFreeVmId() {
+    private async Task<int> GetFreeVmId()
+    {
         int vmId = Helpers.GetRandomNumber(10000, 99999);
 
         ProxmoxVmDto? vm = await proxmoxApiService.GetVmByIdAsync(vmId);
@@ -261,7 +305,8 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         return await GetFreeVmId();
     }
 
-    private async Task<string> ChangeVmName(string vmName, int vmId) {
+    private async Task<string> ChangeVmName(string vmName, int vmId)
+    {
         // create scope to use db
         using var scope = scopeFactory.CreateScope();
         var vmRepository = scope.ServiceProvider.GetRequiredService<VmBookingRepository>();

@@ -123,7 +123,7 @@ public class ProxmoxApiService
         var data = await response.Content.ReadFromJsonAsync<Dictionary<string, ProxmoxVmConfigDto>>();
         if (data == null)
         {
-            return new ();
+            return new();
         }
 
         return data["data"];
@@ -203,7 +203,7 @@ public class ProxmoxApiService
         var data = await response.Content.ReadFromJsonAsync<Dictionary<string, ProxmoxVncDto>>();
         if (data == null)
         {
-            return new ();
+            return new();
         }
 
         return data["data"];
@@ -248,9 +248,12 @@ public class ProxmoxApiService
         Dictionary<string, Dictionary<string, List<ProxmoxNetworkDeviceDto>>>? data = null;
         var response = await _client.GetAsync($"https://{Config.PROXMOX_ADDR}/api2/json/nodes/{vm.Node}/qemu/{vm.VmId}/agent/network-get-interfaces");
 
-        try {
+        try
+        {
             data = await response.Content.ReadFromJsonAsync<Dictionary<string, Dictionary<string, List<ProxmoxNetworkDeviceDto>>>>();
-        } catch {
+        }
+        catch
+        {
             Console.WriteLine($"Error while reading network devices. {vm.Name}");
         }
 
@@ -306,6 +309,12 @@ public class ProxmoxApiService
         }
 
         return data["data"];
+    }
+
+    // Storage
+    public async Task<List<ProxmoxStorageDto>> GetProxmoxStorages()
+    {
+        return await GetProxmoxResources<ProxmoxStorageDto>("storage");
     }
 
     // Nodes
