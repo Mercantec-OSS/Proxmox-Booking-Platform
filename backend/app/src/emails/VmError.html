@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Error under vm creating. Template ##VM_TYPE##</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            margin-top: 0;
+        }
+
+        .details {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .details th,
+        .details td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        .details th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>VM not created: ##VM_TYPE##</h1>
+        <p>Please contact the administrator for further assistance.</p>
+        <div class="section">
+            <h2>Machine info</h2>
+            <p><strong>Type:</strong> ##VM_TYPE##</p>
+            <p><strong>Machine name: </strong> ##VM_NAME##</p>
+            <p><strong>Created:</strong> ##VM_CREATED##</p>
+            <p><strong>Expires:</strong> ##VM_EXPIRES##</p>
+        </div>
+        <div class="section">
+            <h2>Details</h2>
+            <p>
+                <strong>This email was send at</strong> ##CREATED_AT##
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

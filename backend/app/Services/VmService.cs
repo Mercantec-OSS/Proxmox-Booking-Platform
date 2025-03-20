@@ -28,21 +28,6 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         await proxmoxApiService.AddToHA(vmId);
         await WaitForAgent(vmName);
 
-        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
-        if (vm == null)
-        {
-            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
-        }
-
-        if (username != "")
-        {
-            await proxmoxApiService.SetVmPassword(vm, username, password);
-        }
-
-        // update vm tags
-        await proxmoxApiService.UpdateVmTags(vm, "booking");
-
-        // send email at vm is ready to use
         using var scope = scopeFactory.CreateScope();
         EmailService emailService = scope.ServiceProvider.GetRequiredService<EmailService>();
         VmBookingRepository vmBookingRepository = scope.ServiceProvider.GetRequiredService<VmBookingRepository>();
@@ -54,6 +39,22 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
         {
             throw new HttpException(HttpStatusCode.NotFound, $"Vm {vmName} booking not found");
         }
+
+        ProxmoxVmDto? vm = await proxmoxApiService.GetVmByNameAsync(vmName);
+        if (vm == null)
+        {
+            EmailDto emailError = EmailDto.GetVmError(vmBooking);
+            await emailService.SendAsync(emailError);
+            throw new HttpException(HttpStatusCode.NotFound, "Vm not found");
+        }
+
+        if (username != "")
+        {
+            await proxmoxApiService.SetVmPassword(vm, username, password);
+        }
+
+        // update vm tags
+        await proxmoxApiService.UpdateVmTags(vm, "booking");
 
         EmailDto email = EmailDto.GetVmReady(vmBooking);
         await emailService.SendAsync(email);

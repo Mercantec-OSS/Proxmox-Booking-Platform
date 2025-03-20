@@ -219,6 +219,23 @@ public class EmailDto
         return new EmailDto() { Recipient = booking.Owner.Email, Subject = subject, Body = htmlContent };
     }
 
+    public static EmailDto GetVmError(VmBooking booking)
+    {
+        string htmlContent = File.ReadAllText(Path.Combine(Config.EMAIL_TEMPLATES_PATH, "VmError.html"));
+        htmlContent = ReplaceFromString(htmlContent, new()
+        {
+            { "##VM_TYPE##", booking.Type.ToString() },
+            { "##VM_NAME##", booking.Name },
+            { "##VM_CREATED##", booking.CreatedAt.ToString("ddd, dd MMM yyy HH:mm:ss") },
+            { "##VM_EXPIRES##", booking.ExpiredAt.ToString("ddd, dd MMM yyy HH:mm:ss") },
+            { "##CREATED_AT##", DateTime.UtcNow.ToString("ddd, dd MMM yyy HH:mm:ss") }
+        });
+
+        string subject = $"Error during VM creation. Template {booking.Type}";
+
+        return new EmailDto() { Recipient = booking.Owner.Email, Subject = subject, Body = htmlContent };
+    }
+
     private static string ReplaceFromString(string stringToReplaceFrom, Dictionary<string, string> replacements)
     {
         return replacements.Aggregate(stringToReplaceFrom, (current, replacment) =>
