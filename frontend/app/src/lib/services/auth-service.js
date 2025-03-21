@@ -68,5 +68,17 @@ export const authService = {
         }
       })
       .json();
+  },
+
+  async sendPasswordResetEmail(email) {
+    return clientApi.post('reset-password/create-token', { json: { email } }).json();
+  },
+
+  async validateToken(token, email) {
+    return clientApi.post('reset-password/validate-token', { json: { token, email } }).json();
+  },
+
+  async resetPassword(token, email, password) {
+    return clientApi.post('reset-password/change-password', { json: { token, email, password } }).json();
   }
 };
