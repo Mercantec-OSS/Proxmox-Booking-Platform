@@ -216,7 +216,7 @@
 </script>
 
 <VMExtensionRequestDialog bind:vmExtensionRequestDialogOpen />
-<DeleteBookingDialog bind:deleteDialogOpen listOfBookings={selectedRowIds} />
+<DeleteBookingDialog bind:deleteDialogOpen bind:listOfBookings={selectedRowIds} />
 
 {#if $vmListStore.length === 0}
   <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
