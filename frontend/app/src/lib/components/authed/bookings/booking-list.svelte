@@ -14,6 +14,7 @@
   import { Checkbox } from '$lib/components/ui/checkbox/index.js';
   import { renderComponent } from '$lib/components/ui/data-table/index.js';
   import DeleteBookingDialog from '$lib/components/authed/bookings/dialogs/delete-booking-dialog.svelte';
+
   let userAuthed = $derived($userStore.role === 'Admin' || $userStore.role === 'Teacher');
   let vmExtensionRequestDialogOpen = $state(false);
   let data = $derived($vmListStore);
@@ -42,7 +43,7 @@
             table.toggleAllPageRowsSelected(!!value);
             if (value) {
               // When selecting all, directly set to all current rows
-              selectedRowIds = table.getRowModel().rows.map(row => row.original);
+              selectedRowIds = table.getRowModel().rows.map((row) => row.original);
             } else {
               selectedRowIds = [];
             }
@@ -56,17 +57,24 @@
             row.toggleSelected(!!value);
             if (value) {
               // Check if booking is already selected before adding
-              if (!selectedRowIds.find(booking => booking.id === row.original.id)) {
+              if (!selectedRowIds.find((booking) => booking.id === row.original.id)) {
                 selectedRowIds = [...selectedRowIds, row.original];
               }
             } else {
-              selectedRowIds = selectedRowIds.filter(booking => booking.id !== row.original.id);
+              selectedRowIds = selectedRowIds.filter((booking) => booking.id !== row.original.id);
             }
           },
           'aria-label': 'Select row'
         }),
       enableSorting: false,
       enableHiding: false
+    },
+    {
+      accessorKey: 'type',
+      header: 'Template',
+      cell: ({ row }) => row.getValue('type'),
+      enableSorting: true,
+      sortingFn: 'alphanumeric'
     },
     {
       accessorKey: 'message',
@@ -229,19 +237,21 @@
       <div class="w-full">
         <div class="flex flex-wrap justify-between items-center py-4">
           <!-- Filter by owner -->
-           <div class="flex flex-wrap gap-x-4 justify-center items-center">
-          <Input
-            placeholder="Filter by owner..."
-            value={table.getColumn('owner')?.getFilterValue() ?? ''}
-            oninput={(e) => table.getColumn('owner')?.setFilterValue(e.currentTarget.value)}
-            onchange={(e) => table.getColumn('owner')?.setFilterValue(e.currentTarget.value)}
-            class="w-full md:w-96"
-          />
+          <div class="flex flex-wrap gap-x-4 justify-center items-center">
+            <Input
+              placeholder="Filter by owner..."
+              value={table.getColumn('owner')?.getFilterValue() ?? ''}
+              oninput={(e) => table.getColumn('owner')?.setFilterValue(e.currentTarget.value)}
+              onchange={(e) => table.getColumn('owner')?.setFilterValue(e.currentTarget.value)}
+              class="w-full md:w-96"
+            />
 
-          {#if selectedRowIds.length > 0}
-          <Button variant="outline" onclick={() => deleteDialogOpen = true}><Trash2 class="h-4 w-4 mr-1" />Delete {selectedRowIds.length} {selectedRowIds.length > 1 ? 'Bookings' : 'Booking'}</Button>
-        {/if}
-      </div>
+            {#if selectedRowIds.length > 0}
+              <Button variant="outline" onclick={() => (deleteDialogOpen = true)}
+                ><Trash2 class="h-4 w-4 mr-1" />Delete {selectedRowIds.length} {selectedRowIds.length > 1 ? 'Bookings' : 'Booking'}</Button
+              >
+            {/if}
+          </div>
 
           <div class="flex flex-wrap">
             <!-- Create booking -->
