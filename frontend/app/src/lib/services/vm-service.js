@@ -157,16 +157,6 @@ export const vmService = {
       .json();
   },
 
-  async getVmInfoBackend(cookie, uuid) {
-    return await backendApi
-      .get(`script/vm/get-ip/${uuid}`, {
-        headers: {
-          Cookie: `token=${cookie}`
-        }
-      })
-      .json();
-  },
-
   async resetVmPower(name) {
     await clientApi.get(`script/vm/reset-power/${name}`).json();
   },
