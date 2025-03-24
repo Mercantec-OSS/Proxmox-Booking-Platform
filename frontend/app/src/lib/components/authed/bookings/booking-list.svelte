@@ -22,10 +22,6 @@
 
   let deleteDialogOpen = $state(false);
 
-  $effect(() => {
-    console.log($vmListStore);
-  });
-
   const dateTimeFormatter = new Intl.DateTimeFormat(undefined, {
     day: '2-digit',
     month: 'short',
