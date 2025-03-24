@@ -18,10 +18,10 @@ export const load = async ({ parent, params, cookies }) => {
     const vmData = await vmService.getVMBookingByIdBackend(token, id);
 
     if (vmData.uuid && vmData.isAccepted) {
-      const [creds, isoList, usageInfo] = await Promise.all([vmService.getVmInfoBackend(token, vmData.uuid), vmService.getIsoListBackend(token), vmService.getUsageInfoBackend(token, vmData.uuid)]);
+      const [isoList, usageInfo] = await Promise.all([vmService.getIsoListBackend(token), vmService.getUsageInfoBackend(token, vmData.uuid)]);
 
       return {
-        vmData: { ...vmData, ...creds, isoList, usageInfo },
+        vmData: { ...vmData, isoList, usageInfo },
         userInfo
       };
     }
