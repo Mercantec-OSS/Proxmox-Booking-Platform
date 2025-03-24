@@ -114,7 +114,8 @@ public class VmService(ProxmoxApiService proxmoxApiService, IServiceScopeFactory
             Username = booking.Login,
             Password = booking.Password,
             Cpu = vm.MaxCPU,
-            Ram = vm.MaxRamGb
+            Ram = vm.MaxRamGb,
+            PowerStatus = vm.Status
         };
     }
 

@@ -14,4 +14,8 @@ public class VmInfoGetDto
     public int Cpu { get; set; } = 0;
     [JsonPropertyName("ram")]
     public int Ram { get; set; } = 0;
+    [JsonPropertyName("powerStatus")]
+    public string PowerStatus { get; set; } = string.Empty;
+    [JsonPropertyName("isPowerOn")]
+    public bool IsPowerOn => PowerStatus == "running";
 }
