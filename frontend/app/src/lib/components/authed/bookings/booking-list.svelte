@@ -233,7 +233,7 @@
 </script>
 
 <VMExtensionRequestDialog bind:vmExtensionRequestDialogOpen />
-<DeleteBookingDialog bind:deleteDialogOpen listOfBookings={selectedBookings} />
+<DeleteBookingDialog bind:deleteDialogOpen bind:listOfBookings={selectedBookings} />
 
 {#if data.length === 0 && !globalFilter}
   <div class="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm">
