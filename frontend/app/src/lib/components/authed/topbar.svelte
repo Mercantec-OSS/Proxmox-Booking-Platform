@@ -98,25 +98,11 @@
     <UserSearch />
   </div>
 
-  <!-- Notifications -->
-  <div class="px-2">
-    <HoverCard.Root openDelay={200} closeDelay={150}>
-      <HoverCard.Trigger>
-        <Button variant="outline" size="icon" class="hidden md:flex"><Bell /></Button>
-      </HoverCard.Trigger>
-      <HoverCard.Content>
-        <div class="flex justify-between space-x-4">
-          <p class="text-sm">Notifications not yet implemented</p>
-        </div>
-      </HoverCard.Content>
-    </HoverCard.Root>
-  </div>
-
   <!-- User menu -->
   <div class="pl-2">
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
-        <Button variant="outline" size="icon" class="overflow-hidden rounded-full">
+        <Button variant="outline" size="icon" class="overflow-hidden rounded-lg">
           <User />
         </Button>
       </DropdownMenu.Trigger>
