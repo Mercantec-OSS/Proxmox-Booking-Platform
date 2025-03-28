@@ -51,8 +51,8 @@
 
   async function fetchVmCreds() {
     try {
-      const { ip, username, password } = await vmService.getVmInfo($selectedBookingStore.uuid);
-      selectedBookingStore.update((store) => ({ ...store, ip, username, password }));
+      const { ip, username, password, isPowerOn } = await vmService.getVmInfo($selectedBookingStore.uuid);
+      selectedBookingStore.update((store) => ({ ...store, ip, username, password, isPowerOn }));
     } catch (error) {
       toast.error(error.message);
     }
@@ -126,10 +126,10 @@
           <span class="sr-only">Back</span>
         </Button>
         <h1 class="flex-1 shrink-0 whitespace-nowrap text-xl font-semibold tracking-tight sm:grow-0">Booking details</h1>
-        <Badge variant="outline" class="text-primary border-primary">Virtual machine</Badge>
-        <Badge class="text-primary border-primary" variant="outline">
-          {$selectedBookingStore.extentions?.some((ext) => !ext.isAccepted) ? 'Pending Extension' : $selectedBookingStore.isAccepted ? 'Confirmed' : 'Pending'}
-        </Badge>
+        <div class="inline-flex items-center gap-x-2">
+          <div class="size-2 rounded-full {$selectedBookingStore.isPowerOn ? 'bg-green-500' : 'bg-red-500'}"></div>
+          <p class="text-sm {$selectedBookingStore.isPowerOn ? 'text-green-500' : 'text-red-500'}">{$selectedBookingStore.isPowerOn ? 'Online' : 'Offline'}</p>
+        </div>
         <div class="flex items-center gap-2 md:ml-auto">
           <!-- Buttons for teacher/admin to accept or delete booking -->
           {#if !$selectedBookingStore.isAccepted}
