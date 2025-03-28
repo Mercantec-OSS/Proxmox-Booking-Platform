@@ -105,6 +105,14 @@ public class AuthorizationController(
 
         // define user role
         User.UserRoles userRole = Models.User.UserRoles.Student;
+
+        // if first user in system set as admin
+        if (await userRepository.GetUserCountAsync() == 0)
+        {
+            Console.WriteLine("First user in system. Set as Admin");
+            userRole = Models.User.UserRoles.Admin;
+        }
+
         InviteToken? inviteToken = InviteKeysService.UseToken(userDto.Email, userDto.InviteKey);
         if (userDto.InviteKey != "" && inviteToken != null)
         {
