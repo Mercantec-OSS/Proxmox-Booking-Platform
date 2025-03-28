@@ -262,15 +262,7 @@
                 <Textarea class="max-h-20" placeholder="Describe the purpose of this VM booking" id="comment" bind:value={vmBookingInput.message} />
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                onmousedown={(e) => {
-                  if (!isLoading) {
-                    e.preventDefault();
-                    e.target.form.requestSubmit();
-                  }
-                }}
+              <Button type="submit" disabled={isLoading}
                 >{#if isLoading}
                   <LoaderCircle class="mr-2 h-4 w-4 animate-spin" />
                 {/if}
