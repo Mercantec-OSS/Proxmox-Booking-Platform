@@ -23,6 +23,11 @@ public class UserRepository(Context context)
         return await _dbService.Users.ToListAsync();
     }
 
+    public async Task<int> GetUserCountAsync()
+    {
+        return await _dbService.Users.CountAsync();
+    }
+
     public async Task<User?> GetUserByFullNameAsync(string name)
     {
         return await _dbService.Users.FirstOrDefaultAsync(u => 
